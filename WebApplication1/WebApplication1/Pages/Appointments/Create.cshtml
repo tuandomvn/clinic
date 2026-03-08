@@ -112,36 +112,23 @@
             return;
         }
 
-        // Render doctors as checkboxes so user can select 1..n doctors
+        // Single-select doctor dropdown (choose one doctor)
+        const sel = document.createElement('select');
+        sel.className = 'form-select';
+        sel.id = 'doctorSelect';
+        const empty = document.createElement('option'); empty.value = ''; empty.innerText = 'Chọn bác sĩ'; sel.appendChild(empty);
         Object.keys(doctorsInfo).forEach(id => {
-            const wrap = document.createElement('div');
-            wrap.className = 'form-check mb-2';
-
-            const input = document.createElement('input');
-            input.className = 'form-check-input';
-            input.type = 'checkbox';
-            input.id = 'doc-' + id;
-            input.dataset.doc = id;
-
-            const label = document.createElement('label');
-            label.className = 'form-check-label ms-2';
-            label.htmlFor = 'doc-' + id;
-            label.innerText = doctorsInfo[id].name;
-
-            wrap.appendChild(input);
-            wrap.appendChild(label);
-            container.appendChild(wrap);
-
-            input.addEventListener('change', function(){
-                // avoid full re-render which can override existing columns
-                const currentDate = document.getElementById('date').value;
-                if (this.checked) {
-                    addDoctorColumn(id, currentDate);
-                } else {
-                    removeDoctorColumn(id);
-                }
-            });
+            const opt = document.createElement('option'); opt.value = id; opt.innerText = doctorsInfo[id].name; sel.appendChild(opt);
         });
+        sel.addEventListener('change', function(){
+            const curDate = document.getElementById('date').value;
+            if (!this.value) {
+                document.getElementById('slots').innerHTML = '<div class="text-muted">Chọn bác sĩ để xem ca khả dụng.</div>';
+                return;
+            }
+            renderSlotsForDoctor(this.value, curDate);
+        });
+        container.appendChild(sel);
     }
 
     // Add column for a single doctor (if not already present)

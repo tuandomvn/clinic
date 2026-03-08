@@ -257,6 +257,19 @@ body {
 /* make columns sit side-by-side and not wrap into new lines */
 .slot-column { flex: 0 0 180px; }
 
+/* Horizontal compact layout for single-doctor slots */
+#slots {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+#slots .slot-btn {
+  display: inline-block;
+  margin-bottom: 0;
+}
+
 /* scrollbar appearance (non-critical) */
 .slot-column::-webkit-scrollbar { width: 8px; }
 .slot-column::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 4px; }
