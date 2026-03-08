@@ -1,0 +1,110 @@
+@page
+@{
+    ViewData["Title"] = "Patients";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Patients</h2>
+    <div>
+        <a class="btn btn-sm btn-primary" href="/Patients/Create">New Patient</a>
+    </div>
+</div>
+
+<div class="card mb-3 p-3">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-5">
+            <input class="form-control" placeholder="Search by name or ID" />
+        </div>
+        <div class="col-md-3">
+            <select class="form-select">
+                <option>All status</option>
+                <option>Active</option>
+                <option>Inactive</option>
+            </select>
+        </div>
+        <div class="col-md-4 text-end">
+            <a class="btn btn-outline-secondary btn-sm me-2">Import</a>
+            <a class="btn btn-outline-secondary btn-sm">Export</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card p-3">
+        <div class="text-center mb-3">
+                <h5 class="mb-0"><a class="text-decoration-none text-dark" href="/Patients/Details?id=123">Nguyen Van A</a></h5>
+                <div class="small text-muted">ID: PT-00123</div>
+                <div>
+                    <img src="~/images/barcode-PT-00123.svg" alt="PT-00123 barcode" class="barcode-img mt-2" />
+                </div>
+            </div>
+
+            <ul class="list-unstyled small text-muted">
+                <li><strong>Phone:</strong> 090-123-4567</li>
+                <li><strong>Birth:</strong> 1988-04-12</li>
+                <li><strong>Address:</strong> Ho Chi Minh City</li>
+                <li><strong>Last visit:</strong> 2026-02-28</li>
+            </ul>
+
+            <div class="d-grid mt-3">
+                <a class="btn btn-outline-primary">Edit Profile</a>
+                <a class="btn btn-outline-secondary mt-2">View Medical Records</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card p-3">
+            <h5 class="mb-3">Patient List</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Patient</th>
+                            <th>Phone</th>
+                            <th>Last visit</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none" href="/Patients/Details?id=123">Nguyen Van A</a></div>
+                                        <div class="small text-muted">PT-00123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>090-123-4567</td>
+                            <td>2026-02-28</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Edit?id=123">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=123">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none" href="/Patients/Details?id=456">Le Thi C</a></div>
+                                        <div class="small text-muted">PT-00456</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>091-555-1234</td>
+                            <td>2026-02-25</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Edit?id=456">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=456">Details</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

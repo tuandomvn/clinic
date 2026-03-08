@@ -1,0 +1,100 @@
+@page
+@{
+    ViewData["Title"] = "Chi tiết bệnh nhân";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Chi tiết bệnh nhân</h2>
+    <div>
+        <a class="btn btn-sm btn-outline-secondary me-2" href="/Patients">Quay lại</a>
+        <a class="btn btn-sm btn-primary" href="/Appointments/Create">Hẹn mới</a>
+    </div>
+}</div>
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card p-3 patient-card text-center">
+            <h4 class="mb-0">Nguyen Van A</h4>
+            <div class="small text-muted">ID: PT-00123</div>
+            <div>
+                <img src="~/images/barcode-PT-00123.svg" alt="PT-00123 barcode" class="barcode-img mt-2" />
+            </div>
+            <ul class="list-unstyled text-start mt-3 small text-muted">
+                <li><strong>Phone:</strong> 090-123-4567</li>
+                <li><strong>Birth:</strong> 1988-04-12</li>
+                <li><strong>Gender:</strong> Male</li>
+                <li><strong>Address:</strong> Ho Chi Minh City</li>
+            </ul>
+
+            <div class="d-grid gap-2 mt-3">
+                <a class="btn btn-outline-primary" href="/Patients/Edit?id=123">Chỉnh sửa</a>
+            </div>
+        </div>
+
+        <div class="card p-3 mt-3">
+            <h6 class="mb-3">Lịch hẹn kế tiếp</h6>
+            <div>
+                <div class="fw-semibold">2026-03-19 09:30</div>
+                <div class="small text-muted">Dr. Tran Thi B — Follow-up</div>
+                <div class="mt-3 d-flex gap-2">
+                    <a class="btn btn-sm btn-primary" href="/Visits/NextAppointment?appointmentId=3">Xem</a>
+                    <a class="btn btn-sm btn-outline-secondary" href="/Appointments/Create?patientId=123">Đổi lịch</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card p-3 mb-4">
+            <h5 class="mb-3">Lịch sử khám</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Ngày</th>
+                            <th>Bác sĩ</th>
+                            <th>Tóm tắt</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-03-05 09:30</td>
+                            <td>Dr. Tran Thi B</td>
+                            <td>Viêm họng cấp</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=1">Kết quả</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-03-08 10:00</td>
+                            <td>Điều dưỡng Hồng</td>
+                            <td>3 ngày sau mổ — Vết mổ khô, không sốt.</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=5">Chi tiết</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2025-12-20 10:00</td>
+                            <td>Dr. Nguyen Van D</td>
+                            <td>Mổ viêm xoang</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Kết quả</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2025-12-10 10:00</td>
+                            <td>Dr. Nguyen Van D</td>
+                            <td>Khám tổng quát</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Kết quả</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+       
+    </div>
+</div>

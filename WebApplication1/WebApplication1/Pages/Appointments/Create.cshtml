@@ -1,0 +1,338 @@
+@page
+@{
+    ViewData["Title"] = "New Appointment";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Tạo lịch khám mới</h2>
+    <div>
+        <a class="btn btn-sm btn-outline-secondary" href="/Appointments">Quay lại</a>
+    </div>
+</div>
+
+<div class="card p-3">
+    <form id="appointmentForm">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Bệnh nhân (ID hoặc tên)</label>
+                <input type="text" id="patient" class="form-control" placeholder="PT-00123 hoặc tên bệnh nhân" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Chọn ngày khám</label>
+                <input type="date" id="date" class="form-control" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Chọn bác sĩ</label>
+                <div id="doctors" class="d-flex flex-column">
+                    <div class="text-muted">Chọn ngày để xem bác sĩ có ca làm việc.</div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Chọn ca khám (30 phút 1 ca)</label>
+                <div id="slots" class="d-flex flex-wrap gap-2">
+                    <div class="text-muted">Chọn ngày và bác sĩ để thấy các ca khả dụng.</div>
+                </div>
+            </div>
+
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-primary" id="submitBtn">Đặt lịch</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Mock doctor registry
+    const doctorsInfo = {
+        "1": { name: 'Dr. Tran Thi B' },
+        "2": { name: 'Dr. Nguyen Van D' },
+        "3": { name: 'Dr. Le Hong C' }
+    };
+
+    // Mock doctor shift definitions (start, end) per doctor id (24h)
+    const doctorShifts = {
+        "1": [ { start: '08:00', end: '12:00' }, { start: '13:00', end: '17:00' } ],
+        "2": [ { start: '09:00', end: '12:30' }, { start: '14:00', end: '18:00' } ],
+        "3": [ { start: '07:30', end: '11:30' }, { start: '12:30', end: '16:00' } ]
+    };
+
+    // Mock already booked slots per date+doctor (generate randomly per day)
+    const mockBookedCache = {}; // cache so selection is stable per date+doctor during session
+
+    function getMockBooked(date, docId, allSlots) {
+        if (!date || !docId) return [];
+        const key = date + '::' + docId;
+        if (mockBookedCache[key]) return mockBookedCache[key];
+
+        const starts = allSlots.map(s => s.from);
+        if (starts.length === 0) {
+            mockBookedCache[key] = [];
+            return [];
+        }
+
+        // choose 0..min(3, starts.length) random booked slots
+        const maxPick = Math.min(3, starts.length);
+        const pickCount = Math.floor(Math.random() * (maxPick + 1)); // possibly 0
+        const picked = new Set();
+        while (picked.size < pickCount) {
+            const idx = Math.floor(Math.random() * starts.length);
+            picked.add(starts[idx]);
+        }
+
+        const result = Array.from(picked);
+        mockBookedCache[key] = result;
+        return result;
+    }
+
+    function pad(n) { return n.toString().padStart(2, '0'); }
+    function timeToMinutes(t) { const [hh, mm] = t.split(':').map(Number); return hh*60 + mm; }
+    function minutesToTime(m) { const hh = Math.floor(m/60); const mm = m%60; return pad(hh)+':'+pad(mm); }
+
+    function generateSlotsForShift(shift) {
+        const start = timeToMinutes(shift.start);
+        const end = timeToMinutes(shift.end);
+        const slots = [];
+        // 30-minute slots -> return objects with from/to
+        for (let t = start; t + 30 <= end; t += 30) {
+            slots.push({ from: minutesToTime(t), to: minutesToTime(t + 30) });
+        }
+        return slots;
+    }
+
+    let selectedDoctor = null;
+
+    function renderDoctorsForDate(date) {
+        const container = document.getElementById('doctors');
+        container.innerHTML = '';
+        if (!date) {
+            container.innerHTML = '<div class="text-muted">Chọn ngày để xem bác sĩ có ca làm việc.</div>';
+            return;
+        }
+
+        // Render doctors as checkboxes so user can select 1..n doctors
+        Object.keys(doctorsInfo).forEach(id => {
+            const wrap = document.createElement('div');
+            wrap.className = 'form-check mb-2';
+
+            const input = document.createElement('input');
+            input.className = 'form-check-input';
+            input.type = 'checkbox';
+            input.id = 'doc-' + id;
+            input.dataset.doc = id;
+
+            const label = document.createElement('label');
+            label.className = 'form-check-label ms-2';
+            label.htmlFor = 'doc-' + id;
+            label.innerText = doctorsInfo[id].name;
+
+            wrap.appendChild(input);
+            wrap.appendChild(label);
+            container.appendChild(wrap);
+
+            input.addEventListener('change', function(){
+                // avoid full re-render which can override existing columns
+                const currentDate = document.getElementById('date').value;
+                if (this.checked) {
+                    addDoctorColumn(id, currentDate);
+                } else {
+                    removeDoctorColumn(id);
+                }
+            });
+        });
+    }
+
+    // Add column for a single doctor (if not already present)
+    function addDoctorColumn(docId, date) {
+        const slotsContainer = document.getElementById('slots');
+        // if column already exists, refresh it
+        if (slotsContainer.querySelector('[data-col="' + docId + '"]')) {
+            // remove then re-add to refresh
+            removeDoctorColumn(docId);
+        }
+        const col = document.createElement('div');
+        col.className = 'slot-column';
+        col.style.minWidth = '220px';
+        col.style.flex = '0 0 220px';
+        col.dataset.col = docId;
+        col.innerHTML = '<div class="fw-semibold mb-2">' + doctorsInfo[docId].name + '</div>';
+
+        const shifts = doctorShifts[docId] || [];
+        let allSlots = [];
+        shifts.forEach(s => { allSlots = allSlots.concat(generateSlotsForShift(s)); });
+        const bookedForDate = getMockBooked(date, docId, allSlots);
+
+        if (allSlots.length === 0) {
+            const note = document.createElement('div'); note.className = 'text-muted'; note.innerText = 'No shifts'; col.appendChild(note);
+        } else {
+            allSlots.forEach(slot => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-outline-secondary slot-btn mb-2';
+                btn.dataset.doc = docId;
+                btn.dataset.from = slot.from;
+                btn.dataset.to = slot.to;
+                btn.innerText = slot.from + ' → ' + slot.to;
+                if (bookedForDate.includes(slot.from)) {
+                    btn.disabled = true; btn.classList.add('btn-busy'); btn.title = 'Đã được đặt (busy)';
+                } else {
+                    btn.addEventListener('click', function(){
+                        handleSlotSelectionForDoctor(docId, btn, 2);
+                    });
+                }
+                col.appendChild(btn);
+            });
+        }
+
+        slotsContainer.appendChild(col);
+    }
+
+    function removeDoctorColumn(docId) {
+        const slotsContainer = document.getElementById('slots');
+        const el = slotsContainer.querySelector('[data-col="' + docId + '"]');
+        if (el) el.remove();
+    }
+
+    // Render slots for each selected doctor separately (columns)
+    function renderSlotsForSelectedDoctors(date) {
+        const slotsContainer = document.getElementById('slots');
+        slotsContainer.innerHTML = '';
+        const checked = Array.from(document.querySelectorAll('#doctors input[type=checkbox]:checked')).map(i=>i.dataset.doc);
+        if (!date) {
+            slotsContainer.innerHTML = '<div class="text-muted">Chọn ngày để xem ca khả dụng.</div>';
+            return;
+        }
+        if (checked.length === 0) {
+            slotsContainer.innerHTML = '<div class="text-muted">Chọn ít nhất 1 bác sĩ để xem ca.</div>';
+            return;
+        }
+
+        // For each selected doctor, create a column showing their slots
+        checked.forEach(docId => {
+            const col = document.createElement('div');
+            col.className = 'slot-column';
+            col.style.minWidth = '220px';
+            col.style.flex = '0 0 220px';
+            col.innerHTML = '<div class="fw-semibold mb-2">' + doctorsInfo[docId].name + '</div>';
+
+            const shifts = doctorShifts[docId] || [];
+            let allSlots = [];
+            shifts.forEach(s => { allSlots = allSlots.concat(generateSlotsForShift(s)); });
+            const bookedForDate = getMockBooked(date, docId, allSlots);
+
+            if (allSlots.length === 0) {
+                const note = document.createElement('div'); note.className = 'text-muted'; note.innerText = 'No shifts'; col.appendChild(note);
+            } else {
+                allSlots.forEach(slot => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'btn btn-outline-secondary slot-btn mb-2';
+                    btn.dataset.doc = docId;
+                    btn.dataset.from = slot.from;
+                    btn.dataset.to = slot.to;
+                    btn.innerText = slot.from + ' → ' + slot.to;
+                    if (bookedForDate.includes(slot.from)) {
+                        btn.disabled = true; btn.classList.add('btn-busy'); btn.title = 'Đã được đặt (busy)';
+                    } else {
+                        // enable multi-select of contiguous slots up to 2 per doctor
+                        btn.addEventListener('click', function(){
+                            handleSlotSelectionForDoctor(docId, btn, 2);
+                        });
+                    }
+                    col.appendChild(btn);
+                });
+            }
+
+            slotsContainer.appendChild(col);
+        });
+    }
+
+    // handle selecting up to maxSlots contiguous slots for a given doctor
+    function handleSlotSelectionForDoctor(docId, btn, maxSlots) {
+        // find all buttons for this doctor
+        const docBtns = Array.from(document.querySelectorAll('#slots button[data-doc="' + docId + '"]'));
+        // currently selected for this doctor
+        const selected = docBtns.filter(b=>b.classList.contains('active'));
+        // if btn already active -> deselect
+        if (btn.classList.contains('active')) {
+            btn.classList.remove('active','btn-primary'); btn.classList.add('btn-outline-secondary');
+            return;
+        }
+
+        // attempt to select btn; compute numeric times of current selected + this one
+        const times = selected.map(b => timeToMinutes(b.dataset.from));
+        times.push(timeToMinutes(btn.dataset.from));
+        times.sort((a,b)=>a-b);
+
+        // check contiguous: differences between adjacent must equal slot length (30)
+        const contiguous = times.every((t,i,arr) => i===0 || (t - arr[i-1]) === 30);
+        if (!contiguous) {
+            alert('Vui lòng chọn các ca liên tiếp (contiguous) cho cùng 1 bác sĩ.');
+            return;
+        }
+
+        if (times.length > maxSlots) {
+            alert('Chỉ được chọn tối đa ' + maxSlots + ' ca liên tiếp.');
+            return;
+        }
+
+        // select the button
+        btn.classList.add('active'); btn.classList.remove('btn-outline-secondary'); btn.classList.add('btn-primary');
+    }
+
+    function renderSlotsForDoctor(docId, date) {
+        const slotsContainer = document.getElementById('slots');
+        slotsContainer.innerHTML = '';
+        const shifts = doctorShifts[docId] || [];
+        // build all slots across shifts so we can randomly mark some as booked
+        let allSlots = [];
+        shifts.forEach(s => { allSlots = allSlots.concat(generateSlotsForShift(s)); });
+        const bookedForDate = getMockBooked(date, docId, allSlots);
+        let any=false;
+        shifts.forEach(shift=>{
+            const shiftSlots = generateSlotsForShift(shift);
+            shiftSlots.forEach(slot => {
+                any = true;
+                const btn = document.createElement('button');
+                btn.type='button';
+                btn.className = 'btn btn-outline-secondary slot-btn';
+                btn.dataset.from = slot.from;
+                btn.dataset.to = slot.to;
+                btn.innerText = slot.from + ' → ' + slot.to;
+                // mark booked by comparing start times
+                if (bookedForDate.includes(slot.from)) {
+                    btn.disabled = true;
+                    btn.classList.add('btn-busy');
+                    btn.title = 'Đã được đặt (busy)';
+                } else {
+                    btn.onclick = function(){
+                        document.querySelectorAll('.slot-btn.active').forEach(el => { el.classList.remove('active','btn-primary'); el.classList.add('btn-outline-secondary'); });
+                        btn.classList.add('active'); btn.classList.remove('btn-outline-secondary'); btn.classList.add('btn-primary');
+                    };
+                }
+                slotsContainer.appendChild(btn);
+            });
+        });
+        if (!any) slotsContainer.innerHTML = '<div class="text-muted">Không có ca làm việc cho bác sĩ này trong ngày đã chọn.</div>';
+    }
+
+    document.getElementById('date').addEventListener('change', function(){
+        const date = this.value;
+        selectedDoctor = null;
+        renderDoctorsForDate(date);
+        document.getElementById('slots').innerHTML = '<div class="text-muted">Chọn bác sĩ để xem ca khả dụng.</div>';
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', function(){
+        const patient = document.getElementById('patient').value.trim();
+        const date = document.getElementById('date').value;
+        const selected = document.querySelector('.slot-btn.active');
+        if (!patient) { alert('Vui lòng nhập thông tin bệnh nhân.'); return; }
+        if (!date) { alert('Vui lòng chọn ngày.'); return; }
+        if (!selected) { alert('Vui lòng chọn bác sĩ và ca khám.'); return; }
+        const from = selected.dataset.from;
+        alert('Đặt lịch thành công:\nBệnh nhân: ' + patient + '\nBác sĩ ID: ' + selectedDoctor + '\nNgày: ' + date + '\nCa: ' + from + ' (' + '30 phút' + ')');
+    });
+</script>

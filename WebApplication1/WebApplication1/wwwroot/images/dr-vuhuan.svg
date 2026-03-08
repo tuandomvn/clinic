@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="80" viewBox="0 0 800 200">
+  <defs>
+    <style>
+      .title { font-family: Georgia, 'Times New Roman', serif; font-size: 80px; fill:#0f8b7a; font-weight:700 }
+      .subtitle { font-family: Arial, Helvetica, sans-serif; font-size:30px; fill:#0f8b7a; letter-spacing:4px }
+    </style>
+  </defs>
+  <text x="20" y="90" class="title">DR.VUHUAN</text>
+  <text x="20" y="140" class="subtitle">AESTHETICS &amp; SURGERY</text>
+</svg>
