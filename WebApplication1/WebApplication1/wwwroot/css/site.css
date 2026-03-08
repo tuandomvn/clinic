@@ -209,6 +209,12 @@ body {
   margin-right: auto;
 }
 
+/* Ensure barcode inside patient card stays small (override broader img rules) */
+.patient-card img.barcode-img {
+  width: 140px !important;
+  max-width: 140px !important;
+}
+
 /* Slot button styles */
 .slot-btn {
   min-width: 120px;
@@ -273,3 +279,14 @@ body {
 /* scrollbar appearance (non-critical) */
 .slot-column::-webkit-scrollbar { width: 8px; }
 .slot-column::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 4px; }
+
+/* Patient link styling to match primary buttons */
+.patient-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.patient-link:hover, .patient-link:focus {
+  color: var(--color-dark);
+  text-decoration: none;
+}

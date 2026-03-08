@@ -15,21 +15,14 @@
         <div class="col-md-5">
             <input class="form-control" placeholder="Search by name or ID" />
         </div>
-        <div class="col-md-3">
-            <select class="form-select">
-                <option>All status</option>
-                <option>Active</option>
-                <option>Inactive</option>
-            </select>
-        </div>
     </div>
 </div>
 
 <div class="row g-4">
     <div class="col-lg-4">
         <div class="card p-3">
-        <div class="text-center mb-3">
-                <h5 class="mb-0"><a class="text-decoration-none text-dark" href="/Patients/Details?id=123">Nguyen Van A</a></h5>
+            <div class="text-center mb-3">
+                <h5 class="mb-0"><a class="text-decoration-none text-dark patient-link" href="/Patients/Details?id=123">Nguyen Van A</a></h5>
                 <div class="small text-muted">ID: PT-00123</div>
                 <div>
                     <img src="~/images/barcode-PT-00123.svg" alt="PT-00123 barcode" class="barcode-img mt-2" />
@@ -37,6 +30,7 @@
             </div>
 
             <ul class="list-unstyled small text-muted">
+                <li><strong>CCCD:</strong> 01234566777</li>
                 <li><strong>Phone:</strong> 090-123-4567</li>
                 <li><strong>Birth:</strong> 1988-04-12</li>
                 <li><strong>Address:</strong> Ho Chi Minh City</li>
@@ -68,7 +62,7 @@
                                 <div class="d-flex align-items-center">
                                     <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
                                     <div>
-                                        <div class="fw-semibold"><a class="text-decoration-none" href="/Patients/Details?id=123">Nguyen Van A</a></div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=123">Nguyen Van A</a></div>
                                         <div class="small text-muted">PT-00123</div>
                                     </div>
                                 </div>
@@ -85,7 +79,7 @@
                                 <div class="d-flex align-items-center">
                                     <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
                                     <div>
-                                        <div class="fw-semibold"><a class="text-decoration-none" href="/Patients/Details?id=456">Le Thi C</a></div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=456">Le Thi C</a></div>
                                         <div class="small text-muted">PT-00456</div>
                                     </div>
                                 </div>
