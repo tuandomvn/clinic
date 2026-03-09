@@ -19,7 +19,7 @@
 </div>
 
 <div class="row g-4">
-    <div class="col-lg-4">
+    <div class="col-lg-3">
         <div class="card p-3">
             <div class="text-center mb-3">
                 <h5 class="mb-0"><a class="text-decoration-none text-dark patient-link" href="/Patients/Details?id=123">Nguyen Van A</a></h5>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div class="col-lg-8">
+    <div class="col-lg-9">
         <div class="card p-3">
             <h5 class="mb-3">Patient List</h5>
             <div class="table-responsive">
@@ -53,6 +53,8 @@
                             <th>Patient</th>
                             <th>Phone</th>
                             <th>Last visit</th>
+                            <th>Next Visit</th>
+                            <th>Confirm (từ khách hàng)</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -69,6 +71,8 @@
                             </td>
                             <td>090-123-4567</td>
                             <td>2026-02-28</td>
+                            <td>2026-03-15</td>
+                            <td><span class="badge bg-success">Đã xác nhận</span></td>
                             <td>
                                 <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
                                 <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=123">Details</a>
@@ -86,9 +90,163 @@
                             </td>
                             <td>091-555-1234</td>
                             <td>2026-02-25</td>
+                            <td>2026-03-20</td>
+                            <td><span class="badge bg-warning text-dark">Chờ xác nhận</span></td>
                             <td>
                                 <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
                                 <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=456">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=789">Tran Van B</a></div>
+                                        <div class="small text-muted">PT-00789</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>092-777-8899</td>
+                            <td>2026-03-01</td>
+                            <td>2026-03-18</td>
+                            <td><span class="badge bg-success">Đã xác nhận</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=789">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=101">Pham Thi D</a></div>
+                                        <div class="small text-muted">PT-00101</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>093-111-2233</td>
+                            <td>2026-02-20</td>
+                            <td>2026-03-22</td>
+                            <td><span class="badge bg-secondary">Chưa gửi</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=101">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=202">Hoang Minh E</a></div>
+                                        <div class="small text-muted">PT-00202</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>094-333-4455</td>
+                            <td>2026-03-05</td>
+                            <td>2026-03-25</td>
+                            <td><span class="badge bg-success">Đã xác nhận</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=202">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=303">Vo Thi F</a></div>
+                                        <div class="small text-muted">PT-00303</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>095-666-7788</td>
+                            <td>2026-02-15</td>
+                            <td>2026-03-12</td>
+                            <td><span class="badge bg-warning text-dark">Chờ xác nhận</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=303">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=404">Dang Quang G</a></div>
+                                        <div class="small text-muted">PT-00404</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>096-888-9900</td>
+                            <td>2026-03-08</td>
+                            <td>2026-03-28</td>
+                            <td><span class="badge bg-success">Đã xác nhận</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=404">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=505">Bui Thi H</a></div>
+                                        <div class="small text-muted">PT-00505</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>097-999-0011</td>
+                            <td>2026-02-22</td>
+                            <td>2026-03-30</td>
+                            <td><span class="badge bg-secondary">Chưa gửi</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=505">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=606">Ly Van K</a></div>
+                                        <div class="small text-muted">PT-00606</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>098-222-3344</td>
+                            <td>2026-03-03</td>
+                            <td>2026-04-02</td>
+                            <td><span class="badge bg-warning text-dark">Chờ xác nhận</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=606">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold"><a class="text-decoration-none patient-link" href="/Patients/Details?id=707">Ngo Thi L</a></div>
+                                        <div class="small text-muted">PT-00707</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>099-444-5566</td>
+                            <td>2026-02-18</td>
+                            <td>2026-04-05</td>
+                            <td><span class="badge bg-success">Đã xác nhận</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="">Edit</a>
+                                <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=707">Details</a>
                             </td>
                         </tr>
                     </tbody>
