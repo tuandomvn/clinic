@@ -12,7 +12,7 @@
 </div>
 
 <div class="row g-4">
-    <div class="col-lg-4">
+    <div class="col-lg-3">
         <div class="card p-3 patient-card text-center">
             <div class="text-center mb-3">
                 <h5 class="mb-0">Nguyen Van A</h5>
@@ -30,7 +30,7 @@
             </ul>
 
             <div class="d-grid gap-2 mt-3">
-                <a class="btn btn-outline-primary" href="/Patients/Edit?id=123">Chỉnh sửa</a>
+                <a class="btn btn-outline-primary" href="">Chỉnh sửa</a>
             </div>
         </div>
 
@@ -47,48 +47,83 @@
         </div>
     </div>
 
-    <div class="col-lg-8">
+    <div class="col-lg-9">
         <div class="card p-3 mb-4">
-            <h5 class="mb-3">Lịch sử khám</h5>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Lịch sử khám</h5>
+                <div class="d-flex flex-wrap align-items-center gap-2 small">
+                    <span class="fw-semibold me-1">Loại Activity:</span>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeExam" value="Khám bệnh" checked />
+                        <label class="form-check-label" for="filterTypeExam">Khám bệnh</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeSurgery" value="Mổ" checked />
+                        <label class="form-check-label" for="filterTypeSurgery">Mổ</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeFollowup" value="Tái khám" checked />
+                        <label class="form-check-label" for="filterTypeFollowup">Tái khám</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeOther" value="Khác" checked />
+                        <label class="form-check-label" for="filterTypeOther">Khác</label>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
-                <table class="table align-middle">
+                <table class="table align-middle" id="visitHistoryTable">
                     <thead>
                         <tr>
                             <th>Ngày</th>
                             <th>Bác sĩ</th>
                             <th>Tóm tắt</th>
+                            <th>Loại</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
+                        <tr data-visit-type="Khám bệnh">
                             <td>2026-03-05 09:30</td>
                             <td>Dr. Tran Thi B</td>
                             <td>Viêm họng cấp</td>
+                            <td class="visit-type">Khám bệnh</td>
                             <td>
                                 <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=1">Kết quả</a>
                             </td>
                         </tr>
-                        <tr>
+                        <tr data-visit-type="Tái khám">
                             <td>2026-03-08 10:00</td>
                             <td>Điều dưỡng Hồng</td>
                             <td>3 ngày sau mổ — Vết mổ khô, không sốt.</td>
+                            <td class="visit-type">Tái khám</td>
                             <td>
                                 <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=5">Chi tiết</a>
                             </td>
                         </tr>
-                        <tr>
+                        <tr data-visit-type="Mổ">
                             <td>2025-12-20 10:00</td>
                             <td>Dr. Nguyen Van D</td>
                             <td>Mổ viêm xoang</td>
+                            <td class="visit-type">Mổ</td>
                             <td>
                                 <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Kết quả</a>
                             </td>
                         </tr>
-                        <tr>
+                        <tr data-visit-type="Khác">
+                            <td>2025-12-10 10:00</td>
+                            <td>CSKH Nguyen Van A</td>
+                            <td>Đã book lịch hẹn với bs</td>
+                            <td class="visit-type">Khác</td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Xem lịch</a>
+                            </td>
+                        </tr>
+                        <tr data-visit-type="Khám bệnh">
                             <td>2025-12-10 10:00</td>
                             <td>Dr. Nguyen Van D</td>
                             <td>Khám tổng quát</td>
+                            <td class="visit-type">Khám bệnh</td>
                             <td>
                                 <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Kết quả</a>
                             </td>
@@ -98,6 +133,38 @@
             </div>
         </div>
 
-       
+
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkboxes = document.querySelectorAll('.visit-type-filter');
+            const rows = document.querySelectorAll('#visitHistoryTable tbody tr');
+
+            function applyFilter() {
+                const activeTypes = Array.from(checkboxes)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+
+                rows.forEach(row => {
+                    const type = row.dataset.visitType;
+                    if (!type) {
+                        row.style.display = '';
+                        return;
+                    }
+
+                    if (activeTypes.length === 0) {
+                        row.style.display = 'none';
+                    } else {
+                        row.style.display = activeTypes.includes(type) ? '' : 'none';
+                    }
+                });
+            }
+
+            checkboxes.forEach(cb => cb.addEventListener('change', applyFilter));
+            applyFilter();
+        });
+    </script>
+}
