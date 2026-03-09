@@ -1,11 +1,45 @@
-﻿@page
+@page
+@model WebApplication1.Pages.IndexModel
 @{
     ViewData["Title"] = "Appointments";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Lịch khám hôm nay</h2>
     <div>
+        <h2 class="mb-0">
+            Lịch khám
+            @if (Model.WeekOffset == 0)
+            {
+                @:hôm nay
+            }
+            else if (Model.WeekOffset == 1)
+            {
+                @:tuần này
+            }
+            else if (Model.WeekOffset == 2)
+            {
+                @:tuần kế tiếp
+            }
+            else if (Model.WeekOffset == 3)
+            {
+                @:2 tuần kế tiếp
+            }
+            else if (Model.WeekOffset > 3)
+            {
+                @:trong @Model.WeekOffset tuần nữa
+            }
+        </h2>
+        <div class="text-muted small">
+            @Model.StartOfWeek.ToString("dd/MM") - @Model.EndOfWeek.ToString("dd/MM/yyyy")
+        </div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <div class="btn-group" role="group" aria-label="Chọn tuần">
+            <a asp-page="./Index" asp-route-weekOffset="0" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 0 ? "active" : "")">Hôm nay</a>
+            <a asp-page="./Index" asp-route-weekOffset="1" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 1 ? "active" : "")">Tuần này</a>
+            <a asp-page="./Index" asp-route-weekOffset="2" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 2 ? "active" : "")">Tuần kế tiếp</a>
+            <a asp-page="./Index" asp-route-weekOffset="3" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 3 ? "active" : "")">2 tuần kế tiếp</a>
+        </div>
         <a class="btn btn-sm btn-primary" href="/Appointments/Create">New Appointment</a>
     </div>
 </div>
