@@ -1,154 +1,182 @@
 ﻿@page
-@model IndexModel
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Appointments";
 }
 
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12 d-flex justify-content-between align-items-center">
-            <h2 class="mb-0">Dashboard</h2>
-            <div>
-                <a class="btn btn-sm btn-outline-secondary me-2" href="/Appointments">View Appointments</a>
-                <a class="btn btn-sm btn-primary" href="/Appointments/Create">New Appointment</a>
-            </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Appointments</h2>
+    <div>
+        <a class="btn btn-sm btn-primary" href="/Appointments/Create">New Appointment</a>
+    </div>
+</div>
+
+<div class="card mb-3 p-3">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+            <input class="form-control" placeholder="Search by patient name or ID" />
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <select class="form-select">
+                <option>All doctors</option>
+                <option>Dr. Tran Thi B</option>
+                <option>Dr. Nguyen Van D</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select">
+                <option>All types</option>
+                <option>Check-up</option>
+                <option>Follow-up</option>
+                <option>Emergency</option>
+            </select>
         </div>
     </div>
+</div>
 
-    <div class="row dashboard-metrics g-3 mb-4">
-        <div class="col-6 col-md-3">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <div class="feature-icon">AP</div>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Appointments Today</div>
-                        <div class="h4 mb-0">24</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <div class="feature-icon">PT</div>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Active Patients</div>
-                        <div class="h4 mb-0">1,238</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <div class="feature-icon">DR</div>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Doctors</div>
-                        <div class="h4 mb-0">12</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
-            <div class="card p-3">
-                <div class="d-flex align-items-center">
-                    <div class="me-3">
-                        <div class="feature-icon">FT</div>
-                    </div>
-                    <div>
-                        <div class="text-muted small">Free Slots</div>
-                        <div class="h4 mb-0">18</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-lg-7">
-            <div class="card p-3">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Upcoming Appointments</h5>
-                    <a href="/Appointments" class="small">See all</a>
-                </div>
-                <div class="table-responsive">
-                    <table class="table appointments-table align-middle">
-                        <thead>
-                            <tr>
-                                <th>Patient</th>
-                                <th>Doctor</th>
-                                <th>Time</th>
-                                <th>Type</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="d-flex align-items-center">
-                                    <img class="avatar me-2" src="https://via.placeholder.com/44" alt="avatar" />
+<div class="row g-4">
+    <div class="col-lg-12">
+        <div class="card p-3">
+            <h5 class="mb-3">Lịch khám</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>09:30</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
                                     <div>
                                         <div class="fw-semibold">Nguyen Van A</div>
-                                        <div class="small text-muted">ID: PT-00123</div>
+                                        <div class="small text-muted">PT-00123</div>
                                     </div>
-                                </td>
-                                <td>Dr. Tran Thi B</td>
-                                <td>2026-03-05 09:30</td>
-                                <td>Check-up</td>
-                                <td><a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=1">Details</a></td>
-                            </tr>
-                            <tr>
-                                <td class="d-flex align-items-center">
-                                    <img class="avatar me-2" src="https://via.placeholder.com/44" alt="avatar" />
+                                </div>
+                            </td>
+                            <td>Dr. Tran Thi B</td>
+                            <td>Check-up</td>
+                            <td>Room 201</td>
+                            <td><span class="badge bg-info">In consultation</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Visits/HealthRecord?appointmentId=1">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>09:45</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Pham Van E</div>
+                                        <div class="small text-muted">PT-00789</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Lab Tech</td>
+                            <td>Lab test</td>
+                            <td>Lab A</td>
+                            <td><span class="badge bg-warning text-dark">In lab</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Visits/HealthRecord?appointmentId=4">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10:00</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
                                     <div>
                                         <div class="fw-semibold">Le Thi C</div>
-                                        <div class="small text-muted">ID: PT-00456</div>
+                                        <div class="small text-muted">PT-00456</div>
                                     </div>
-                                </td>
-                                <td>Dr. Nguyen Van D</td>
-                                <td>2026-03-05 10:00</td>
-                                <td>Follow-up</td>
-                                <td><a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=2">Details</a></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                                </div>
+                            </td>
+                            <td>Dr. Nguyen Van D</td>
+                            <td>Follow-up</td>
+                            <td></td>
+                            <td><span class="badge bg-success">Checked-in</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Visits/HealthRecord?appointmentId=2">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10:00</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Le Thi E</div>
+                                        <div class="small text-muted">PT-00456</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Nguyen Van D</td>
+                            <td>Follow-up</td>
+                            <td></td>
+                            <td><span class="badge bg-success">Checked-in</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Visits/HealthRecord?appointmentId=2">Details</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
+</div>
 
-        <div class="col-lg-5">
-            <div class="card p-3 patient-list mb-3">
-                <h5>Recent Patients</h5>
-                <div class="list-group list-group-flush">
-                    <div class="list-group-item d-flex align-items-center">
-                        <img src="https://via.placeholder.com/56" class="me-3 rounded-circle" alt=""> 
-                        <div>
-                            <div class="fw-semibold">Pham Van E</div>
-                            <div class="small text-muted">Checked-in: 2 hours ago</div>
-                        </div>
-                    </div>
-                    <div class="list-group-item d-flex align-items-center">
-                        <img src="https://via.placeholder.com/56" class="me-3 rounded-circle" alt=""> 
-                        <div>
-                            <div class="fw-semibold">Hoang Thi F</div>
-                            <div class="small text-muted">Checked-in: Yesterday</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-            <div class="card p-3">
-                <h6 class="mb-3">Quick Actions</h6>
-                <div class="d-grid gap-2">
-                    <a class="btn btn-success" href="/Patients/Create">New Patient</a>
-                    <a class="btn btn-outline-primary" href="/Appointments/Create">Schedule Appointment</a>
-                    <a class="btn btn-outline-secondary" href="/Patients">Patient Directory</a>
-                </div>
+<br />
+<br />
+<div class="row g-4">
+    <div class="col-lg-12">
+        <div class="card p-3">
+            <h5 class="mb-3">Lịch mổ</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>09:30</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Nguyen Van G</div>
+                                        <div class="small text-muted">PT-00123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Tran Thi B, Dr. Tran Thi C, Nurse. Tran Thi B</td>
+                            <td>Room 201</td>
+                            <td><span class="badge bg-info"></span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Visits/HealthRecord?appointmentId=1">Details</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
