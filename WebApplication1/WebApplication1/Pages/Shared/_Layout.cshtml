@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -24,10 +24,13 @@
                 </div>
 
                 <div class="d-flex align-items-center">
-                    <form class="d-none d-md-flex me-3" role="search">
-                        <input class="form-control form-control-sm" type="search" placeholder="Search patients or appointments" aria-label="Search">
+                    <form class="d-none d-md-flex me-3 align-items-center" role="search">
+                        <div class="input-group input-group-sm">
+                            <input class="form-control form-control-sm" type="search" placeholder="Search patients or appointments" aria-label="Search">
+                            <a class="btn btn-outline-primary btn-sm" href="/Patients/Details?id=123" title="Scan mã vạch bệnh nhân">Scan</a>
+                        </div>
                     </form>
-                    <a class="btn btn-outline-secondary btn-sm me-2 d-none d-md-inline" href="#">Support</a>
+                  @*   <a class="btn btn-outline-secondary btn-sm me-2 d-none d-md-inline" href="#">Support</a> *@
                     <div class="dropdown">
                         <a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             Hello, Dr. VuHuan
