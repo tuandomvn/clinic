@@ -1,0 +1,217 @@
+@page
+@model WebApplication1.Pages.IndexModel
+@{
+    ViewData["Title"] = "Appointments";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0">
+            Lịch khám
+            @if (Model.WeekOffset == 0)
+            {
+                @:hôm nay
+            }
+            else if (Model.WeekOffset == 1)
+            {
+                @:tuần này
+            }
+            else if (Model.WeekOffset == 2)
+            {
+                @:tuần kế tiếp
+            }
+            else if (Model.WeekOffset == 3)
+            {
+                @:2 tuần kế tiếp
+            }
+            else if (Model.WeekOffset > 3)
+            {
+                @:trong @Model.WeekOffset tuần nữa
+            }
+        </h2>
+        <div class="text-muted small">
+            @Model.StartOfWeek.ToString("dd/MM") - @Model.EndOfWeek.ToString("dd/MM/yyyy")
+        </div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <div class="btn-group" role="group" aria-label="Chọn tuần">
+            <a asp-page="./Index" asp-route-weekOffset="0" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 0 ? "active" : "")">Hôm nay</a>
+            <a asp-page="./Index" asp-route-weekOffset="1" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 1 ? "active" : "")">Tuần này</a>
+            <a asp-page="./Index" asp-route-weekOffset="2" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 2 ? "active" : "")">Tuần kế tiếp</a>
+            <a asp-page="./Index" asp-route-weekOffset="3" class="btn btn-sm btn-outline-secondary @(Model.WeekOffset == 3 ? "active" : "")">2 tuần kế tiếp</a>
+        </div>
+        <a class="btn btn-sm btn-primary" href="/Appointments/Create">New Appointment</a>
+    </div>
+</div>
+
+<div class="card mb-3 p-3">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-4">
+            <input class="form-control" placeholder="Search by patient name or ID" />
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control" />
+        </div>
+        <div class="col-md-2">
+            <select class="form-select">
+                <option>All doctors</option>
+                <option>Dr. Tran Thi B</option>
+                <option>Dr. Nguyen Van D</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select">
+                <option>All types</option>
+                <option>Check-up</option>
+                <option>Follow-up</option>
+                <option>Emergency</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-12">
+        <div class="card p-3">
+            <h5 class="mb-3">Lịch khám</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Type</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>09:30</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Nguyen Van A</div>
+                                        <div class="small text-muted">PT-00123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Tran Thi B</td>
+                            <td>Check-up</td>
+                            <td>Room 201</td>
+                            <td><span class="badge bg-info">In consultation</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>09:45</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Pham Van E</div>
+                                        <div class="small text-muted">PT-00789</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Lab Tech</td>
+                            <td>Lab test</td>
+                            <td>Lab A</td>
+                            <td><span class="badge bg-warning text-dark">In lab</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10:00</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Le Thi C</div>
+                                        <div class="small text-muted">PT-00456</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Nguyen Van D</td>
+                            <td>Follow-up</td>
+                            <td></td>
+                            <td><span class="badge bg-success">Checked-in</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>10:00</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Le Thi E</div>
+                                        <div class="small text-muted">PT-00456</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Nguyen Van D</td>
+                            <td>Follow-up</td>
+                            <td></td>
+                            <td><span class="badge bg-success">Checked-in</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<br />
+<br />
+<div class="row g-4">
+    <div class="col-lg-12">
+        <div class="card p-3">
+            <h5 class="mb-3">Lịch mổ</h5>
+            <div class="table-responsive">
+                <table class="table align-middle">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Patient</th>
+                            <th>Doctor</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>09:30</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
+                                    <div>
+                                        <div class="fw-semibold">Nguyen Van G</div>
+                                        <div class="small text-muted">PT-00123</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Dr. Tran Thi B, Dr. Tran Thi C, Nurse. Tran Thi B</td>
+                            <td>Room 201</td>
+                            <td><span class="badge bg-success">Checked-in</span></td>
+                            <td>
+                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

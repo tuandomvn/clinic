@@ -1,0 +1,225 @@
+@page
+@{
+    ViewData["Title"] = "Đặt lịch mổ";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Đặt lịch mổ</h2>
+    <div>
+        <a class="btn btn-sm btn-outline-secondary" href="/Appointments">Quay lại</a>
+    </div>
+</div>
+
+<div class="card p-3">
+    <form id="surgeryForm">
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Bệnh nhân (ID hoặc tên)</label>
+                <input type="text" id="patient" class="form-control" placeholder="PT-00123 hoặc tên bệnh nhân" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Chọn ngày mổ</label>
+                <input type="date" id="date" class="form-control" />
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">Chọn phòng mổ</label>
+                <select id="room" class="form-select">
+                    <option value="">Chọn phòng</option>
+                </select>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Chọn đội ngũ (bác sĩ & điều dưỡng)</label>
+                <div id="staffList" class="d-flex flex-wrap gap-2">
+                    <div class="text-muted">Chọn ngày mổ.</div>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Ca khả dụng</label>
+                <div id="groupSlots" class="d-flex flex-wrap gap-2">
+                    <div class="text-muted">Chọn ngày, phòng và ít nhất 1 thành viên để thấy ca khả dụng.</div>
+                </div>
+            </div>
+
+            <div class="col-12 text-end">
+                <button type="button" class="btn btn-primary" id="submitSurgery">Đặt lịch mổ</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Mock staff registry (doctors + nurses). Each has id, name, role
+    const staffInfo = {
+        "d1": { name: 'Dr. Tran Thi B', role: 'Doctor' },
+        "d2": { name: 'Dr. Nguyen Van D', role: 'Doctor' },
+        "n1": { name: 'Nurse Hong', role: 'Nurse' },
+        "n2": { name: 'Nurse Lan', role: 'Nurse' }
+    };
+
+    // Rooms with shifts
+    const roomsInfo = {
+        "r1": { name: 'Phòng mổ 1' },
+        "r2": { name: 'Phòng mổ 2' }
+    };
+
+    // Shift definitions per entity (same format as earlier) - for simplicity mock static shifts
+    const entityShifts = {
+        "d1": [ { start: '07:30', end: '12:30' }, { start: '13:30', end: '17:00' } ],
+        "d2": [ { start: '08:00', end: '12:00' }, { start: '13:00', end: '16:30' } ],
+        "n1": [ { start: '07:00', end: '11:30' }, { start: '12:30', end: '16:00' } ],
+        "n2": [ { start: '09:00', end: '12:30' }, { start: '13:30', end: '18:00' } ],
+        // rooms availability
+        "r1": [ { start: '07:00', end: '18:00' } ],
+        "r2": [ { start: '08:00', end: '17:00' } ]
+    };
+
+    // per-session mock booked cache for entities (so slots can appear busy)
+    const bookedCache = {};
+
+    function pad(n) { return n.toString().padStart(2, '0'); }
+    function timeToMinutes(t) { const [hh, mm] = t.split(':').map(Number); return hh*60 + mm; }
+    function minutesToTime(m) { const hh = Math.floor(m/60); const mm = m%60; return pad(hh)+':'+pad(mm); }
+
+    function generateSlotsForShift(shift, duration=30) {
+        const start = timeToMinutes(shift.start);
+        const end = timeToMinutes(shift.end);
+        const slots = [];
+        for (let t = start; t + duration <= end; t += duration) {
+            slots.push({ from: minutesToTime(t), to: minutesToTime(t + duration) });
+        }
+        return slots;
+    }
+
+    function allSlotsForEntity(entityId, duration=30) {
+        const shifts = entityShifts[entityId] || [];
+        let slots = [];
+        shifts.forEach(s => { slots = slots.concat(generateSlotsForShift(s, duration)); });
+        return slots;
+    }
+
+    // simple random booked generator per entity/date
+    function getEntityBooked(date, entityId, allSlots) {
+        const key = date + '::' + entityId;
+        if (bookedCache[key]) return bookedCache[key];
+        const starts = allSlots.map(s => s.from);
+        const maxPick = Math.min(3, starts.length);
+        const pickCount = Math.floor(Math.random() * (maxPick + 1));
+        const picked = new Set();
+        while (picked.size < pickCount) {
+            const idx = Math.floor(Math.random() * starts.length);
+            picked.add(starts[idx]);
+        }
+        const res = Array.from(picked);
+        bookedCache[key] = res;
+        return res;
+    }
+
+    // compute intersection of available starts across entities
+    function intersectSlotStarts(lists) {
+        if (lists.length === 0) return [];
+        // each list is array of strings 'HH:MM'
+        const counts = {};
+        lists.forEach(list => { list.forEach(t => { counts[t] = (counts[t]||0) + 1; }); });
+        return Object.keys(counts).filter(t => counts[t] === lists.length).sort();
+    }
+
+    // render room options
+    function populateRooms() {
+        const sel = document.getElementById('room');
+        sel.innerHTML = '<option value="">Chọn phòng</option>';
+        Object.keys(roomsInfo).forEach(id => {
+            const opt = document.createElement('option'); opt.value = id; opt.innerText = roomsInfo[id].name; sel.appendChild(opt);
+        });
+    }
+
+    function renderStaffForDate(date) {
+        const container = document.getElementById('staffList');
+        container.innerHTML = '';
+        if (!date) { container.innerHTML = '<div class="text-muted">Chọn ngày để xem nhân sự.</div>'; return; }
+        Object.keys(staffInfo).forEach(id => {
+            const slotCount = allSlotsForEntity(id).length;
+            const div = document.createElement('div'); div.className = 'form-check me-2';
+            const input = document.createElement('input'); input.className = 'form-check-input'; input.type = 'checkbox'; input.id = 'staff-'+id; input.dataset.id = id;
+            const label = document.createElement('label'); label.className = 'form-check-label ms-1'; label.htmlFor = 'staff-'+id; label.innerText = staffInfo[id].name + ' (' + staffInfo[id].role + ')';
+            div.appendChild(input); div.appendChild(label); container.appendChild(div);
+
+            input.addEventListener('change', renderGroupSlots);
+        });
+    }
+
+    function renderGroupSlots() {
+        const date = document.getElementById('date').value;
+        const roomId = document.getElementById('room').value;
+        const checked = Array.from(document.querySelectorAll('#staffList input[type=checkbox]:checked')).map(i=>i.dataset.id);
+        const out = document.getElementById('groupSlots'); out.innerHTML = '';
+        if (!date || !roomId || checked.length === 0) {
+            out.innerHTML = '<div class="text-muted">Chọn ngày, phòng và ít nhất 1 nhân sự để xem ca khả dụng.</div>';
+            return;
+        }
+        // show columns per entity (room first, then each staff) so user can inspect availability
+        const duration = 30;
+        const entities = [roomId].concat(checked);
+
+        entities.forEach(ent => {
+            const col = document.createElement('div');
+            col.className = 'slot-column';
+            col.style.minWidth = '220px';
+            col.style.flex = '0 0 220px';
+            const title = ent === roomId ? (roomsInfo[ent].name + ' (Phòng)') : (staffInfo[ent].name + ' (' + staffInfo[ent].role + ')');
+            col.innerHTML = '<div class="fw-semibold mb-2">' + title + '</div>';
+
+            const all = allSlotsForEntity(ent, duration);
+            const booked = getEntityBooked(date, ent, all);
+
+            if (!all || all.length === 0) {
+                const note = document.createElement('div'); note.className = 'text-muted'; note.innerText = 'No shifts'; col.appendChild(note);
+            } else {
+                all.forEach(slot => {
+                    const btn = document.createElement('button'); btn.type='button'; btn.className='btn btn-outline-secondary slot-btn mb-2';
+                    btn.dataset.entity = ent; btn.dataset.from = slot.from; btn.dataset.to = slot.to;
+                    btn.innerText = slot.from + ' → ' + slot.to;
+                    if (booked.includes(slot.from)) {
+                        btn.disabled = true; btn.classList.add('btn-busy'); btn.title = 'Đã được đặt (busy)';
+                    } else {
+                        btn.addEventListener('click', function(){
+                            // toggle active per entity column (user can pick per-entity)
+                            btn.classList.toggle('active');
+                            if (btn.classList.contains('active')) { btn.classList.remove('btn-outline-secondary'); btn.classList.add('btn-primary'); }
+                            else { btn.classList.remove('btn-primary'); btn.classList.add('btn-outline-secondary'); }
+                        });
+                    }
+                    col.appendChild(btn);
+                });
+            }
+
+            out.appendChild(col);
+        });
+    }
+
+    document.getElementById('date').addEventListener('change', function(){
+        const date = this.value; selectedStaff = null; renderStaffForDate(date); populateRooms(); document.getElementById('groupSlots').innerHTML = '<div class="text-muted">Chọn ngày, phòng và ít nhất 1 nhân sự để xem ca khả dụng.</div>';
+    });
+
+    document.getElementById('room').addEventListener('change', renderGroupSlots);
+
+    document.getElementById('submitSurgery').addEventListener('click', function(){
+        const patient = document.getElementById('patient').value.trim();
+        const date = document.getElementById('date').value;
+        const room = document.getElementById('room').value;
+        const staff = Array.from(document.querySelectorAll('#staffList input[type=checkbox]:checked')).map(i=>i.dataset.id);
+        const selected = document.querySelector('#groupSlots .slot-btn.active');
+        if (!patient) { alert('Vui lòng nhập thông tin bệnh nhân.'); return; }
+        if (!date) { alert('Vui lòng chọn ngày.'); return; }
+        if (!room) { alert('Vui lòng chọn phòng mổ.'); return; }
+        if (staff.length === 0) { alert('Vui lòng chọn ít nhất 1 bác sĩ hoặc điều dưỡng.'); return; }
+        if (!selected) { alert('Vui lòng chọn ca mổ phù hợp cho cả nhóm.'); return; }
+        alert('Đặt mổ thành công:\nBệnh nhân: ' + patient + '\nNgày: ' + date + '\nPhòng: ' + roomsInfo[room].name + '\nĐội ngũ: ' + staff.map(s=>staffInfo[s].name).join(', ') + '\nCa: ' + selected.dataset.from + ' - ' + selected.dataset.to);
+    });
+
+    // initial populate rooms (if page loads with date empty still show rooms list)
+    populateRooms();
+</script>

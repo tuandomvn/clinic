@@ -1,0 +1,303 @@
+html {
+  font-size: 14px;
+}
+
+/* Header (navbar) - make darker to match palette */
+.navbar {
+  background: var(--color-dark) !important;
+  border-bottom: 1px solid rgba(var(--dark-rgb),0.06);
+}
+.navbar .navbar-brand, .navbar .navbar-brand span, .navbar .nav-link, .navbar .btn {
+  color: #fff !important;
+}
+.navbar .btn.btn-outline-secondary {
+  color: #fff;
+  border-color: rgba(255,255,255,0.12);
+}
+
+/* Card surfaces use the surface color */
+.card {
+  background-color: var(--color-surface);
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+
+/* Buttons primary / outline to match brand */
+.btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: #fff !important;
+}
+.btn-outline-primary {
+  background-color: transparent !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+.btn-outline-primary:hover, .btn-outline-primary:focus {
+  background-color: rgba(var(--primary-rgb),0.06) !important;
+}
+}
+
+:root {
+  /* Color palette from user */
+  --color-bg: #F8F8F8;    /* very light */
+  --color-surface: #D6D8D8; /* light gray */
+  --color-primary: #70A19A; /* brand teal */
+  --color-dark: #363B2C;   /* dark olive */
+  --primary-rgb: 112,161,154; /* rgb for rgba uses */
+  --dark-rgb: 54,59,44;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--color-dark);
+  background-color: var(--color-bg);
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* Modern theme additions */
+.navbar-brand {
+  color: var(--color-primary);
+  font-size: 1.125rem;
+}
+
+.navbar-brand img.logo-img {
+  height: 44px;
+  width: auto;
+  display: inline-block;
+}
+.navbar-brand span { color: #0b5ed7; font-weight:700; }
+
+.hero {
+  background: linear-gradient(180deg, rgba(11,94,215,0.06), rgba(11,94,215,0.02));
+  border-radius: 12px;
+  padding: 3rem 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.hero .display-4 {
+  font-weight: 700;
+  color: #0b1f3a;
+}
+
+.hero p.lead {
+  color: #4b6478;
+  font-size: 1.05rem;
+}
+
+.feature-card {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.06);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.feature-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(16,24,40,0.08);
+}
+
+.feature-icon {
+  width: 56px;
+  height: 56px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(var(--primary-rgb),0.12);
+  color: var(--color-dark);
+  font-weight: 700;
+}
+
+.footer a { color: inherit; text-decoration: none; }
+
+@media (max-width: 767.98px) {
+  .hero { padding: 2rem 1rem; }
+  .feature-icon { width: 48px; height: 48px; }
+}
+
+/* Sidebar and dashboard styles for clinic app */
+.sidebar {
+  min-height: 100vh;
+  border-right: 1px solid rgba(33,37,41,0.05);
+}
+.sidebar .nav-link {
+  color: var(--color-dark);
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 0.25rem;
+}
+.sidebar .nav-link:hover {
+  background: rgba(var(--primary-rgb),0.06);
+  color: var(--color-primary);
+}
+.sidebar .nav-link.active {
+  background: rgba(var(--primary-rgb),0.12);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.dashboard-metrics .card {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(var(--dark-rgb),0.04);
+}
+
+.appointments-table img.avatar {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.patient-list .card {
+  border-radius: 12px;
+}
+
+@media (max-width: 991.98px) {
+  .sidebar { display: none; }
+}
+
+/* Patients / Doctors / Schedule specific styles */
+.patient-card, .doctor-card {
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(var(--dark-rgb),0.04);
+}
+.patient-card img, .doctor-card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* Doctor avatar on Doctors page - keep small */
+.doctor-img {
+  max-width: 100px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.schedule-list .list-group-item {
+  border: 0;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(16,24,40,0.03);
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 576px) {
+  .appointments-table td .fw-semibold { font-size: 0.95rem; }
+}
+
+/* Barcode image style for patient card */
+.barcode-img {
+  width: 140px;
+  height: auto;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Ensure barcode inside patient card stays small (override broader img rules) */
+.patient-card img.barcode-img {
+  width: 140px !important;
+  max-width: 140px !important;
+}
+
+/* Slot button styles */
+.slot-btn {
+  min-width: 120px;
+  text-align: center;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Busy (booked) slot style */
+.btn-busy {
+  background-color: var(--color-dark) !important;
+  border-color: var(--color-dark) !important;
+  color: #fff !important;
+  opacity: 0.95;
+}
+
+/* Hover/active for available slots */
+.slot-btn.btn-primary {
+  box-shadow: 0 4px 10px rgba(var(--primary-rgb),0.12);
+}
+
+/* Compact slot column layout */
+#groupSlots, #slots {
+  /* allow horizontal scrolling when many columns */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.slot-column {
+  max-height: 320px; /* limit vertical height */
+  overflow-y: auto; /* scroll inside column */
+  padding-right: 0.5rem;
+  margin-right: 0.5rem;
+  border-right: 1px solid rgba(0,0,0,0.04);
+}
+
+.slot-column .fw-semibold {
+  font-size: 0.95rem;
+}
+
+.slot-btn {
+  padding: 0.28rem 0.5rem;
+  font-size: 0.85rem;
+  min-width: 100px;
+}
+
+/* make columns sit side-by-side and not wrap into new lines */
+.slot-column { flex: 0 0 180px; }
+
+/* Horizontal compact layout for single-doctor slots */
+#slots {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+#slots .slot-btn {
+  display: inline-block;
+  margin-bottom: 0;
+}
+
+/* scrollbar appearance (non-critical) */
+.slot-column::-webkit-scrollbar { width: 8px; }
+.slot-column::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.08); border-radius: 4px; }
+
+/* Patient link styling to match primary buttons */
+.patient-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+.patient-link:hover, .patient-link:focus {
+  color: var(--color-dark);
+  text-decoration: none;
+}

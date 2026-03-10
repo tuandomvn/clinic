@@ -10,3 +10,13 @@ Schedule to a customer
 
 
 https://1drv.ms/w/c/584f1a7dd6fcbf77/IQBDCnBdDdb3TKEG2nosz8zYAXKcEdsu0N6LJNSzOb7RgsA?e=q4yhtb
+
+--Setup code
+dotnet tool install --global dotnet-ef
+
+
+cd d:\GitHub\clinic\WebApplication1
+dotnet ef migrations add SeedSampleData --project Clinic.Services --startup-project Clinic.API
+
+
+dotnet ef database update --project Clinic.Services --startup-project Clinic.API

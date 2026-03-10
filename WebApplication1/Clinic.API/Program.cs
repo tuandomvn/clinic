@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Clinic.Services.Data;
+using Clinic.Services.Domain.Entities;
 using Clinic.API.Auth;
 using Clinic.Services.Services.Auth;
 using Clinic.Services.Services.Appointments;
@@ -67,6 +68,25 @@ namespace Clinic.API
             });
 
             var app = builder.Build();
+
+            // Apply pending migrations and seed UserAccounts if empty
+            using (var scope = app.Services.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ClinicDbContext>();
+                db.Database.Migrate();
+                var hasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
+                if (!db.UserAccounts.Any())
+                {
+                    var hash = hasher.Hash("Password@123");
+                    var utc = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+                    db.UserAccounts.AddRange(
+                        new UserAccount { StaffId = 1, Username = "doctor1", PasswordHash = hash, Role = "Doctor", IsActive = true, CreatedAt = utc },
+                        new UserAccount { StaffId = 2, Username = "nurse1", PasswordHash = hash, Role = "Nurse", IsActive = true, CreatedAt = utc },
+                        new UserAccount { StaffId = 3, Username = "doctor2", PasswordHash = hash, Role = "Doctor", IsActive = true, CreatedAt = utc },
+                        new UserAccount { StaffId = 4, Username = "nurse2", PasswordHash = hash, Role = "Nurse", IsActive = true, CreatedAt = utc });
+                    db.SaveChanges();
+                }
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())

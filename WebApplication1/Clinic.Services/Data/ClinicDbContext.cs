@@ -133,5 +133,69 @@ public class ClinicDbContext : DbContext
             e.HasOne(x => x.Patient).WithMany(p => p.Activities).HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.SetNull);
             e.HasIndex(x => x.CreatedAt);
         });
+
+        SeedData(modelBuilder);
+    }
+
+    private static void SeedData(ModelBuilder modelBuilder)
+    {
+        var utc = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+        var staff = new[]
+        {
+            new Staff { Id = 1, FullName = "Nguyễn Văn Bác sĩ", StaffType = StaffType.Doctor, Email = "doctor1@clinic.com", Phone = "0901234567", Specialization = "Nội tổng quát", IsActive = true, CreatedAt = utc },
+            new Staff { Id = 2, FullName = "Trần Thị Y tá", StaffType = StaffType.Nurse, Email = "nurse1@clinic.com", Phone = "0901234568", IsActive = true, CreatedAt = utc },
+            new Staff { Id = 3, FullName = "Lê Văn Phẫu thuật", StaffType = StaffType.Doctor, Email = "doctor2@clinic.com", Phone = "0901234569", Specialization = "Ngoại khoa", IsActive = true, CreatedAt = utc },
+            new Staff { Id = 4, FullName = "Phạm Thị Điều dưỡng", StaffType = StaffType.Nurse, Email = "nurse2@clinic.com", Phone = "0901234570", IsActive = true, CreatedAt = utc },
+        };
+        modelBuilder.Entity<Staff>().HasData(staff);
+
+        var patients = new[]
+        {
+            new Patient { Id = 1, FullName = "Hoàng Minh Anh", DateOfBirth = new DateTime(1985, 5, 15), Gender = "Nam", Phone = "0912345678", Email = "hoangminh@email.com", Address = "123 Đường ABC, Quận 1, TP.HCM", IsActive = true, CreatedAt = utc },
+            new Patient { Id = 2, FullName = "Nguyễn Thị Bình", DateOfBirth = new DateTime(1990, 8, 20), Gender = "Nữ", Phone = "0912345679", Address = "456 Đường XYZ, Quận 3, TP.HCM", IsActive = true, CreatedAt = utc },
+            new Patient { Id = 3, FullName = "Trần Văn Cường", DateOfBirth = new DateTime(1978, 3, 10), Gender = "Nam", Phone = "0912345680", IdentityNumber = "012345678901", IsActive = true, CreatedAt = utc },
+        };
+        modelBuilder.Entity<Patient>().HasData(patients);
+
+        var historyRecords = new[]
+        {
+            new HealthRecord { Id = 1, PatientId = 1, StaffId = 1, VisitDate = new DateTime(2024, 2, 10, 8, 0, 0, DateTimeKind.Utc), Diagnosis = "Cảm cúm nhẹ", Symptoms = "Sốt, đau họng", Notes = "Nghỉ ngơi, uống nhiều nước", CreatedAt = utc },
+            new HealthRecord { Id = 2, PatientId = 2, StaffId = 1, VisitDate = new DateTime(2024, 2, 15, 9, 30, 0, DateTimeKind.Utc), Diagnosis = "Khám sức khỏe định kỳ", Symptoms = "Không", Notes = "Kết quả tốt", CreatedAt = utc },
+        };
+        modelBuilder.Entity<HealthRecord>().HasData(historyRecords);
+
+        var prescriptions = new[]
+        {
+            new Prescription { Id = 1, HealthRecordId = 1, MedicineName = "Paracetamol 500mg", Dosage = "1 viên", Frequency = "3 lần/ngày", Duration = "5 ngày", Instructions = "Uống sau ăn", IsActive = true, CreatedAt = utc },
+        };
+        modelBuilder.Entity<Prescription>().HasData(prescriptions);
+
+        var appointments = new[]
+        {
+            new Appointment { Id = 1, PatientId = 1, StaffId = 1, ScheduledAt = new DateTime(2024, 3, 20, 8, 0, 0, DateTimeKind.Utc), DurationMinutes = 30, Status = AppointmentStatus.Scheduled, Reason = "Tái khám", CreatedAt = utc },
+            new Appointment { Id = 2, PatientId = 2, StaffId = 1, ScheduledAt = new DateTime(2024, 3, 21, 9, 0, 0, DateTimeKind.Utc), DurationMinutes = 30, Status = AppointmentStatus.Scheduled, Reason = "Khám tổng quát", CreatedAt = utc },
+        };
+        modelBuilder.Entity<Appointment>().HasData(appointments);
+
+        var surgerySchedules = new[]
+        {
+            new SurgerySchedule { Id = 1, PatientId = 3, ScheduledAt = new DateTime(2024, 3, 25, 7, 0, 0, DateTimeKind.Utc), DurationMinutes = 120, Room = "Phòng 101", SurgeryType = "Phẫu thuật ruột thừa", Description = "Nội soi cắt ruột thừa", Status = SurgeryStatus.Scheduled, CreatedAt = new DateTime(2024, 3, 5, 0, 0, 0, DateTimeKind.Utc) },
+        };
+        modelBuilder.Entity<SurgerySchedule>().HasData(surgerySchedules);
+
+        var surgeryTeam = new[]
+        {
+            new SurgeryScheduleStaff { SurgeryScheduleId = 1, StaffId = 3, TeamRole = "Surgeon" },
+        };
+        modelBuilder.Entity<SurgeryScheduleStaff>().HasData(surgeryTeam);
+
+        var activities = new[]
+        {
+            new Activity { Id = 1, ActivityType = ActivityType.PatientRegistered, Description = "Đăng ký bệnh nhân mới: Hoàng Minh Anh", PatientId = 1, EntityType = "Patient", EntityId = 1, CreatedAt = utc },
+            new Activity { Id = 2, ActivityType = ActivityType.AppointmentCreated, Description = "Tạo lịch hẹn tái khám", StaffId = 1, PatientId = 1, EntityType = "Appointment", EntityId = 1, CreatedAt = utc },
+            new Activity { Id = 3, ActivityType = ActivityType.SurgeryScheduled, Description = "Lên lịch phẫu thuật ruột thừa", StaffId = 3, PatientId = 3, EntityType = "SurgerySchedule", EntityId = 1, CreatedAt = new DateTime(2024, 3, 5, 0, 0, 0, DateTimeKind.Utc) },
+        };
+        modelBuilder.Entity<Activity>().HasData(activities);
     }
 }
