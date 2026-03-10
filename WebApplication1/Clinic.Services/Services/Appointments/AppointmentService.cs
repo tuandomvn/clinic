@@ -128,6 +128,36 @@ public sealed class AppointmentService : IAppointmentService
         };
     }
 
+    public async Task<IReadOnlyList<AppointmentResponse>> GetByDateAsync(DateOnly date, CancellationToken ct = default)
+    {
+        var dayStartUtc = date.ToDateTime(TimeOnly.MinValue, DateTimeKind.Utc);
+        var dayEndUtc = dayStartUtc.AddDays(1);
+
+        var items = await _db.Appointments
+            .AsNoTracking()
+            .Include(a => a.Patient)
+            .Include(a => a.Staff)
+            //.Where(a => a.ScheduledAt >= dayStartUtc && a.ScheduledAt < dayEndUtc) TODO
+            .OrderBy(a => a.ScheduledAt)
+            .ToListAsync(ct);
+
+        return items.Select(a => new AppointmentResponse
+        {
+            Id = a.Id,
+            PatientId = a.PatientId,
+            StaffId = a.StaffId,
+            PatientName = a.Patient?.FullName,
+            StaffName = a.Staff?.FullName,
+            ScheduledAt = a.ScheduledAt,
+            DurationMinutes = a.DurationMinutes,
+            Status = a.Status,
+            Notes = a.Notes,
+            Reason = a.Reason,
+            CreatedAt = a.CreatedAt,
+            UpdatedAt = a.UpdatedAt
+        }).ToList();
+    }
+
     private async Task<bool> HasDoctorTimeConflict(int staffId, DateTime start, int durationMinutes, int? excludeAppointmentId, CancellationToken ct)
     {
         var end = start.AddMinutes(durationMinutes);

@@ -73,7 +73,7 @@
 <div class="row g-4">
     <div class="col-lg-12">
         <div class="card p-3">
-            <h5 class="mb-3">Lịch khám</h5>
+            <h5 class="mb-3">Lịch khám (theo ngày)</h5>
             <div class="table-responsive">
                 <table class="table align-middle">
                     <thead>
@@ -81,89 +81,42 @@
                             <th>Time</th>
                             <th>Patient</th>
                             <th>Doctor</th>
-                            <th>Type</th>
-                            <th>Location</th>
+                            <th>Reason</th>
                             <th>Status</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>09:30</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
-                                    <div>
-                                        <div class="fw-semibold">Nguyen Van A</div>
-                                        <div class="small text-muted">PT-00123</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Dr. Tran Thi B</td>
-                            <td>Check-up</td>
-                            <td>Room 201</td>
-                            <td><span class="badge bg-info">In consultation</span></td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>09:45</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
-                                    <div>
-                                        <div class="fw-semibold">Pham Van E</div>
-                                        <div class="small text-muted">PT-00789</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Dr. Lab Tech</td>
-                            <td>Lab test</td>
-                            <td>Lab A</td>
-                            <td><span class="badge bg-warning text-dark">In lab</span></td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>10:00</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
-                                    <div>
-                                        <div class="fw-semibold">Le Thi C</div>
-                                        <div class="small text-muted">PT-00456</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Dr. Nguyen Van D</td>
-                            <td>Follow-up</td>
-                            <td></td>
-                            <td><span class="badge bg-success">Checked-in</span></td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>10:00</td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
-                                    <div>
-                                        <div class="fw-semibold">Le Thi E</div>
-                                        <div class="small text-muted">PT-00456</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>Dr. Nguyen Van D</td>
-                            <td>Follow-up</td>
-                            <td></td>
-                            <td><span class="badge bg-success">Checked-in</span></td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Details?id=123">Details</a>
-                            </td>
-                        </tr>
+                        @if (Model.Appointments.Any())
+                        {
+                            foreach (var a in Model.Appointments)
+                            {
+                                <tr>
+                                    <td>@a.ScheduledAt.ToLocalTime().ToString("HH:mm")</td>
+                                    <td>
+                                        <div class="fw-semibold">@a.PatientName</div>
+                                        <div class="small text-muted">ID: @a.PatientId</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold">@a.StaffName</div>
+                                        <div class="small text-muted">ID: @a.StaffId</div>
+                                    </td>
+                                    <td>@a.Reason</td>
+                                    <td>
+                                        <span class="badge bg-secondary">@a.Status</span>
+                                    </td>
+                                    <td>
+                                        <a class="btn btn-sm btn-outline-primary me-1" href="/Appointments/Index">Details</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">Không có lịch khám nào trong ngày.</td>
+                            </tr>
+                        }
                     </tbody>
                 </table>
             </div>

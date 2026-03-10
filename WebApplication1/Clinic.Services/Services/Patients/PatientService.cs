@@ -1,0 +1,59 @@
+using Clinic.Services.Data;
+using Microsoft.EntityFrameworkCore;
+using PatientEntity = Clinic.Services.Domain.Entities.Patient;
+
+namespace Clinic.Services.Services.Patients;
+
+public sealed class PatientService : IPatientService
+{
+    private readonly ClinicDbContext _db;
+
+    public PatientService(ClinicDbContext db)
+    {
+        _db = db;
+    }
+
+    public async Task<IReadOnlyList<PatientEntity>> GetAllAsync(CancellationToken ct = default)
+    {
+        return await _db.Patients
+            .AsNoTracking()
+            .OrderBy(p => p.FullName)
+            .ToListAsync(ct);
+    }
+
+    public async Task<(IReadOnlyList<PatientEntity> Items, int TotalCount)> GetPagedAsync(
+        int page,
+        int pageSize,
+        string? sortBy,
+        bool ascending,
+        CancellationToken ct = default)
+    {
+        if (page <= 0) page = 1;
+        if (pageSize <= 0) pageSize = 10;
+
+        var query = _db.Patients.AsNoTracking();
+
+        sortBy = string.IsNullOrWhiteSpace(sortBy) ? "name" : sortBy.ToLowerInvariant();
+        query = sortBy switch
+        {
+            "phone" => ascending
+                ? query.OrderBy(p => p.Phone)
+                : query.OrderByDescending(p => p.Phone),
+            "lastvisit" => ascending
+                ? query.OrderBy(p => p.CreatedAt)
+                : query.OrderByDescending(p => p.CreatedAt),
+            _ => ascending
+                ? query.OrderBy(p => p.FullName)
+                : query.OrderByDescending(p => p.FullName)
+        };
+
+        var totalCount = await query.CountAsync(ct);
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync(ct);
+
+        return (items, totalCount);
+    }
+}
+

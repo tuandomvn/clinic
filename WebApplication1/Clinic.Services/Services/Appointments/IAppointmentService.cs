@@ -9,4 +9,7 @@ public interface IAppointmentService
     Task<AppointmentResponse?> UpdateAsync(int id, UpdateAppointmentRequest request, CancellationToken ct = default);
     Task<AppointmentResponse?> CancelAsync(int id, CancelAppointmentRequest? request, CancellationToken ct = default);
     Task<DoctorDayAvailabilityResponse?> GetDoctorDayAvailabilityAsync(int staffId, DateOnly date, CancellationToken ct = default);
+
+    /// <summary>Lấy tất cả lịch hẹn theo ngày (UTC) đã cho.</summary>
+    Task<IReadOnlyList<AppointmentResponse>> GetByDateAsync(DateOnly date, CancellationToken ct = default);
 }

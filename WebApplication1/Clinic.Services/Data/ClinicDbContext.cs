@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Clinic.Services.Domain.Entities;
+using System.Linq;
 
 namespace Clinic.Services.Data;
 
@@ -150,12 +151,29 @@ public class ClinicDbContext : DbContext
         };
         modelBuilder.Entity<Staff>().HasData(staff);
 
-        var patients = new[]
+        var basePatients = new[]
         {
             new Patient { Id = 1, FullName = "Hoàng Minh Anh", DateOfBirth = new DateTime(1985, 5, 15), Gender = "Nam", Phone = "0912345678", Email = "hoangminh@email.com", Address = "123 Đường ABC, Quận 1, TP.HCM", IsActive = true, CreatedAt = utc },
             new Patient { Id = 2, FullName = "Nguyễn Thị Bình", DateOfBirth = new DateTime(1990, 8, 20), Gender = "Nữ", Phone = "0912345679", Address = "456 Đường XYZ, Quận 3, TP.HCM", IsActive = true, CreatedAt = utc },
             new Patient { Id = 3, FullName = "Trần Văn Cường", DateOfBirth = new DateTime(1978, 3, 10), Gender = "Nam", Phone = "0912345680", IdentityNumber = "012345678901", IsActive = true, CreatedAt = utc },
         };
+
+        var demoPatients = Enumerable.Range(4, 97)
+            .Select(i => new Patient
+            {
+                Id = i,
+                FullName = $"Bệnh nhân demo {i}",
+                DateOfBirth = new DateTime(1990, 1, 1).AddDays(i),
+                Gender = i % 2 == 0 ? "Nam" : "Nữ",
+                Phone = $"09{i:0000000}",
+                Email = null,
+                Address = $"Địa chỉ demo {i}",
+                IsActive = true,
+                CreatedAt = utc
+            })
+            .ToArray();
+
+        var patients = basePatients.Concat(demoPatients).ToArray();
         modelBuilder.Entity<Patient>().HasData(patients);
 
         var historyRecords = new[]
