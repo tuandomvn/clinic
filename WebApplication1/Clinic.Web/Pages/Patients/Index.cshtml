@@ -12,29 +12,31 @@
 </div>
 
 <style>
-    .sortable-header {
+    .table-patients thead tr {
+        /* nền header dùng primary nhạt */
+        background-color: rgba(var(--bs-primary-rgb), 0.05);
+    }
+
+    .table-patients thead .sortable-header {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        color: inherit;
+        color: #212529 !important; /* giống text bình thường */
         text-decoration: none;
+        font-weight: 500;
     }
 
-    .sortable-header.active {
+    .table-patients thead .sortable-header.active {
         font-weight: 600;
+    }
+
+    .table-patients thead .sortable-header .sort-icon {
+        font-size: 0.75rem;
         color: var(--bs-primary);
     }
 
-    .sortable-header .sort-icon {
-        font-size: 0.75rem;
-    }
-
-    .sortable-header:hover {
+    .table-patients thead .sortable-header:hover {
         text-decoration: underline;
-    }
-
-    .table-patients thead tr {
-        background-color: #f8f9fa;
     }
 
     .pagination .page-link {
@@ -57,37 +59,7 @@
 </div>
 
 <div class="row g-4">
-    <div class="col-lg-3">
-        <div class="card p-3">
-            @if (Model.Patients.Any())
-            {
-                var p = Model.Patients.First();
-                <div class="text-center mb-3">
-                    <h5 class="mb-0">
-                        <a class="text-decoration-none text-dark patient-link" href="/Patients/Details?id=@p.Id">@p.FullName</a>
-                    </h5>
-                    <div class="small text-muted">ID: PT-@p.Id.ToString("D5")</div>
-                </div>
-
-                <ul class="list-unstyled small text-muted">
-                    <li><strong>Phone:</strong> @p.Phone</li>
-                    <li><strong>Birth:</strong> @p.DateOfBirth.ToString("yyyy-MM-dd")</li>
-                    <li><strong>Gender:</strong> @p.Gender</li>
-                    <li><strong>Address:</strong> @p.Address</li>
-                </ul>
-            }
-            else
-            {
-                <div class="text-muted text-center">Không có bệnh nhân.</div>
-            }
-
-            <div class="d-grid mt-3">
-                <a class="btn btn-outline-primary">Edit Profile</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-9">
+    <div class="col-lg-12">
         <div class="card p-3">
             <h5 class="mb-3">Patient List</h5>
             <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">

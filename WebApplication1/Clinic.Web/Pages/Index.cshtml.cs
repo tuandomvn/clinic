@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Clinic.Services.Models.Appointment;
 using Clinic.Services.Services.Appointments;
 
-namespace WebApplication1.Pages
+namespace Clinic.Web.Pages
 {
     public class IndexModel : PageModel
     {

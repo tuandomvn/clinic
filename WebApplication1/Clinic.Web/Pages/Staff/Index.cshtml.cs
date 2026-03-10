@@ -2,7 +2,7 @@ using StaffEntity = Clinic.Services.Domain.Entities.Staff;
 using Clinic.Services.Services.Staffs;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace WebApplication1.Pages.Staff;
+namespace Clinic.Web.Pages.Staff;
 
 public class IndexModel : PageModel
 {
