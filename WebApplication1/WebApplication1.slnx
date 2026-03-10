@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="Clinic.API/Clinic.API.csproj" Id="41960570-8e44-4cbf-9d6f-3d61a39956d6" />
+  <Project Path="Clinic.Services/Clinic.Services.csproj" Id="5574dc3f-6385-4782-b273-977bc712a009" />
   <Project Path="WebApplication1/WebApplication1.csproj" />
 </Solution>
