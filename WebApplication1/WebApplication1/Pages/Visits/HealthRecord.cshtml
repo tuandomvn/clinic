@@ -31,6 +31,10 @@
                 </li>
             </ul>
 
+            <div class="mb-3">
+                <button class="btn btn-primary" onclick="window.print()">In Báo cáo</button>
+            </div>
+
             <!-- Tab panes -->
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="treatment" role="tabpanel" aria-labelledby="treatment-tab">
@@ -95,21 +99,37 @@
                         <table class="table">
                             <thead>
                                 <tr>
+                                    <th style="width: 40px;">
+                                        <input type="checkbox" class="form-check-input select-all-services" title="Chọn tất cả" />
+                                    </th>
                                     <th>Dịch vụ</th>
                                     <th>Mô tả</th>
                                     <th>Ghi chú</th>
+                                    <th style="width: 120px;">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input row-select-services" />
+                                    </td>
                                     <td>Khám tai mũi họng</td>
                                     <td>Khám lâm sàng chuyên khoa</td>
                                     <td>-</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" data-service="Khám tai mũi họng">Xem kết quả</button>
+                                    </td>
                                 </tr>
                                 <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input row-select-services" />
+                                    </td>
                                     <td>Xét nghiệm nhanh</td>
                                     <td>Test virus</td>
                                     <td>Kết quả dương tính</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" data-service="Xét nghiệm nhanh">Xem kết quả</button>
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,8 +149,8 @@
                             <tbody>
                                 <tr>
                                     <td>37</td>
-                                    <td></td>
-                                    <td></td>
+                                    <td>100</td>
+                                    <td>60</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -224,3 +244,115 @@
         </div>
     </div>
 </div>
+
+<!-- Result Modal -->
+<div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="resultModalLabel">Chi tiết kết quả</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalContent">
+                    <p class="text-muted">Đang tải...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">In kết quả</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Select all checkboxes functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Services table
+        const selectAllServices = document.querySelector('.select-all-services');
+        const rowSelectServices = document.querySelectorAll('.row-select-services');
+
+        if (selectAllServices) {
+            selectAllServices.addEventListener('change', function() {
+                rowSelectServices.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+
+            rowSelectServices.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    selectAllServices.checked = Array.from(rowSelectServices).every(cb => cb.checked);
+                });
+            });
+        }
+
+        // Labs table
+        const selectAllLabs = document.querySelector('.select-all-labs');
+        const rowSelectLabs = document.querySelectorAll('.row-select-labs');
+
+        if (selectAllLabs) {
+            selectAllLabs.addEventListener('change', function() {
+                rowSelectLabs.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+
+            rowSelectLabs.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    selectAllLabs.checked = Array.from(rowSelectLabs).every(cb => cb.checked);
+                });
+            });
+        }
+
+        // Prescription table
+        const selectAllPrescription = document.querySelector('.select-all-prescription');
+        const rowSelectPrescription = document.querySelectorAll('.row-select-prescription');
+
+        if (selectAllPrescription) {
+            selectAllPrescription.addEventListener('change', function() {
+                rowSelectPrescription.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+            });
+
+            rowSelectPrescription.forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    selectAllPrescription.checked = Array.from(rowSelectPrescription).every(cb => cb.checked);
+                });
+            });
+        }
+
+        // Result modal - populate content based on button clicked
+        const resultModal = document.getElementById('resultModal');
+        if (resultModal) {
+            resultModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const serviceName = button.getAttribute('data-service');
+                const modalTitle = resultModal.querySelector('#resultModalLabel');
+                const modalContent = resultModal.querySelector('#modalContent');
+
+                modalTitle.textContent = 'Chi tiết kết quả: ' + serviceName;
+                modalContent.innerHTML = `
+                    <div class="card p-3">
+                        <h6 class="mb-3">Dịch vụ: ${serviceName}</h6>
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <strong>Ngày thực hiện:</strong> 2026-03-05
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Trạng thái:</strong> <span class="badge bg-success">Hoàn thành</span>
+                            </div>
+                        </div>
+                        <hr />
+                        <h6 class="mb-2">Kết quả:</h6>
+                        <p class="text-muted">Dương tính / Bình thường tùy theo dịch vụ</p>
+                        <hr />
+                        <h6 class="mb-2">Ghi chú bác sĩ:</h6>
+                        <p class="text-muted">Kết quả xác nhận chẩn đoán ban đầu. Khuyến nghị theo dõi thêm 3-5 ngày.</p>
+                    </div>
+                `;
+            });
+        }
+    });
+</script>

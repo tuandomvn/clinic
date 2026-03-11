@@ -19,3 +19,10 @@ dotnet tool install --global dotnet-ef
 cd d:\GitHub\clinic\WebApplication1
 dotnet ef migrations add SeedSampleData --project Clinic.Services --startup-project Clinic.API
 dotnet ef database update --project Clinic.Services --startup-project Clinic.API
+
+
+--
+https://www.youtube.com/watch?v=lW1vAfGp754&list=PLIjDF3Ai4XvoIoxhhKSbr_IXgxAYVxZ-5&index=4
+
+Dich vụ chỉ định: attach kết quả
+Remove: Ket qua xet nghiem, ket qua chan doan hinh anh
