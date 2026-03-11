@@ -13,30 +13,11 @@
 
 <style>
     .table-patients thead tr {
-        /* nền header dùng primary nhạt */
-        background-color: rgba(var(--bs-primary-rgb), 0.05);
-    }
-
-    .table-patients thead .sortable-header {
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-        color: #212529 !important; /* giống text bình thường */
-        text-decoration: none;
-        font-weight: 500;
-    }
-
-    .table-patients thead .sortable-header.active {
-        font-weight: 600;
-    }
-
-    .table-patients thead .sortable-header .sort-icon {
-        font-size: 0.75rem;
-        color: var(--bs-primary);
+        /* nền header dùng màu dark olive từ color palette */
+        background-color: #363B2C;
     }
 
     .table-patients thead .sortable-header:hover {
-        text-decoration: underline;
     }
 
     .pagination .page-link {
@@ -46,7 +27,6 @@
     .pagination .page-item.active .page-link {
         background-color: var(--bs-primary);
         border-color: var(--bs-primary);
-        color: #fff;
     }
 </style>
 

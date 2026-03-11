@@ -55,5 +55,22 @@ public sealed class PatientService : IPatientService
 
         return (items, totalCount);
     }
+
+    public async Task<PatientEntity?> GetByIdAsync(int id, CancellationToken ct = default)
+    {
+        return await _db.Patients
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
+    }
+
+    public async Task<PatientEntity?> GetByIdWithDetailsAsync(int id, CancellationToken ct = default)
+    {
+        return await _db.Patients
+            .AsNoTracking()
+            .Include(p => p.Activities.OrderByDescending(a => a.CreatedAt))
+            .Include(p => p.Appointments.OrderByDescending(a => a.ScheduledAt))
+                .ThenInclude(a => a.Staff)
+            .FirstOrDefaultAsync(p => p.Id == id, ct);
+    }
 }
 

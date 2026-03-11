@@ -1,149 +1,181 @@
 @page
+@using Clinic.Services.Domain.Entities
+@model Clinic.Web.Pages.Patients.DetailsModel
 @{
     ViewData["Title"] = "Chi tiết bệnh nhân";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Chi tiết bệnh nhân</h2>
-    <div>
-        <a class="btn btn-sm btn-outline-secondary me-2" href="/Patients">Quay lại</a>
-        <a class="btn btn-sm btn-primary" href="/Appointments/Create">Hẹn mới</a>
+@if (Model.Patient == null)
+{
+    <div class="alert alert-danger" role="alert">
+        Không tìm thấy bệnh nhân.
     </div>
-</div>
-
-<div class="row g-4">
-    <div class="col-lg-3">
-        <div class="card p-3 patient-card text-center">
-            <div class="text-center mb-3">
-                <h5 class="mb-0">Nguyen Van A</h5>
-                <div class="small text-muted">ID: PT-00123</div>
-                <div>
-                    <img src="~/images/barcode-PT-00123.svg" alt="PT-00123 barcode" class="barcode-img mt-2" />
-                </div>
-            </div>
-            <ul class="list-unstyled text-start mt-3 small text-muted">
-                <li><strong>CCCD:</strong> 01234566777</li>
-                <li><strong>Phone:</strong> 090-123-4567</li>
-                <li><strong>Birth:</strong> 1988-04-12</li>
-                <li><strong>Gender:</strong> Male</li>
-                <li><strong>Address:</strong> Ho Chi Minh City</li>
-            </ul>
-
-            <div class="d-grid gap-2 mt-3">
-                <a class="btn btn-outline-primary" href="">Chỉnh sửa</a>
-            </div>
-        </div>
-
-        <div class="card p-3 mt-3">
-            <h6 class="mb-3">Lịch hẹn kế tiếp</h6>
-            <div>
-                <div class="fw-semibold">2026-03-19 09:30</div>
-                <div class="small text-muted">Dr. Tran Thi B — Follow-up</div>
-                <div class="mt-3 d-flex gap-2">
-                    <a class="btn btn-sm btn-primary" href="/Visits/NextAppointment?appointmentId=3">Xem</a>
-                    <a class="btn btn-sm btn-outline-secondary" href="/Appointments/Create?patientId=123">Đổi lịch</a>
-                </div>
-            </div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Chi tiết bệnh nhân</h2>
+        <div>
+            <a class="btn btn-sm btn-outline-secondary me-2" href="/Patients">Quay lại</a>
+            <a class="btn btn-sm btn-primary" href="/Appointments/Create?patientId=@Model.Patient.Id">Hẹn mới</a>
         </div>
     </div>
 
-    <div class="col-lg-9">
-        <div class="card p-3 mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">Lịch sử khám</h5>
-                <div class="d-flex flex-wrap align-items-center gap-2 small">
-                    <span class="fw-semibold me-1">Loại Activity:</span>
-                    <div class="form-check form-check-inline mb-0">
-                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeExam" value="Khám bệnh" checked />
-                        <label class="form-check-label" for="filterTypeExam">Khám bệnh</label>
-                    </div>
-                    <div class="form-check form-check-inline mb-0">
-                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeSurgery" value="Mổ" checked />
-                        <label class="form-check-label" for="filterTypeSurgery">Mổ</label>
-                    </div>
-                    <div class="form-check form-check-inline mb-0">
-                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeFollowup" value="Tái khám" checked />
-                        <label class="form-check-label" for="filterTypeFollowup">Tái khám</label>
-                    </div>
-                    <div class="form-check form-check-inline mb-0">
-                        <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeOther" value="Khác" checked />
-                        <label class="form-check-label" for="filterTypeOther">Khác</label>
+    <div class="row g-4">
+        <div class="col-lg-3">
+            <div class="card p-3 patient-card text-center">
+                <div class="text-center mb-3">
+                    <h5 class="mb-0">@Model.Patient.FullName</h5>
+                    <div class="small text-muted">ID: PT-@Model.Patient.Id.ToString("D5")</div>
+                    <div>
+                        <img src="~/images/barcode-PT-@(Model.Patient.Id.ToString("D5")).svg" alt="PT-@(Model.Patient.Id.ToString("D5")) barcode" class="barcode-img mt-2" onerror="this.style.display='none'" />
                     </div>
                 </div>
+                <ul class="list-unstyled text-start mt-3 small text-muted">
+                    <li><strong>CCCD:</strong> @(Model.Patient.IdentityNumber ?? "-")</li>
+                    <li><strong>Phone:</strong> @(Model.Patient.Phone ?? "-")</li>
+                    <li><strong>Email:</strong> @(Model.Patient.Email ?? "-")</li>
+                    <li><strong>Birth:</strong> @Model.Patient.DateOfBirth.ToString("yyyy-MM-dd")</li>
+                    <li><strong>Gender:</strong> @(Model.Patient.Gender ?? "-")</li>
+                    <li><strong>Address:</strong> @(Model.Patient.Address ?? "-")</li>
+                </ul>
+
+                <div class="d-grid gap-2 mt-3">
+                    <a class="btn btn-outline-primary" href="/Patients/Edit?id=@Model.Patient.Id">Chỉnh sửa</a>
+                </div>
             </div>
-            <div class="table-responsive">
-                <table class="table align-middle" id="visitHistoryTable">
-                    <thead>
-                        <tr>
-                            <th>Ngày</th>
-                            <th>Bác sĩ</th>
-                            <th>Tóm tắt</th>
-                            <th>Loại</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr data-visit-type="Khám bệnh">
-                            <td>2026-03-05 09:30</td>
-                            <td>Dr. Tran Thi B</td>
-                            <td>Viêm họng cấp</td>
-                            <td class="visit-type">Khám bệnh</td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=1">Kết quả</a>
-                            </td>
-                        </tr>
-                        <tr data-visit-type="Tái khám">
-                            <td>2026-03-08 10:00</td>
-                            <td>Điều dưỡng Hồng</td>
-                            <td>3 ngày sau mổ — Vết mổ khô, không sốt.</td>
-                            <td class="visit-type">Tái khám</td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=5">Chi tiết</a>
-                            </td>
-                        </tr>
-                        <tr data-visit-type="Mổ">
-                            <td>2025-12-20 10:00</td>
-                            <td>Dr. Nguyen Van D</td>
-                            <td>Mổ viêm xoang</td>
-                            <td class="visit-type">Mổ</td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Kết quả</a>
-                            </td>
-                        </tr>
-                        <tr data-visit-type="Khác">
-                            <td>2025-12-10 10:00</td>
-                            <td>CSKH Nguyen Van A</td>
-                            <td>Đã book lịch hẹn với bs</td>
-                            <td class="visit-type">Khác</td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary" href="/Visits/NextAppointment?appointmentId=3">Xem lịch</a>
-                            </td>
-                        </tr>
-                        <tr data-visit-type="Khác">
-                            <td>2025-12-10 10:00</td>
-                            <td>System - auto</td>
-                            <td>Gửi tin nhắn nhắc hẹn trước 24h</td>
-                            <td class="visit-type">Khác</td>
-                            <td>
-                            </td>
-                        </tr>
-                        <tr data-visit-type="Khám bệnh">
-                            <td>2025-12-10 10:00</td>
-                            <td>Dr. Nguyen Van D</td>
-                            <td>Khám tổng quát</td>
-                            <td class="visit-type">Khám bệnh</td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Kết quả</a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+
+            @if (Model.NextAppointment != null)
+            {
+                <div class="card p-3 mt-3">
+                    <h6 class="mb-3">Lịch hẹn kế tiếp</h6>
+                    <div>
+                        <div class="fw-semibold">@Model.NextAppointment.ScheduledAt.ToString("yyyy-MM-dd HH:mm")</div>
+                        <div class="small text-muted">
+                            @if (Model.NextAppointment.Staff != null)
+                            {
+                                <span>Dr. @Model.NextAppointment.Staff.FullName</span>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.NextAppointment.Reason))
+                            {
+                                <span>— @Model.NextAppointment.Reason</span>
+                            }
+                        </div>
+                        <div class="mt-3 d-flex gap-2">
+                            <a class="btn btn-sm btn-primary" href="/Appointments/@Model.NextAppointment.Id">Xem</a>
+                            <a class="btn btn-sm btn-outline-secondary" href="/Appointments/Edit?id=@Model.NextAppointment.Id">Đổi lịch</a>
+                        </div>
+                    </div>
+                </div>
+            }
         </div>
 
+        <div class="col-lg-9">
+            <div class="card p-3 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Lịch sử khám</h5>
+                    <div class="d-flex flex-wrap align-items-center gap-2 small">
+                        <span class="fw-semibold me-1">Loại Activity:</span>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeExam" value="AppointmentCompleted" checked />
+                            <label class="form-check-label" for="filterTypeExam">Khám bệnh</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeSurgery" value="SurgeryScheduled" checked />
+                            <label class="form-check-label" for="filterTypeSurgery">Mổ</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeFollowup" value="HistoryRecordAdded" checked />
+                            <label class="form-check-label" for="filterTypeFollowup">Tái khám</label>
+                        </div>
+                        <div class="form-check form-check-inline mb-0">
+                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeOther" value="General" checked />
+                            <label class="form-check-label" for="filterTypeOther">Khác</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle" id="visitHistoryTable">
+                        <thead>
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Bác sĩ</th>
+                                <th>Tóm tắt</th>
+                                <th>Loại</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.VisitHistory.Any())
+                            {
+                                @foreach (var appointment in Model.VisitHistory)
+                                {
+                                    var visitType = "General";
+                                    var displayType = "Khác";
 
+                                    if (appointment.Status == global::Clinic.Services.Domain.Entities.AppointmentStatus.Completed)
+                                    {
+                                        visitType = "AppointmentCompleted";
+                                        displayType = "Khám bệnh";
+                                    }
+                                    else if (appointment.Status == global::Clinic.Services.Domain.Entities.AppointmentStatus.InProgress)
+                                    {
+                                        visitType = "AppointmentCompleted";
+                                        displayType = "Khám bệnh";
+                                    }
+
+                                    <tr data-visit-type="@visitType">
+                                        <td>@appointment.ScheduledAt.ToString("yyyy-MM-dd HH:mm")</td>
+                                        <td>@(appointment.Staff?.FullName ?? "-")</td>
+                                        <td>@(appointment.Reason ?? appointment.Notes ?? "-")</td>
+                                        <td class="visit-type">@displayType</td>
+                                        <td>
+                                            <a class="btn btn-sm btn-outline-primary" href="/Appointments/@appointment.Id">Chi tiết</a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted">Không có lịch sử khám.</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            @if (Model.Activities.Any())
+            {
+                <div class="card p-3">
+                    <h5 class="mb-3">Hoạt động gần đây</h5>
+                    <div class="activity-timeline">
+                        @foreach (var activity in Model.Activities.Take(10))
+                        {
+                            <div class="activity-item mb-3 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <div class="fw-semibold">@activity.Description</div>
+                                        <div class="small text-muted">
+                                            @if (activity.Staff != null)
+                                            {
+                                                <span>Bởi @activity.Staff.FullName</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="small text-muted text-end">
+                                        @activity.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
     </div>
-</div>
+}
 
 @section Scripts {
     <script>

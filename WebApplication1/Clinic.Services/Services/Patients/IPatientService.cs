@@ -13,5 +13,11 @@ public interface IPatientService
         string? sortBy,
         bool ascending,
         CancellationToken ct = default);
+
+    /// <summary>Lấy chi tiết bệnh nhân theo ID.</summary>
+    Task<PatientEntity?> GetByIdAsync(int id, CancellationToken ct = default);
+
+    /// <summary>Lấy chi tiết bệnh nhân kèm theo Activities và Appointments.</summary>
+    Task<PatientEntity?> GetByIdWithDetailsAsync(int id, CancellationToken ct = default);
 }
 
