@@ -164,9 +164,12 @@ public class ClinicDbContext : DbContext
                 Id = i,
                 FullName = $"Bệnh nhân demo {i}",
                 DateOfBirth = new DateTime(1990, 1, 1).AddDays(i),
+                IdentityNumber = $"ID{i:000000000}",
+                BarcodeValue = $"BC{i:000000000}",
+                BarcodeType = BarcodeType.Code128,
                 Gender = i % 2 == 0 ? "Nam" : "Nữ",
                 Phone = $"09{i:0000000}",
-                Email = null,
+                Email = $"dominht{i}@gmail.com",
                 Address = $"Địa chỉ demo {i}",
                 IsActive = true,
                 CreatedAt = utc

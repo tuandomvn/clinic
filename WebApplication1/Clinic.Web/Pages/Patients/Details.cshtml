@@ -26,9 +26,12 @@ else
             <div class="card p-3 patient-card text-center">
                 <div class="text-center mb-3">
                     <h5 class="mb-0">@Model.Patient.FullName</h5>
-                    <div class="small text-muted">ID: PT-@Model.Patient.Id.ToString("D5")</div>
-                    <div>
-                        <img src="~/images/barcode-PT-@(Model.Patient.Id.ToString("D5")).svg" alt="PT-@(Model.Patient.Id.ToString("D5")) barcode" class="barcode-img mt-2" onerror="this.style.display='none'" />
+                    <div class="small text-muted">ID: @Model.Patient.BarcodeValue</div>
+                    <div class="mt-2" style="min-height: 80px; display: flex; align-items: center; justify-content: center;">
+                        @if (!string.IsNullOrEmpty(Model.Patient.BarcodeValue))
+                        {
+                            <svg id="barcode-@Model.Patient.Id"></svg>
+                        }
                     </div>
                 </div>
                 <ul class="list-unstyled text-start mt-3 small text-muted">
@@ -178,8 +181,42 @@ else
 }
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOMContentLoaded event fired');
+
+            // Generate barcode
+            const barcodeElement = document.getElementById('barcode-@Model.Patient.Id');
+            const barcodeValue = '@Model.Patient.BarcodeValue';
+
+            console.log('Barcode Element:', barcodeElement);
+            console.log('Barcode Value:', barcodeValue);
+
+            if (barcodeElement && barcodeValue) {
+                try {
+                    console.log('Attempting to generate barcode...');
+
+                    // Generate Code128 barcode using SVG
+                    JsBarcode('#barcode-@Model.Patient.Id', barcodeValue, {
+                        format: 'CODE128',
+                        width: 2,
+                        height: 50,
+                        displayValue: true,
+                        fontSize: 14,
+                        margin: 10
+                    });
+
+                    console.log('Barcode generated successfully');
+                } catch (e) {
+                    console.error('Barcode generation error:', e);
+                    barcodeElement.textContent = 'Error: ' + e.message;
+                }
+            } else {
+                console.warn('Barcode element or value not found', { element: !!barcodeElement, value: !!barcodeValue });
+            }
+
+            // Visit history filter
             const checkboxes = document.querySelectorAll('.visit-type-filter');
             const rows = document.querySelectorAll('#visitHistoryTable tbody tr');
 

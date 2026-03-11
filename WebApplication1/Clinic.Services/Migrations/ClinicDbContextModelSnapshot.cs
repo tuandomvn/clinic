@@ -251,6 +251,12 @@ namespace Clinic.Services.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<int>("BarcodeType")
+                        .HasColumnType("int");
+
+                    b.Property<string>("BarcodeValue")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -299,6 +305,7 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 1,
                             Address = "123 Đường ABC, Quận 1, TP.HCM",
+                            BarcodeType = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1985, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Email = "hoangminh@email.com",
@@ -311,6 +318,7 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 2,
                             Address = "456 Đường XYZ, Quận 3, TP.HCM",
+                            BarcodeType = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 8, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Nguyễn Thị Bình",
@@ -321,6 +329,7 @@ namespace Clinic.Services.Migrations
                         new
                         {
                             Id = 3,
+                            BarcodeType = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1978, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             FullName = "Trần Văn Cường",
@@ -333,10 +342,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 4,
                             Address = "Địa chỉ demo 4",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000004",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht4@gmail.com",
                             FullName = "Bệnh nhân demo 4",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000004",
                             IsActive = true,
                             Phone = "090000004"
                         },
@@ -344,10 +357,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 5,
                             Address = "Địa chỉ demo 5",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000005",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht5@gmail.com",
                             FullName = "Bệnh nhân demo 5",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000005",
                             IsActive = true,
                             Phone = "090000005"
                         },
@@ -355,10 +372,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 6,
                             Address = "Địa chỉ demo 6",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000006",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht6@gmail.com",
                             FullName = "Bệnh nhân demo 6",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000006",
                             IsActive = true,
                             Phone = "090000006"
                         },
@@ -366,10 +387,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 7,
                             Address = "Địa chỉ demo 7",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000007",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht7@gmail.com",
                             FullName = "Bệnh nhân demo 7",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000007",
                             IsActive = true,
                             Phone = "090000007"
                         },
@@ -377,10 +402,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 8,
                             Address = "Địa chỉ demo 8",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000008",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht8@gmail.com",
                             FullName = "Bệnh nhân demo 8",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000008",
                             IsActive = true,
                             Phone = "090000008"
                         },
@@ -388,10 +417,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 9,
                             Address = "Địa chỉ demo 9",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000009",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht9@gmail.com",
                             FullName = "Bệnh nhân demo 9",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000009",
                             IsActive = true,
                             Phone = "090000009"
                         },
@@ -399,10 +432,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 10,
                             Address = "Địa chỉ demo 10",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000010",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht10@gmail.com",
                             FullName = "Bệnh nhân demo 10",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000010",
                             IsActive = true,
                             Phone = "090000010"
                         },
@@ -410,10 +447,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 11,
                             Address = "Địa chỉ demo 11",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000011",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht11@gmail.com",
                             FullName = "Bệnh nhân demo 11",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000011",
                             IsActive = true,
                             Phone = "090000011"
                         },
@@ -421,10 +462,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 12,
                             Address = "Địa chỉ demo 12",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000012",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht12@gmail.com",
                             FullName = "Bệnh nhân demo 12",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000012",
                             IsActive = true,
                             Phone = "090000012"
                         },
@@ -432,10 +477,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 13,
                             Address = "Địa chỉ demo 13",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000013",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht13@gmail.com",
                             FullName = "Bệnh nhân demo 13",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000013",
                             IsActive = true,
                             Phone = "090000013"
                         },
@@ -443,10 +492,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 14,
                             Address = "Địa chỉ demo 14",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000014",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht14@gmail.com",
                             FullName = "Bệnh nhân demo 14",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000014",
                             IsActive = true,
                             Phone = "090000014"
                         },
@@ -454,10 +507,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 15,
                             Address = "Địa chỉ demo 15",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000015",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht15@gmail.com",
                             FullName = "Bệnh nhân demo 15",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000015",
                             IsActive = true,
                             Phone = "090000015"
                         },
@@ -465,10 +522,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 16,
                             Address = "Địa chỉ demo 16",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000016",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht16@gmail.com",
                             FullName = "Bệnh nhân demo 16",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000016",
                             IsActive = true,
                             Phone = "090000016"
                         },
@@ -476,10 +537,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 17,
                             Address = "Địa chỉ demo 17",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000017",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht17@gmail.com",
                             FullName = "Bệnh nhân demo 17",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000017",
                             IsActive = true,
                             Phone = "090000017"
                         },
@@ -487,10 +552,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 18,
                             Address = "Địa chỉ demo 18",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000018",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht18@gmail.com",
                             FullName = "Bệnh nhân demo 18",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000018",
                             IsActive = true,
                             Phone = "090000018"
                         },
@@ -498,10 +567,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 19,
                             Address = "Địa chỉ demo 19",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000019",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht19@gmail.com",
                             FullName = "Bệnh nhân demo 19",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000019",
                             IsActive = true,
                             Phone = "090000019"
                         },
@@ -509,10 +582,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 20,
                             Address = "Địa chỉ demo 20",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000020",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht20@gmail.com",
                             FullName = "Bệnh nhân demo 20",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000020",
                             IsActive = true,
                             Phone = "090000020"
                         },
@@ -520,10 +597,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 21,
                             Address = "Địa chỉ demo 21",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000021",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht21@gmail.com",
                             FullName = "Bệnh nhân demo 21",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000021",
                             IsActive = true,
                             Phone = "090000021"
                         },
@@ -531,10 +612,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 22,
                             Address = "Địa chỉ demo 22",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000022",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht22@gmail.com",
                             FullName = "Bệnh nhân demo 22",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000022",
                             IsActive = true,
                             Phone = "090000022"
                         },
@@ -542,10 +627,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 23,
                             Address = "Địa chỉ demo 23",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000023",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht23@gmail.com",
                             FullName = "Bệnh nhân demo 23",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000023",
                             IsActive = true,
                             Phone = "090000023"
                         },
@@ -553,10 +642,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 24,
                             Address = "Địa chỉ demo 24",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000024",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht24@gmail.com",
                             FullName = "Bệnh nhân demo 24",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000024",
                             IsActive = true,
                             Phone = "090000024"
                         },
@@ -564,10 +657,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 25,
                             Address = "Địa chỉ demo 25",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000025",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht25@gmail.com",
                             FullName = "Bệnh nhân demo 25",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000025",
                             IsActive = true,
                             Phone = "090000025"
                         },
@@ -575,10 +672,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 26,
                             Address = "Địa chỉ demo 26",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000026",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht26@gmail.com",
                             FullName = "Bệnh nhân demo 26",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000026",
                             IsActive = true,
                             Phone = "090000026"
                         },
@@ -586,10 +687,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 27,
                             Address = "Địa chỉ demo 27",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000027",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht27@gmail.com",
                             FullName = "Bệnh nhân demo 27",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000027",
                             IsActive = true,
                             Phone = "090000027"
                         },
@@ -597,10 +702,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 28,
                             Address = "Địa chỉ demo 28",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000028",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht28@gmail.com",
                             FullName = "Bệnh nhân demo 28",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000028",
                             IsActive = true,
                             Phone = "090000028"
                         },
@@ -608,10 +717,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 29,
                             Address = "Địa chỉ demo 29",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000029",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht29@gmail.com",
                             FullName = "Bệnh nhân demo 29",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000029",
                             IsActive = true,
                             Phone = "090000029"
                         },
@@ -619,10 +732,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 30,
                             Address = "Địa chỉ demo 30",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000030",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht30@gmail.com",
                             FullName = "Bệnh nhân demo 30",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000030",
                             IsActive = true,
                             Phone = "090000030"
                         },
@@ -630,10 +747,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 31,
                             Address = "Địa chỉ demo 31",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000031",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht31@gmail.com",
                             FullName = "Bệnh nhân demo 31",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000031",
                             IsActive = true,
                             Phone = "090000031"
                         },
@@ -641,10 +762,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 32,
                             Address = "Địa chỉ demo 32",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000032",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht32@gmail.com",
                             FullName = "Bệnh nhân demo 32",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000032",
                             IsActive = true,
                             Phone = "090000032"
                         },
@@ -652,10 +777,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 33,
                             Address = "Địa chỉ demo 33",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000033",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht33@gmail.com",
                             FullName = "Bệnh nhân demo 33",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000033",
                             IsActive = true,
                             Phone = "090000033"
                         },
@@ -663,10 +792,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 34,
                             Address = "Địa chỉ demo 34",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000034",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht34@gmail.com",
                             FullName = "Bệnh nhân demo 34",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000034",
                             IsActive = true,
                             Phone = "090000034"
                         },
@@ -674,10 +807,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 35,
                             Address = "Địa chỉ demo 35",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000035",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht35@gmail.com",
                             FullName = "Bệnh nhân demo 35",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000035",
                             IsActive = true,
                             Phone = "090000035"
                         },
@@ -685,10 +822,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 36,
                             Address = "Địa chỉ demo 36",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000036",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht36@gmail.com",
                             FullName = "Bệnh nhân demo 36",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000036",
                             IsActive = true,
                             Phone = "090000036"
                         },
@@ -696,10 +837,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 37,
                             Address = "Địa chỉ demo 37",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000037",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht37@gmail.com",
                             FullName = "Bệnh nhân demo 37",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000037",
                             IsActive = true,
                             Phone = "090000037"
                         },
@@ -707,10 +852,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 38,
                             Address = "Địa chỉ demo 38",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000038",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht38@gmail.com",
                             FullName = "Bệnh nhân demo 38",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000038",
                             IsActive = true,
                             Phone = "090000038"
                         },
@@ -718,10 +867,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 39,
                             Address = "Địa chỉ demo 39",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000039",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht39@gmail.com",
                             FullName = "Bệnh nhân demo 39",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000039",
                             IsActive = true,
                             Phone = "090000039"
                         },
@@ -729,10 +882,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 40,
                             Address = "Địa chỉ demo 40",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000040",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht40@gmail.com",
                             FullName = "Bệnh nhân demo 40",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000040",
                             IsActive = true,
                             Phone = "090000040"
                         },
@@ -740,10 +897,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 41,
                             Address = "Địa chỉ demo 41",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000041",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht41@gmail.com",
                             FullName = "Bệnh nhân demo 41",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000041",
                             IsActive = true,
                             Phone = "090000041"
                         },
@@ -751,10 +912,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 42,
                             Address = "Địa chỉ demo 42",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000042",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht42@gmail.com",
                             FullName = "Bệnh nhân demo 42",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000042",
                             IsActive = true,
                             Phone = "090000042"
                         },
@@ -762,10 +927,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 43,
                             Address = "Địa chỉ demo 43",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000043",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht43@gmail.com",
                             FullName = "Bệnh nhân demo 43",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000043",
                             IsActive = true,
                             Phone = "090000043"
                         },
@@ -773,10 +942,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 44,
                             Address = "Địa chỉ demo 44",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000044",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht44@gmail.com",
                             FullName = "Bệnh nhân demo 44",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000044",
                             IsActive = true,
                             Phone = "090000044"
                         },
@@ -784,10 +957,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 45,
                             Address = "Địa chỉ demo 45",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000045",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht45@gmail.com",
                             FullName = "Bệnh nhân demo 45",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000045",
                             IsActive = true,
                             Phone = "090000045"
                         },
@@ -795,10 +972,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 46,
                             Address = "Địa chỉ demo 46",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000046",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht46@gmail.com",
                             FullName = "Bệnh nhân demo 46",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000046",
                             IsActive = true,
                             Phone = "090000046"
                         },
@@ -806,10 +987,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 47,
                             Address = "Địa chỉ demo 47",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000047",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht47@gmail.com",
                             FullName = "Bệnh nhân demo 47",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000047",
                             IsActive = true,
                             Phone = "090000047"
                         },
@@ -817,10 +1002,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 48,
                             Address = "Địa chỉ demo 48",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000048",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht48@gmail.com",
                             FullName = "Bệnh nhân demo 48",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000048",
                             IsActive = true,
                             Phone = "090000048"
                         },
@@ -828,10 +1017,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 49,
                             Address = "Địa chỉ demo 49",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000049",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht49@gmail.com",
                             FullName = "Bệnh nhân demo 49",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000049",
                             IsActive = true,
                             Phone = "090000049"
                         },
@@ -839,10 +1032,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 50,
                             Address = "Địa chỉ demo 50",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000050",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht50@gmail.com",
                             FullName = "Bệnh nhân demo 50",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000050",
                             IsActive = true,
                             Phone = "090000050"
                         },
@@ -850,10 +1047,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 51,
                             Address = "Địa chỉ demo 51",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000051",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht51@gmail.com",
                             FullName = "Bệnh nhân demo 51",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000051",
                             IsActive = true,
                             Phone = "090000051"
                         },
@@ -861,10 +1062,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 52,
                             Address = "Địa chỉ demo 52",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000052",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht52@gmail.com",
                             FullName = "Bệnh nhân demo 52",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000052",
                             IsActive = true,
                             Phone = "090000052"
                         },
@@ -872,10 +1077,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 53,
                             Address = "Địa chỉ demo 53",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000053",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht53@gmail.com",
                             FullName = "Bệnh nhân demo 53",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000053",
                             IsActive = true,
                             Phone = "090000053"
                         },
@@ -883,10 +1092,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 54,
                             Address = "Địa chỉ demo 54",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000054",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht54@gmail.com",
                             FullName = "Bệnh nhân demo 54",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000054",
                             IsActive = true,
                             Phone = "090000054"
                         },
@@ -894,10 +1107,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 55,
                             Address = "Địa chỉ demo 55",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000055",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht55@gmail.com",
                             FullName = "Bệnh nhân demo 55",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000055",
                             IsActive = true,
                             Phone = "090000055"
                         },
@@ -905,10 +1122,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 56,
                             Address = "Địa chỉ demo 56",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000056",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht56@gmail.com",
                             FullName = "Bệnh nhân demo 56",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000056",
                             IsActive = true,
                             Phone = "090000056"
                         },
@@ -916,10 +1137,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 57,
                             Address = "Địa chỉ demo 57",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000057",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht57@gmail.com",
                             FullName = "Bệnh nhân demo 57",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000057",
                             IsActive = true,
                             Phone = "090000057"
                         },
@@ -927,10 +1152,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 58,
                             Address = "Địa chỉ demo 58",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000058",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht58@gmail.com",
                             FullName = "Bệnh nhân demo 58",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000058",
                             IsActive = true,
                             Phone = "090000058"
                         },
@@ -938,10 +1167,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 59,
                             Address = "Địa chỉ demo 59",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000059",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht59@gmail.com",
                             FullName = "Bệnh nhân demo 59",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000059",
                             IsActive = true,
                             Phone = "090000059"
                         },
@@ -949,10 +1182,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 60,
                             Address = "Địa chỉ demo 60",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000060",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht60@gmail.com",
                             FullName = "Bệnh nhân demo 60",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000060",
                             IsActive = true,
                             Phone = "090000060"
                         },
@@ -960,10 +1197,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 61,
                             Address = "Địa chỉ demo 61",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000061",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht61@gmail.com",
                             FullName = "Bệnh nhân demo 61",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000061",
                             IsActive = true,
                             Phone = "090000061"
                         },
@@ -971,10 +1212,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 62,
                             Address = "Địa chỉ demo 62",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000062",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht62@gmail.com",
                             FullName = "Bệnh nhân demo 62",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000062",
                             IsActive = true,
                             Phone = "090000062"
                         },
@@ -982,10 +1227,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 63,
                             Address = "Địa chỉ demo 63",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000063",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht63@gmail.com",
                             FullName = "Bệnh nhân demo 63",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000063",
                             IsActive = true,
                             Phone = "090000063"
                         },
@@ -993,10 +1242,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 64,
                             Address = "Địa chỉ demo 64",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000064",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht64@gmail.com",
                             FullName = "Bệnh nhân demo 64",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000064",
                             IsActive = true,
                             Phone = "090000064"
                         },
@@ -1004,10 +1257,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 65,
                             Address = "Địa chỉ demo 65",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000065",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht65@gmail.com",
                             FullName = "Bệnh nhân demo 65",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000065",
                             IsActive = true,
                             Phone = "090000065"
                         },
@@ -1015,10 +1272,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 66,
                             Address = "Địa chỉ demo 66",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000066",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht66@gmail.com",
                             FullName = "Bệnh nhân demo 66",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000066",
                             IsActive = true,
                             Phone = "090000066"
                         },
@@ -1026,10 +1287,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 67,
                             Address = "Địa chỉ demo 67",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000067",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht67@gmail.com",
                             FullName = "Bệnh nhân demo 67",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000067",
                             IsActive = true,
                             Phone = "090000067"
                         },
@@ -1037,10 +1302,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 68,
                             Address = "Địa chỉ demo 68",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000068",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht68@gmail.com",
                             FullName = "Bệnh nhân demo 68",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000068",
                             IsActive = true,
                             Phone = "090000068"
                         },
@@ -1048,10 +1317,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 69,
                             Address = "Địa chỉ demo 69",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000069",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht69@gmail.com",
                             FullName = "Bệnh nhân demo 69",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000069",
                             IsActive = true,
                             Phone = "090000069"
                         },
@@ -1059,10 +1332,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 70,
                             Address = "Địa chỉ demo 70",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000070",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 12, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht70@gmail.com",
                             FullName = "Bệnh nhân demo 70",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000070",
                             IsActive = true,
                             Phone = "090000070"
                         },
@@ -1070,10 +1347,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 71,
                             Address = "Địa chỉ demo 71",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000071",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht71@gmail.com",
                             FullName = "Bệnh nhân demo 71",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000071",
                             IsActive = true,
                             Phone = "090000071"
                         },
@@ -1081,10 +1362,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 72,
                             Address = "Địa chỉ demo 72",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000072",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht72@gmail.com",
                             FullName = "Bệnh nhân demo 72",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000072",
                             IsActive = true,
                             Phone = "090000072"
                         },
@@ -1092,10 +1377,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 73,
                             Address = "Địa chỉ demo 73",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000073",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht73@gmail.com",
                             FullName = "Bệnh nhân demo 73",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000073",
                             IsActive = true,
                             Phone = "090000073"
                         },
@@ -1103,10 +1392,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 74,
                             Address = "Địa chỉ demo 74",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000074",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht74@gmail.com",
                             FullName = "Bệnh nhân demo 74",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000074",
                             IsActive = true,
                             Phone = "090000074"
                         },
@@ -1114,10 +1407,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 75,
                             Address = "Địa chỉ demo 75",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000075",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 17, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht75@gmail.com",
                             FullName = "Bệnh nhân demo 75",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000075",
                             IsActive = true,
                             Phone = "090000075"
                         },
@@ -1125,10 +1422,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 76,
                             Address = "Địa chỉ demo 76",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000076",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 18, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht76@gmail.com",
                             FullName = "Bệnh nhân demo 76",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000076",
                             IsActive = true,
                             Phone = "090000076"
                         },
@@ -1136,10 +1437,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 77,
                             Address = "Địa chỉ demo 77",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000077",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht77@gmail.com",
                             FullName = "Bệnh nhân demo 77",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000077",
                             IsActive = true,
                             Phone = "090000077"
                         },
@@ -1147,10 +1452,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 78,
                             Address = "Địa chỉ demo 78",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000078",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht78@gmail.com",
                             FullName = "Bệnh nhân demo 78",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000078",
                             IsActive = true,
                             Phone = "090000078"
                         },
@@ -1158,10 +1467,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 79,
                             Address = "Địa chỉ demo 79",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000079",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht79@gmail.com",
                             FullName = "Bệnh nhân demo 79",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000079",
                             IsActive = true,
                             Phone = "090000079"
                         },
@@ -1169,10 +1482,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 80,
                             Address = "Địa chỉ demo 80",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000080",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 22, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht80@gmail.com",
                             FullName = "Bệnh nhân demo 80",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000080",
                             IsActive = true,
                             Phone = "090000080"
                         },
@@ -1180,10 +1497,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 81,
                             Address = "Địa chỉ demo 81",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000081",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht81@gmail.com",
                             FullName = "Bệnh nhân demo 81",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000081",
                             IsActive = true,
                             Phone = "090000081"
                         },
@@ -1191,10 +1512,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 82,
                             Address = "Địa chỉ demo 82",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000082",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 24, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht82@gmail.com",
                             FullName = "Bệnh nhân demo 82",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000082",
                             IsActive = true,
                             Phone = "090000082"
                         },
@@ -1202,10 +1527,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 83,
                             Address = "Địa chỉ demo 83",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000083",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 25, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht83@gmail.com",
                             FullName = "Bệnh nhân demo 83",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000083",
                             IsActive = true,
                             Phone = "090000083"
                         },
@@ -1213,10 +1542,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 84,
                             Address = "Địa chỉ demo 84",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000084",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht84@gmail.com",
                             FullName = "Bệnh nhân demo 84",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000084",
                             IsActive = true,
                             Phone = "090000084"
                         },
@@ -1224,10 +1557,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 85,
                             Address = "Địa chỉ demo 85",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000085",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 27, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht85@gmail.com",
                             FullName = "Bệnh nhân demo 85",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000085",
                             IsActive = true,
                             Phone = "090000085"
                         },
@@ -1235,10 +1572,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 86,
                             Address = "Địa chỉ demo 86",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000086",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht86@gmail.com",
                             FullName = "Bệnh nhân demo 86",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000086",
                             IsActive = true,
                             Phone = "090000086"
                         },
@@ -1246,10 +1587,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 87,
                             Address = "Địa chỉ demo 87",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000087",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht87@gmail.com",
                             FullName = "Bệnh nhân demo 87",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000087",
                             IsActive = true,
                             Phone = "090000087"
                         },
@@ -1257,10 +1602,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 88,
                             Address = "Địa chỉ demo 88",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000088",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht88@gmail.com",
                             FullName = "Bệnh nhân demo 88",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000088",
                             IsActive = true,
                             Phone = "090000088"
                         },
@@ -1268,10 +1617,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 89,
                             Address = "Địa chỉ demo 89",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000089",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 3, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht89@gmail.com",
                             FullName = "Bệnh nhân demo 89",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000089",
                             IsActive = true,
                             Phone = "090000089"
                         },
@@ -1279,10 +1632,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 90,
                             Address = "Địa chỉ demo 90",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000090",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht90@gmail.com",
                             FullName = "Bệnh nhân demo 90",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000090",
                             IsActive = true,
                             Phone = "090000090"
                         },
@@ -1290,10 +1647,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 91,
                             Address = "Địa chỉ demo 91",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000091",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht91@gmail.com",
                             FullName = "Bệnh nhân demo 91",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000091",
                             IsActive = true,
                             Phone = "090000091"
                         },
@@ -1301,10 +1662,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 92,
                             Address = "Địa chỉ demo 92",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000092",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht92@gmail.com",
                             FullName = "Bệnh nhân demo 92",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000092",
                             IsActive = true,
                             Phone = "090000092"
                         },
@@ -1312,10 +1677,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 93,
                             Address = "Địa chỉ demo 93",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000093",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht93@gmail.com",
                             FullName = "Bệnh nhân demo 93",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000093",
                             IsActive = true,
                             Phone = "090000093"
                         },
@@ -1323,10 +1692,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 94,
                             Address = "Địa chỉ demo 94",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000094",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht94@gmail.com",
                             FullName = "Bệnh nhân demo 94",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000094",
                             IsActive = true,
                             Phone = "090000094"
                         },
@@ -1334,10 +1707,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 95,
                             Address = "Địa chỉ demo 95",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000095",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht95@gmail.com",
                             FullName = "Bệnh nhân demo 95",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000095",
                             IsActive = true,
                             Phone = "090000095"
                         },
@@ -1345,10 +1722,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 96,
                             Address = "Địa chỉ demo 96",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000096",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht96@gmail.com",
                             FullName = "Bệnh nhân demo 96",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000096",
                             IsActive = true,
                             Phone = "090000096"
                         },
@@ -1356,10 +1737,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 97,
                             Address = "Địa chỉ demo 97",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000097",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht97@gmail.com",
                             FullName = "Bệnh nhân demo 97",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000097",
                             IsActive = true,
                             Phone = "090000097"
                         },
@@ -1367,10 +1752,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 98,
                             Address = "Địa chỉ demo 98",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000098",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht98@gmail.com",
                             FullName = "Bệnh nhân demo 98",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000098",
                             IsActive = true,
                             Phone = "090000098"
                         },
@@ -1378,10 +1767,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 99,
                             Address = "Địa chỉ demo 99",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000099",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht99@gmail.com",
                             FullName = "Bệnh nhân demo 99",
                             Gender = "Nữ",
+                            IdentityNumber = "ID000000099",
                             IsActive = true,
                             Phone = "090000099"
                         },
@@ -1389,10 +1782,14 @@ namespace Clinic.Services.Migrations
                         {
                             Id = 100,
                             Address = "Địa chỉ demo 100",
+                            BarcodeType = 1,
+                            BarcodeValue = "BC000000100",
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             DateOfBirth = new DateTime(1990, 4, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dominht100@gmail.com",
                             FullName = "Bệnh nhân demo 100",
                             Gender = "Nam",
+                            IdentityNumber = "ID000000100",
                             IsActive = true,
                             Phone = "090000100"
                         });

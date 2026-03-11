@@ -217,3 +217,32 @@ select,
 textarea {
   transition: all 0.2s ease-in-out;
 }
+
+/* ========================================
+   Barcode Styling
+   ======================================== */
+
+.barcode-img {
+  display: inline-block;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #E5E5E5;
+  border-radius: 0.375rem;
+  max-width: 200px;
+}
+
+svg.barcode-img {
+  display: block;
+  margin: 0 auto;
+}
+
+/* QR Code styling */
+#barcode svg {
+  display: block !important;
+}
+
+/* Barcode canvas for JsBarcode */
+canvas {
+  max-width: 100%;
+  height: auto;
+}

@@ -1,5 +1,13 @@
 namespace Clinic.Services.Domain.Entities;
 
+public enum BarcodeType
+{
+    QRCode = 0,
+    Code128 = 1,
+    EAN13 = 2,
+    UPC = 3
+}
+
 public class Patient
 {
     public int Id { get; set; }
@@ -11,6 +19,8 @@ public class Patient
     public string? Address { get; set; }
     public string? IdentityNumber { get; set; }
     public string? InsuranceNumber { get; set; }
+    public string? BarcodeValue { get; set; }
+    public BarcodeType BarcodeType { get; set; } = BarcodeType.Code128;
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
