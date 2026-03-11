@@ -211,12 +211,99 @@ public class ClinicDbContext : DbContext
         };
         modelBuilder.Entity<SurgeryScheduleStaff>().HasData(surgeryTeam);
 
-        var activities = new[]
+        var activities = new List<Activity>();
+
+        // Base activities
+        var baseActivities = new[]
         {
             new Activity { Id = 1, ActivityType = ActivityType.PatientRegistered, Description = "Đăng ký bệnh nhân mới: Hoàng Minh Anh", PatientId = 1, EntityType = "Patient", EntityId = 1, CreatedAt = utc },
             new Activity { Id = 2, ActivityType = ActivityType.AppointmentCreated, Description = "Tạo lịch hẹn tái khám", StaffId = 1, PatientId = 1, EntityType = "Appointment", EntityId = 1, CreatedAt = utc },
             new Activity { Id = 3, ActivityType = ActivityType.SurgeryScheduled, Description = "Lên lịch phẫu thuật ruột thừa", StaffId = 3, PatientId = 3, EntityType = "SurgerySchedule", EntityId = 1, CreatedAt = new DateTime(2024, 3, 5, 0, 0, 0, DateTimeKind.Utc) },
         };
+        activities.AddRange(baseActivities);
+
+        // Generate activities for each patient (base + demo)
+        var patientIds = Enumerable.Range(1, 100).ToList(); // 100 patients
+        var activityDescriptions = new[]
+        {
+            "Tạo lịch hẹn khám bệnh",
+            "Hoàn thành khám bệnh",
+            "Thêm kết quả khám lâm sàng",
+            "Cập nhật thông tin bệnh nhân",
+            "Gửi tin nhắn nhắc lịch khám",
+            "Hủy lịch hẹn",
+            "Rescheduled lịch khám",
+            "Thêm kết quả xét nghiệm",
+            "Tái khám theo hướng dẫn",
+            "Kết thúc điều trị",
+            "Cập nhật thuốc điều trị",
+            "Ghi chú điều trị thêm",
+            "Chuyển bệnh nhân chuyên khoa",
+            "Cập nhật tiền sử bệnh",
+            "Thêm ảnh chẩn đoán hình ảnh",
+            "Yêu cầu tư vấn chuyên khoa",
+            "Hoàn thành đơn thuốc",
+            "Gửi phiếu khám về nhà",
+            "Lên kế hoạch điều trị mới",
+            "Kiểm tra tình trạng sức khỏe định kỳ",
+            "Ghi nhận tăng cân/giảm cân",
+            "Cập nhật tiền sử dị ứng",
+            "Thêm ghi chú y bác sĩ",
+            "Yêu cầu kiểm tra lại",
+            "Sắp xếp nhập viện",
+            "Xuất viện và theo dõi",
+            "Gửi lời mời khám định kỳ",
+            "Cập nhật liên hệ khẩn cấp",
+            "Ghi nhận phản ứng thuốc",
+            "Thêm ghi chú dinh dưỡng",
+        };
+
+        var activityTypes = new[] 
+        { 
+            ActivityType.AppointmentCreated, 
+            ActivityType.AppointmentCompleted, 
+            ActivityType.HistoryRecordAdded, 
+            ActivityType.General 
+        };
+
+        var staffIds = new[] { 1, 2, 3, 4 };
+        int activityId = 4; // Start after base activities (1,2,3)
+
+        foreach (var patientId in patientIds)
+        {
+            var random = new Random(patientId); // Use patientId as seed for consistent results
+            var activitiesPerPatient = random.Next(35, 45); // 35-45 activities per patient
+
+            for (int i = 0; i < activitiesPerPatient; i++)
+            {
+                var activityType = activityTypes[random.Next(activityTypes.Length)];
+                var staffId = random.NextDouble() > 0.3 ? (int?)staffIds[random.Next(staffIds.Length)] : null;
+                var description = activityDescriptions[random.Next(activityDescriptions.Length)];
+
+                // Generate date from past (spread across months)
+                var daysAgo = random.Next(1, 300);
+                var activityDate = utc.AddDays(-daysAgo);
+
+                activities.Add(new Activity
+                {
+                    Id = activityId++,
+                    ActivityType = activityType,
+                    Description = description,
+                    StaffId = staffId,
+                    PatientId = patientId,
+                    EntityType = activityType switch
+                    {
+                        ActivityType.AppointmentCreated => "Appointment",
+                        ActivityType.AppointmentCompleted => "Appointment",
+                        ActivityType.HistoryRecordAdded => "HealthRecord",
+                        _ => "General"
+                    },
+                    EntityId = random.Next(1, 10),
+                    CreatedAt = activityDate
+                });
+            }
+        }
+
         modelBuilder.Entity<Activity>().HasData(activities);
     }
 }

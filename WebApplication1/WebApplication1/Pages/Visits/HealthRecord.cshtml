@@ -15,25 +15,17 @@
             <!-- Nav tabs -->
             <ul class="nav nav-tabs mb-3" id="diagnosisTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="treatment-tab" data-bs-toggle="tab" data-bs-target="#treatment" type="button" role="tab" aria-controls="treatment" aria-selected="true">Báo cáo y tế</button>
+                    <button class="nav-link" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button" role="tab" aria-controls="labs" aria-selected="true">Khám lâm sàng</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab" aria-controls="services" aria-selected="false">Dịch vụ chỉ định</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button" role="tab" aria-controls="labs" aria-selected="false">Kết quả xét nghiệm</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="imaging-tab" data-bs-toggle="tab" data-bs-target="#imaging" type="button" role="tab" aria-controls="imaging" aria-selected="false">Kết quả chẩn đoán hình ảnh</button>
-                </li>
-                
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">Y lệnh nội trú</button>
-                </li>
-                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="prescription-tab" data-bs-toggle="tab" data-bs-target="#prescription" type="button" role="tab" aria-controls="prescription" aria-selected="false">Đơn thuốc</button>
                 </li>
-
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="treatment-tab" data-bs-toggle="tab" data-bs-target="#treatment" type="button" role="tab" aria-controls="treatment" aria-selected="false">Báo cáo y tế</button>
+                </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="followup-tab" data-bs-toggle="tab" data-bs-target="#followup" type="button" role="tab" aria-controls="followup" aria-selected="false">Theo dõi</button>
                 </li>
@@ -125,26 +117,20 @@
                 </div>
 
                 <div class="tab-pane fade" id="labs" role="tabpanel" aria-labelledby="labs-tab">
-                    <h6 class="mb-3">Kết quả xét nghiệm</h6>
                     <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Xét nghiệm</th>
-                                    <th>Kết quả</th>
-                                    <th>Tham chiếu</th>
+                                    <th>Nhiệt độ</th>
+                                    <th>Huyết áp</th>
+                                    <th>Mạch</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>CRP</td>
-                                    <td>3.2 mg/L</td>
-                                    <td>&lt;5 mg/L</td>
-                                </tr>
-                                <tr>
-                                    <td>WBC</td>
-                                    <td>6.8 x10<sup>9</sup>/L</td>
-                                    <td>4.0 - 11.0 x10<sup>9</sup>/L</td>
+                                    <td>37</td>
+                                    <td></td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -166,10 +152,6 @@
                                 <div class="small text-muted mt-2">Chest X-ray — 2026-03-05</div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="mt-3">
-                        <a class="btn btn-primary" href="/Visits/NextAppointment?appointmentId=3">Upload</a>
                     </div>
                 </div>
 

@@ -18,6 +18,4 @@ dotnet tool install --global dotnet-ef
 
 cd d:\GitHub\clinic\WebApplication1
 dotnet ef migrations add SeedSampleData --project Clinic.Services --startup-project Clinic.API
-
-
 dotnet ef database update --project Clinic.Services --startup-project Clinic.API
