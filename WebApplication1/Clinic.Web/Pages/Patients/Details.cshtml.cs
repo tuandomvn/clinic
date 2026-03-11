@@ -96,4 +96,49 @@ public class DetailsModel : PageModel
         }
         return "Khác";
     }
+
+    public async Task<IActionResult> OnGetActivitiesAsync(int draw = 1, int start = 0, int length = 5, CancellationToken ct = default)
+    {
+        if (Id <= 0)
+        {
+            return BadRequest("Invalid patient ID");
+        }
+
+        try
+        {
+            // Load patient with details to ensure Activities are populated
+            var patient = await _patientService.GetByIdWithDetailsAsync(Id, ct);
+            if (patient == null)
+            {
+                return NotFound();
+            }
+
+            var activities = patient.Activities
+                .OrderByDescending(a => a.CreatedAt)
+                .ToList();
+
+            var totalCount = activities.Count;
+            var pagedActivities = activities.Skip(start).Take(length).ToList();
+
+            var result = new
+            {
+                draw,
+                recordsTotal = totalCount,
+                recordsFiltered = totalCount,
+                data = pagedActivities.Select(a => new
+                {
+                    description = a.Description,
+                    staffName = a.Staff?.FullName ?? "-",
+                    createdAt = a.CreatedAt.ToString("MM-dd HH:mm")
+                }).ToArray()
+            };
+
+            return new JsonResult(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error loading activities for patient ID: {Id}", Id);
+            return StatusCode(500, new { error = "An error occurred while loading activities" });
+        }
+    }
 }

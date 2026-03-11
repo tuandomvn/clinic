@@ -26,3 +26,5 @@ https://www.youtube.com/watch?v=lW1vAfGp754&list=PLIjDF3Ai4XvoIoxhhKSbr_IXgxAYVx
 
 Dich vụ chỉ định: attach kết quả
 Remove: Ket qua xet nghiem, ket qua chan doan hinh anh
+
+https://localhost:7170/Patients/Details?id=10
