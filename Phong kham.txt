@@ -28,3 +28,7 @@ Dich vụ chỉ định: attach kết quả
 Remove: Ket qua xet nghiem, ket qua chan doan hinh anh
 
 https://localhost:7170/Patients/Details?id=10
+
+todo: 
+login, cap tk
+authen voi ajax
