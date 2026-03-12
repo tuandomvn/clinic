@@ -1,10 +1,12 @@
 using Clinic.Services.Domain.Entities;
 using Clinic.Services.Services.Patients;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace Clinic.Web.Pages.Patients;
 
+[Authorize]
 public class DetailsModel : PageModel
 {
     private readonly IPatientService _patientService;

@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Authorization;
 using Clinic.Services.Models.Appointment;
 using Clinic.Services.Services.Appointments;
 
 namespace Clinic.Web.Pages
 {
+    [Authorize]
     public class IndexModel : PageModel
     {
         private readonly IAppointmentService _appointmentService;

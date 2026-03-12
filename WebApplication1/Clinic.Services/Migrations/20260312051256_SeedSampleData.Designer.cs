@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Services.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20260311111739_SeedSampleData")]
+    [Migration("20260312051256_SeedSampleData")]
     partial class SeedSampleData
     {
         /// <inheritdoc />
@@ -44567,6 +44567,48 @@ namespace Clinic.Services.Migrations
                         .IsUnique();
 
                     b.ToTable("UserAccounts");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            PasswordHash = "9mtWZsHXatM7leRB3zoVgQa0hIWHrH97p0EWAmRTzS2CThH6Edir7jLPC7a4DbES",
+                            Role = "Doctor",
+                            StaffId = 1,
+                            Username = "doctor1"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            PasswordHash = "OPHxXJ2bbYq4uujTBgUGXZsHY6nwT9NkH5ZT3qgOb8KCz1uftAUP2k6zHZbiwqjR",
+                            Role = "Nurse",
+                            StaffId = 2,
+                            Username = "nurse1"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            PasswordHash = "9uq5G3t8/kSGJTDVJdj/6VrXhP1NYTf0/lgjjiEQGrkx0MpVH/0NJYpHHgNWYrL5",
+                            Role = "Doctor",
+                            StaffId = 3,
+                            Username = "doctor2"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            PasswordHash = "1bM7cGPXogLUndtBurQfshL+Jkys5XnvX/84CBzWIAyoJFbDwP/qU3VoJ8I8PdJv",
+                            Role = "Nurse",
+                            StaffId = 4,
+                            Username = "nurse2"
+                        });
                 });
 
             modelBuilder.Entity("Clinic.Services.Domain.Entities.Activity", b =>

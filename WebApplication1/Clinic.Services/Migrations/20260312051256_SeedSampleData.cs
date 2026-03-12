@@ -4425,6 +4425,17 @@ namespace Clinic.Services.Migrations
                 values: new object[] { 1, new DateTime(2024, 3, 5, 0, 0, 0, 0, DateTimeKind.Utc), "Nội soi cắt ruột thừa", 120, null, 3, "Phòng 101", new DateTime(2024, 3, 25, 7, 0, 0, 0, DateTimeKind.Utc), 0, "Phẫu thuật ruột thừa", null });
 
             migrationBuilder.InsertData(
+                table: "UserAccounts",
+                columns: new[] { "Id", "CreatedAt", "IsActive", "LastLoginAt", "PasswordHash", "Role", "StaffId", "UpdatedAt", "Username" },
+                values: new object[,]
+                {
+                    { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "9mtWZsHXatM7leRB3zoVgQa0hIWHrH97p0EWAmRTzS2CThH6Edir7jLPC7a4DbES", "Doctor", 1, null, "doctor1" },
+                    { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "OPHxXJ2bbYq4uujTBgUGXZsHY6nwT9NkH5ZT3qgOb8KCz1uftAUP2k6zHZbiwqjR", "Nurse", 2, null, "nurse1" },
+                    { 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "9uq5G3t8/kSGJTDVJdj/6VrXhP1NYTf0/lgjjiEQGrkx0MpVH/0NJYpHHgNWYrL5", "Doctor", 3, null, "doctor2" },
+                    { 4, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "1bM7cGPXogLUndtBurQfshL+Jkys5XnvX/84CBzWIAyoJFbDwP/qU3VoJ8I8PdJv", "Nurse", 4, null, "nurse2" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Prescriptions",
                 columns: new[] { "Id", "CreatedAt", "Dosage", "Duration", "Frequency", "HealthRecordId", "Instructions", "IsActive", "MedicineName", "UpdatedAt" },
                 values: new object[] { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "1 viên", "5 ngày", "3 lần/ngày", 1, "Uống sau ăn", true, "Paracetamol 500mg", null });

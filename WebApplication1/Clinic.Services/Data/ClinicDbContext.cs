@@ -142,6 +142,7 @@ public class ClinicDbContext : DbContext
     {
         var utc = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
+        // Seed Staff
         var staff = new[]
         {
             new Staff { Id = 1, FullName = "Nguyễn Văn Bác sĩ", StaffType = StaffType.Doctor, Email = "doctor1@clinic.com", Phone = "0901234567", Specialization = "Nội tổng quát", IsActive = true, CreatedAt = utc },
@@ -150,6 +151,16 @@ public class ClinicDbContext : DbContext
             new Staff { Id = 4, FullName = "Phạm Thị Điều dưỡng", StaffType = StaffType.Nurse, Email = "nurse2@clinic.com", Phone = "0901234570", IsActive = true, CreatedAt = utc },
         };
         modelBuilder.Entity<Staff>().HasData(staff);
+
+        // Seed UserAccounts (linked to Staff)
+        var userAccounts = new[]
+        {
+            new UserAccount { Id = 1, StaffId = 1, Username = "doctor1", PasswordHash = HashPassword("Password@123"), Role = "Doctor", IsActive = true, CreatedAt = utc },
+            new UserAccount { Id = 2, StaffId = 2, Username = "nurse1", PasswordHash = HashPassword("Password@123"), Role = "Nurse", IsActive = true, CreatedAt = utc },
+            new UserAccount { Id = 3, StaffId = 3, Username = "doctor2", PasswordHash = HashPassword("Password@123"), Role = "Doctor", IsActive = true, CreatedAt = utc },
+            new UserAccount { Id = 4, StaffId = 4, Username = "nurse2", PasswordHash = HashPassword("Password@123"), Role = "Nurse", IsActive = true, CreatedAt = utc },
+        };
+        modelBuilder.Entity<UserAccount>().HasData(userAccounts);
 
         var basePatients = new[]
         {
@@ -305,5 +316,23 @@ public class ClinicDbContext : DbContext
         }
 
         modelBuilder.Entity<Activity>().HasData(activities);
+    }
+
+    /// <summary>
+    /// Simple PBKDF2-SHA256 password hashing for seeding
+    /// </summary>
+    private static string HashPassword(string password)
+    {
+        using var deriveBytes = new System.Security.Cryptography.Rfc2898DeriveBytes(
+            password, 16, 10000, System.Security.Cryptography.HashAlgorithmName.SHA256);
+        var salt = deriveBytes.Salt;
+        var hash = deriveBytes.GetBytes(32);
+
+        // Combine salt and hash
+        var hashBytes = new byte[48];
+        System.Buffer.BlockCopy(salt, 0, hashBytes, 0, 16);
+        System.Buffer.BlockCopy(hash, 0, hashBytes, 16, 32);
+
+        return Convert.ToBase64String(hashBytes);
     }
 }
