@@ -109,23 +109,7 @@
                                 <a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?appointmentId=0">Kết quả</a>
                             </td>
                         </tr>
-                        <tr data-visit-type="Khác">
-                            <td>2025-12-10 10:00</td>
-                            <td>CSKH Nguyen Van A</td>
-                            <td>Đã book lịch hẹn với bs</td>
-                            <td class="visit-type">Khác</td>
-                            <td>
-                                <a class="btn btn-sm btn-outline-primary" href="/Visits/NextAppointment?appointmentId=3">Xem lịch</a>
-                            </td>
-                        </tr>
-                        <tr data-visit-type="Khác">
-                            <td>2025-12-10 10:00</td>
-                            <td>System - auto</td>
-                            <td>Gửi tin nhắn nhắc hẹn trước 24h</td>
-                            <td class="visit-type">Khác</td>
-                            <td>
-                            </td>
-                        </tr>
+                      
                         <tr data-visit-type="Khám bệnh">
                             <td>2025-12-10 10:00</td>
                             <td>Dr. Nguyen Van D</td>
@@ -138,13 +122,232 @@
                     </tbody>
                 </table>
             </div>
+                    </div>
+
+                    <div class="card p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Hoạt động gần đây</h5>
+                            <div class="d-flex gap-1 flex-wrap">
+                                <button class="btn btn-sm btn-outline-primary active feed-filter" data-type="all">Tất cả</button>
+                                <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="Post">Bài viết</button>
+                                <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="BirthdayGreeting">Sinh nhật</button>
+                                <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="AppointmentCreated">Lịch hẹn</button>
+                                <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="HistoryRecordAdded">Kết quả</button>
+                                <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="SurgeryScheduled">Phẫu thuật</button>
+                            </div>
+                        </div>
+
+                        <div class="feed-composer mb-3">
+                            <div class="d-flex gap-2 align-items-start">
+                                <div class="feed-avatar flex-shrink-0">👤</div>
+                                <div class="flex-grow-1">
+                                    <textarea id="postContent" class="form-control form-control-sm" rows="2"
+                                        placeholder="Viết ghi chú về bệnh nhân Nguyen Van A..."
+                                        style="resize: vertical;"></textarea>
+                                    <div class="d-flex justify-content-end mt-2 gap-2">
+                                        <span id="postCharCount" class="text-muted small align-self-center"></span>
+                                        <button class="btn btn-primary btn-sm px-3" id="btnPost" disabled>
+                                            Đăng
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="activityFeed" class="activity-feed">
+
+                            <div class="feed-card" data-type="Post">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📝</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">Dr. Tran Thi B</div>
+                                        <div class="feed-time">2 giờ trước · <span class="badge bg-primary badge-sm">Bài viết</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Bệnh nhân tái khám sau 1 tuần điều trị viêm họng cấp. Triệu chứng giảm rõ rệt, tiếp tục theo dõi thêm 3 ngày.</p>
+                                    <div class="feed-images mt-2">
+                                        <img src="https://placehold.co/160x120/e8f5e9/388e3c?text=X-Ray" alt="X-Ray" class="feed-img feed-img-single" onclick="openImageViewer(this.src)" />
+                                    </div>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-19 14:30</span>
+                                    <span class="text-muted small">1 ảnh</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="AppointmentCreated">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📅</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">Lễ tân Nguyen Thi C</div>
+                                        <div class="feed-time">5 giờ trước · <span class="badge bg-info text-dark badge-sm">Lịch hẹn</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Đã tạo lịch hẹn tái khám ngày 2026-03-26 lúc 09:00 với Dr. Tran Thi B.</p>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-19 11:00</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="BirthdayGreeting">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">🎂</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">System - auto</div>
+                                        <div class="feed-time">1 ngày trước · <span class="badge bg-warning text-dark badge-sm">Sinh nhật</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">🎉 Chúc mừng sinh nhật bệnh nhân Nguyen Van A! Chúc anh/chị luôn khỏe mạnh và hạnh phúc.</p>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-18 08:00</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="HistoryRecordAdded">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📋</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">Dr. Tran Thi B</div>
+                                        <div class="feed-time">3 ngày trước · <span class="badge bg-success badge-sm">Kết quả</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Đã cập nhật kết quả xét nghiệm máu. Các chỉ số trong giới hạn bình thường. WBC: 7.2, RBC: 4.8, Hemoglobin: 14.5 g/dL.</p>
+                                    <div class="feed-images feed-images-2 mt-2">
+                                        <img src="https://placehold.co/80x80/e3f2fd/1565c0?text=Lab+1" alt="Lab result 1" class="feed-img" onclick="openImageViewer(this.src)" />
+                                        <img src="https://placehold.co/80x80/fce4ec/c62828?text=Lab+2" alt="Lab result 2" class="feed-img" onclick="openImageViewer(this.src)" />
+                                    </div>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-16 15:20</span>
+                                    <span class="text-muted small">2 ảnh</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="SurgeryScheduled">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">🏥</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">Dr. Nguyen Van D</div>
+                                        <div class="feed-time">5 ngày trước · <span class="badge bg-danger badge-sm">Phẫu thuật</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Lên lịch phẫu thuật nội soi xoang mũi ngày 2026-03-25. Bệnh nhân cần nhịn ăn 8 tiếng trước mổ. Đã tư vấn và ký cam kết.</p>
+                                    <div class="feed-images feed-images-grid mt-2">
+                                        <img src="https://placehold.co/100x100/fff3e0/e65100?text=CT+Scan" alt="CT Scan" class="feed-img feed-img-main" onclick="openImageViewer(this.src)" />
+                                        <div class="feed-img-side">
+                                            <img src="https://placehold.co/80x48/e8eaf6/283593?text=MRI" alt="MRI" class="feed-img" onclick="openImageViewer(this.src)" />
+                                            <div class="feed-img-last-wrap">
+                                                <img src="https://placehold.co/80x48/f3e5f5/6a1b9a?text=Report" alt="Report" class="feed-img" onclick="openImageViewer(this.src)" />
+                                                <div class="feed-img-overlay">+1</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-14 10:45</span>
+                                    <span class="text-muted small">4 ảnh</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="Post">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📝</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">Điều dưỡng Hồng</div>
+                                        <div class="feed-time">1 tuần trước · <span class="badge bg-primary badge-sm">Bài viết</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Đã hướng dẫn bệnh nhân cách vệ sinh mũi bằng nước muối sinh lý trước phẫu thuật. Bệnh nhân hiểu và tuân thủ tốt.</p>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-12 09:15</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="AppointmentCreated">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📅</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">System - auto</div>
+                                        <div class="feed-time">1 tuần trước · <span class="badge bg-info text-dark badge-sm">Lịch hẹn</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Gửi tin nhắn nhắc hẹn trước 24h cho lịch khám ngày 2026-03-12 với Dr. Tran Thi B.</p>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-11 08:00</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="HistoryRecordAdded">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📋</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">Dr. Tran Thi B</div>
+                                        <div class="feed-time">2 tuần trước · <span class="badge bg-success badge-sm">Kết quả</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Chẩn đoán: Viêm xoang mạn tính. Chỉ định CT scan mũi xoang và xét nghiệm tiền phẫu. Lên kế hoạch phẫu thuật nội soi.</p>
+                                    <div class="feed-images mt-2">
+                                        <img src="https://placehold.co/160x120/e0f7fa/00695c?text=Diagnosis" alt="Diagnosis" class="feed-img feed-img-single" onclick="openImageViewer(this.src)" />
+                                    </div>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-03-05 14:00</span>
+                                    <span class="text-muted small">1 ảnh</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="Post">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📝</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">CSKH Nguyen Van A</div>
+                                        <div class="feed-time">3 tuần trước · <span class="badge bg-primary badge-sm">Bài viết</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Bệnh nhân gọi điện hỏi về kết quả xét nghiệm. Đã chuyển cuộc gọi tới phòng khám chuyên khoa.</p>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-02-28 16:30</span>
+                                </div>
+                            </div>
+
+                            <div class="feed-card" data-type="AppointmentCreated">
+                                <div class="feed-card-header">
+                                    <div class="feed-avatar">📅</div>
+                                    <div class="feed-meta">
+                                        <div class="feed-author">Lễ tân Nguyen Thi C</div>
+                                        <div class="feed-time">1 tháng trước · <span class="badge bg-info text-dark badge-sm">Lịch hẹn</span></div>
+                                    </div>
+                                </div>
+                                <div class="feed-card-body">
+                                    <p class="feed-content">Đã đặt lịch khám tổng quát ngày 2026-03-05 lúc 09:30 với Dr. Tran Thi B. Bệnh nhân yêu cầu khám thêm tai mũi họng.</p>
+                                </div>
+                                <div class="feed-card-footer">
+                                    <span class="text-muted small">2026-02-20 10:00</span>
+                                </div>
+                            </div>
+
+                            <div class="text-center text-muted small py-3">— Đã hiển thị tất cả hoạt động —</div>
+                        </div>
+                    </div>
+
+            </div>
         </div>
 
-
-    </div>
-</div>
-
-@section Scripts {
+        @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const checkboxes = document.querySelectorAll('.visit-type-filter');
@@ -172,6 +375,99 @@
 
             checkboxes.forEach(cb => cb.addEventListener('change', applyFilter));
             applyFilter();
+
+            // ===== POST COMPOSER (mockup — no actual save) =====
+            const postContent = document.getElementById('postContent');
+            const btnPost = document.getElementById('btnPost');
+            const postCharCount = document.getElementById('postCharCount');
+
+            if (postContent && btnPost) {
+                postContent.addEventListener('input', function () {
+                    const len = this.value.trim().length;
+                    btnPost.disabled = len === 0;
+                    postCharCount.textContent = len > 0 ? `${len} ký tự` : '';
+                    // Auto-expand textarea
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+                });
+
+                btnPost.addEventListener('click', function () {
+                    const text = postContent.value.trim();
+                    if (!text) return;
+
+                    // Build a new card and prepend (mockup — not saved anywhere)
+                    const cardHtml = `
+                    <div class="feed-card" data-type="Post">
+                        <div class="feed-card-header">
+                            <div class="feed-avatar">📝</div>
+                            <div class="feed-meta">
+                                <div class="feed-author">Bạn</div>
+                                <div class="feed-time">Vừa xong · <span class="badge bg-primary badge-sm">Bài viết</span></div>
+                            </div>
+                        </div>
+                        <div class="feed-card-body">
+                            <p class="feed-content">${text.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>
+                        </div>
+                        <div class="feed-card-footer">
+                            <span class="text-muted small">${new Date().toISOString().slice(0, 16).replace('T', ' ')}</span>
+                        </div>
+                    </div>`;
+
+                    const feed = document.getElementById('activityFeed');
+                    const firstCard = feed.querySelector('.feed-card');
+                    if (firstCard) {
+                        firstCard.insertAdjacentHTML('beforebegin', cardHtml);
+                    } else {
+                        feed.insertAdjacentHTML('afterbegin', cardHtml);
+                    }
+
+                    // Reset composer
+                    postContent.value = '';
+                    postContent.style.height = 'auto';
+                    postCharCount.textContent = '';
+                    btnPost.disabled = true;
+                });
+
+                // Ctrl+Enter to post
+                postContent.addEventListener('keydown', function (e) {
+                    if (e.ctrlKey && e.key === 'Enter' && !btnPost.disabled) {
+                        btnPost.click();
+                    }
+                });
+            }
+
+            // ===== FEED FILTER BUTTONS =====
+            let activeFilter = 'all';
+            document.querySelectorAll('.feed-filter').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.feed-filter').forEach(b => {
+                        b.classList.remove('active', 'btn-outline-primary');
+                        b.classList.add('btn-outline-secondary');
+                    });
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('active', 'btn-outline-primary');
+                    activeFilter = this.dataset.type;
+
+                    const cards = document.querySelectorAll('#activityFeed .feed-card');
+                    cards.forEach(card => {
+                        if (activeFilter === 'all' || card.dataset.type === activeFilter) {
+                            card.style.display = '';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
         });
+
+        // Simple image viewer (lightbox)
+        function openImageViewer(src) {
+            const overlay = document.createElement('div');
+            overlay.className = 'feed-image-viewer';
+            overlay.innerHTML = `<div class="feed-image-viewer-backdrop" onclick="this.parentElement.remove()"></div>
+                <img src="${src}" class="feed-image-viewer-img" />
+                <button class="btn btn-sm btn-light feed-image-viewer-close" onclick="this.parentElement.remove()">&times;</button>`;
+            document.body.appendChild(overlay);
+        }
     </script>
 }
