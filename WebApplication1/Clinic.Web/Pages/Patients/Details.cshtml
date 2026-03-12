@@ -158,6 +158,24 @@ else
                     </div>
                 </div>
 
+                <div class="feed-composer mb-3">
+                    @Html.AntiForgeryToken()
+                    <div class="d-flex gap-2 align-items-start">
+                        <div class="feed-avatar flex-shrink-0">👤</div>
+                        <div class="flex-grow-1">
+                            <textarea id="postContent" class="form-control form-control-sm" rows="2"
+                                placeholder="Viết ghi chú về bệnh nhân @Model.Patient.FullName..."
+                                style="resize: vertical;"></textarea>
+                            <div class="d-flex justify-content-end mt-2 gap-2">
+                                <span id="postCharCount" class="text-muted small align-self-center"></span>
+                                <button class="btn btn-primary btn-sm px-3" id="btnPost" disabled>
+                                    Đăng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="activityFeed" class="activity-feed">
                     <div class="text-center py-4" id="feedLoading">
                         <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
@@ -216,6 +234,77 @@ else
 
             checkboxes.forEach(cb => cb.addEventListener('change', applyFilter));
             applyFilter();
+
+            // ===== POST COMPOSER =====
+            const postContent = document.getElementById('postContent');
+            const btnPost = document.getElementById('btnPost');
+            const postCharCount = document.getElementById('postCharCount');
+
+            if (postContent && btnPost) {
+                postContent.addEventListener('input', function () {
+                    const len = this.value.trim().length;
+                    btnPost.disabled = len === 0;
+                    postCharCount.textContent = len > 0 ? `${len} ký tự` : '';
+                });
+
+                // Auto-expand textarea
+                postContent.addEventListener('input', function () {
+                    this.style.height = 'auto';
+                    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+                });
+
+                btnPost.addEventListener('click', async function () {
+                    const text = postContent.value.trim();
+                    if (!text) return;
+
+                    btnPost.disabled = true;
+                    btnPost.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
+
+                    try {
+                        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                        const res = await fetch(`/Patients/Details?handler=CreateActivity`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': token || ''
+                            },
+                            body: JSON.stringify({ patientId: patientId, contentText: text })
+                        });
+
+                        if (!res.ok) throw new Error('Post failed');
+                        const newActivity = await res.json();
+
+                        // Prepend new card to feed
+                        const cardHtml = renderActivityCard(newActivity);
+                        const feedFirstCard = feed.querySelector('.feed-card');
+                        if (feedFirstCard) {
+                            feedFirstCard.insertAdjacentHTML('beforebegin', cardHtml);
+                        } else {
+                            feed.insertAdjacentHTML('afterbegin', cardHtml);
+                        }
+                        allItems.unshift(newActivity);
+                        applyFeedFilter();
+
+                        // Reset composer
+                        postContent.value = '';
+                        postContent.style.height = 'auto';
+                        postCharCount.textContent = '';
+                    } catch (err) {
+                        console.error('Error posting activity:', err);
+                        alert('Lỗi khi đăng bài viết. Vui lòng thử lại.');
+                    }
+
+                    btnPost.disabled = false;
+                    btnPost.innerHTML = 'Đăng';
+                });
+
+                // Ctrl+Enter to post
+                postContent.addEventListener('keydown', function (e) {
+                    if (e.ctrlKey && e.key === 'Enter' && !btnPost.disabled) {
+                        btnPost.click();
+                    }
+                });
+            }
 
             // ===== ACTIVITY NEWSFEED =====
             const patientId = @(Model.Patient?.Id ?? 0);

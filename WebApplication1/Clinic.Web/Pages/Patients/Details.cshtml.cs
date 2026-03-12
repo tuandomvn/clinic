@@ -1,4 +1,5 @@
 using Clinic.Services.Domain.Entities;
+using Clinic.Services.Data;
 using Clinic.Services.Services.Patients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +11,13 @@ namespace Clinic.Web.Pages.Patients;
 public class DetailsModel : PageModel
 {
     private readonly IPatientService _patientService;
+    private readonly ClinicDbContext _dbContext;
     private readonly ILogger<DetailsModel> _logger;
 
-    public DetailsModel(IPatientService patientService, ILogger<DetailsModel> logger)
+    public DetailsModel(IPatientService patientService, ClinicDbContext dbContext, ILogger<DetailsModel> logger)
     {
         _patientService = patientService;
+        _dbContext = dbContext;
         _logger = logger;
     }
 
@@ -152,6 +155,54 @@ public class DetailsModel : PageModel
             _logger.LogError(ex, "Error loading activities for patient ID: {Id}", Id);
             return StatusCode(500, new { error = "An error occurred while loading activities" });
         }
+    }
+
+    public async Task<IActionResult> OnPostCreateActivityAsync([FromBody] CreateActivityRequest request, CancellationToken ct = default)
+    {
+        if (request.PatientId <= 0 || string.IsNullOrWhiteSpace(request.ContentText))
+        {
+            return BadRequest(new { error = "Nội dung không được để trống." });
+        }
+
+        try
+        {
+            var activity = new Activity
+            {
+                ActivityType = ActivityType.Post,
+                ContentText = request.ContentText.Trim(),
+                CreatedBy = User.Identity?.Name ?? "Unknown",
+                PatientId = request.PatientId,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            _dbContext.Activities.Add(activity);
+            await _dbContext.SaveChangesAsync(ct);
+
+            var result = new
+            {
+                id = activity.Id,
+                contentText = activity.ContentText,
+                createdBy = activity.CreatedBy,
+                activityType = activity.ActivityType.ToString(),
+                activityTypeDisplay = GetActivityTypeDisplay(activity.ActivityType),
+                createdDate = activity.CreatedDate.ToString("yyyy-MM-dd HH:mm"),
+                createdDateRelative = GetRelativeTime(activity.CreatedDate),
+                images = Array.Empty<object>()
+            };
+
+            return new JsonResult(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating activity for patient ID: {PatientId}", request.PatientId);
+            return StatusCode(500, new { error = "Lỗi khi tạo bài viết." });
+        }
+    }
+
+    public class CreateActivityRequest
+    {
+        public int PatientId { get; set; }
+        public string ContentText { get; set; } = string.Empty;
     }
 
     private static string GetRelativeTime(DateTime date)
