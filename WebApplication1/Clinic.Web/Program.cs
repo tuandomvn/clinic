@@ -42,12 +42,6 @@ builder.Services.AddScoped<IJwtTokenService>(sp => new Clinic.Services.Services.
 
 var app = builder.Build();
 
-// Reset database to apply latest schema + seed data (dev only)
-if (app.Environment.IsDevelopment())
-{
-    await DatabaseSeeder.ResetDatabaseAsync(app.Services);
-}
-
 // Seed initial admin user
 await DatabaseSeeder.SeedAdminUserAsync(app.Services);
 
