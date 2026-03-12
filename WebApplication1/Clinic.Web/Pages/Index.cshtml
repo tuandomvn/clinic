@@ -236,13 +236,21 @@
             display: flex !important;
             align-items: center !important;
             justify-content: flex-start !important;
-            gap: 1rem !important;
             flex-wrap: nowrap !important;
             padding: 0.5rem 0 !important;
             margin: 0 !important;
             border-top: 1px solid #dee2e6;
             width: 100%;
             min-height: 32px;
+        }
+        .dataTables_wrapper .row:last-child > div {
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            gap: 1rem !important;
+            flex: 1 1 auto;
+            max-width: 100% !important;
+            width: 100% !important;
         }
         /* Length selector */
         .dataTables_wrapper .dataTables_length {
@@ -279,6 +287,27 @@
             line-height: 18px;
             margin: 0 !important;
             border-radius: 0.1rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item {
+            margin: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item + .page-item .page-link {
+            margin-left: -1px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link {
+            padding: 0.15rem 0.4rem !important;
+            font-size: 0.75rem !important;
+            line-height: 1.2 !important;
+            min-width: auto !important;
+            border-radius: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item:first-child .page-link {
+            border-top-left-radius: 0.2rem !important;
+            border-bottom-left-radius: 0.2rem !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item:last-child .page-link {
+            border-top-right-radius: 0.2rem !important;
+            border-bottom-right-radius: 0.2rem !important;
         }
     </style>
     <script>

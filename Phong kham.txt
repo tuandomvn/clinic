@@ -36,3 +36,7 @@ authen voi ajax
 
 doctor1
 Password@123
+
+update clinicdb.activityimages set ImageUrl = '1.jpg' where Id < 400;
+update clinicdb.activityimages set ImageUrl = '2.jpg' where Id > 400 and Id < 800;
+update clinicdb.activityimages set ImageUrl = '2.jpg' where Id > 800 and Id < 1200;

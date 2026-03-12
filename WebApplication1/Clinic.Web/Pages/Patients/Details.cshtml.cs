@@ -50,7 +50,7 @@ public class DetailsModel : PageModel
             // Lấy lịch hẹn kế tiếp (chưa diễn ra)
             var now = DateTime.UtcNow;
             NextAppointment = Patient.Appointments
-                .Where(a => a.ScheduledAt > now && 
+                .Where(a => //a.ScheduledAt > now && TODO
                             (a.Status == AppointmentStatus.Scheduled || 
                              a.Status == AppointmentStatus.CheckedIn))
                 .OrderBy(a => a.ScheduledAt)
