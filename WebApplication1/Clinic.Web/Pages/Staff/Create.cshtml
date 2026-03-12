@@ -1,0 +1,71 @@
+@page
+@model Clinic.Web.Pages.Staff.CreateModel
+@using Clinic.Services.Domain.Entities
+@{
+    ViewData["Title"] = "Thêm nhân viên mới";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Thêm nhân viên mới</h2>
+    <div>
+        <a class="btn btn-sm btn-outline-secondary" href="/Staff">Quay lại</a>
+    </div>
+</div>
+
+<div class="card p-4">
+    <form method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Input.FullName" class="form-label">Họ tên <span class="text-danger">*</span></label>
+                <input asp-for="Input.FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="Input.StaffType" class="form-label">Chức vụ <span class="text-danger">*</span></label>
+                <select asp-for="Input.StaffType" class="form-select">
+                    <option value="@StaffType.Doctor">Bác sĩ</option>
+                    <option value="@StaffType.Nurse">Y tá</option>
+                    <option value="@StaffType.Technician">Kỹ thuật viên</option>
+                    <option value="@StaffType.Admin">Quản trị</option>
+                </select>
+                <span asp-validation-for="Input.StaffType" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="Input.Specialization" class="form-label">Chuyên khoa</label>
+                <input asp-for="Input.Specialization" class="form-control" placeholder="Nội khoa" />
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Input.Phone" class="form-label">Số điện thoại</label>
+                <input asp-for="Input.Phone" class="form-control" placeholder="0901234567" />
+                <span asp-validation-for="Input.Phone" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <input asp-for="Input.Email" class="form-control" placeholder="email@example.com" />
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check">
+                    <input asp-for="Input.IsActive" class="form-check-input" />
+                    <label asp-for="Input.IsActive" class="form-check-label">Đang hoạt động</label>
+                </div>
+            </div>
+
+            <div class="col-12 text-end mt-4">
+                <a class="btn btn-outline-secondary me-2" href="/Staff">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu nhân viên</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
