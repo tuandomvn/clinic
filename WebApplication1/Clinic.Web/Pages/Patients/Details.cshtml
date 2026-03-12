@@ -80,20 +80,16 @@ else
                     <div class="d-flex flex-wrap align-items-center gap-2 small">
                         <span class="fw-semibold me-1">Loại Activity:</span>
                         <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeExam" value="AppointmentCompleted" checked />
-                            <label class="form-check-label" for="filterTypeExam">Khám bệnh</label>
+                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypePost" value="Post" checked />
+                            <label class="form-check-label" for="filterTypePost">Bài viết</label>
                         </div>
                         <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeSurgery" value="SurgeryScheduled" checked />
-                            <label class="form-check-label" for="filterTypeSurgery">Mổ</label>
+                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeBirthday" value="BirthdayGreeting" checked />
+                            <label class="form-check-label" for="filterTypeBirthday">Chúc mừng SN</label>
                         </div>
                         <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeFollowup" value="HistoryRecordAdded" checked />
-                            <label class="form-check-label" for="filterTypeFollowup">Tái khám</label>
-                        </div>
-                        <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeOther" value="General" checked />
-                            <label class="form-check-label" for="filterTypeOther">Khác</label>
+                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeAppointment" value="Appointment" checked />
+                            <label class="form-check-label" for="filterTypeAppointment">Lịch hẹn</label>
                         </div>
                     </div>
                 </div>
@@ -149,25 +145,32 @@ else
                 </div>
             </div>
 
-            @if (Model.Activities.Any())
-            {
-                <div class="card p-3">
-                    <h5 class="mb-3">Hoạt động gần đây</h5>
-                    <div class="table-responsive">
-                        <table id="activityTable" class="table table-striped table-hover" style="width:100%">
-                            <thead>
-                                <tr>
-                                    <th>Hoạt động</th>
-                                    <th>Bác sĩ</th>
-                                    <th>Ngày giờ</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+            <div class="card p-3">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Hoạt động gần đây</h5>
+                    <div class="d-flex gap-1 flex-wrap">
+                        <button class="btn btn-sm btn-outline-primary active feed-filter" data-type="all">Tất cả</button>
+                        <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="Post">Bài viết</button>
+                        <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="BirthdayGreeting">Sinh nhật</button>
+                        <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="AppointmentCreated">Lịch hẹn</button>
+                        <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="HistoryRecordAdded">Kết quả</button>
+                        <button class="btn btn-sm btn-outline-secondary feed-filter" data-type="SurgeryScheduled">Phẫu thuật</button>
                     </div>
                 </div>
-            }
+
+                <div id="activityFeed" class="activity-feed">
+                    <div class="text-center py-4" id="feedLoading">
+                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                        <span class="ms-2 text-muted">Đang tải...</span>
+                    </div>
+                </div>
+
+                <div class="text-center mt-3" id="loadMoreContainer" style="display:none;">
+                    <button class="btn btn-outline-primary btn-sm" id="btnLoadMore">
+                        Xem thêm hoạt động
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 }
@@ -176,20 +179,12 @@ else
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('DOMContentLoaded event fired');
-
             // Generate barcode
             const barcodeElement = document.getElementById('barcode-@Model.Patient.Id');
             const barcodeValue = '@Model.Patient.BarcodeValue';
 
-            console.log('Barcode Element:', barcodeElement);
-            console.log('Barcode Value:', barcodeValue);
-
             if (barcodeElement && barcodeValue) {
                 try {
-                    console.log('Attempting to generate barcode...');
-
-                    // Generate Code128 barcode using SVG
                     JsBarcode('#barcode-@Model.Patient.Id', barcodeValue, {
                         format: 'CODE128',
                         width: 2,
@@ -198,14 +193,9 @@ else
                         fontSize: 14,
                         margin: 10
                     });
-
-                    console.log('Barcode generated successfully');
                 } catch (e) {
                     console.error('Barcode generation error:', e);
-                    barcodeElement.textContent = 'Error: ' + e.message;
                 }
-            } else {
-                console.warn('Barcode element or value not found', { element: !!barcodeElement, value: !!barcodeValue });
             }
 
             // Visit history filter
@@ -219,74 +209,181 @@ else
 
                 rows.forEach(row => {
                     const type = row.dataset.visitType;
-                    if (!type) {
-                        row.style.display = '';
-                        return;
-                    }
-
-                    if (activeTypes.length === 0) {
-                        row.style.display = 'none';
-                    } else {
-                        row.style.display = activeTypes.includes(type) ? '' : 'none';
-                    }
+                    if (!type) { row.style.display = ''; return; }
+                    row.style.display = (activeTypes.length === 0) ? 'none' : (activeTypes.includes(type) ? '' : 'none');
                 });
             }
 
             checkboxes.forEach(cb => cb.addEventListener('change', applyFilter));
             applyFilter();
 
-            // Initialize DataTables for activity pagination
-            @if (Model.Activities.Any())
-            {
-                <text>
-                const patientId = @Model.Patient?.Id;
-                if (patientId && document.getElementById('activityTable')) {
-                    $('#activityTable').DataTable({
-                        serverSide: true,
-                        processing: true,
-                        pageLength: 5,
-                        paging: true,
-                        searching: false,
-                        ordering: false,
-                        info: true,
-                        language: {
-                            url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
-                        },
-                        ajax: {
-                            url: '/Patients/Details?handler=Activities&id=' + patientId,
-                            type: 'GET',
-                            dataSrc: 'data',
-                            error: function (xhr, status, error) {
-                                console.error('DataTables error:', error, xhr);
-                            }
-                        },
-                        columns: [
-                            { 
-                                data: 'description',
-                                render: function(data) {
-                                    return '<span class="fw-semibold">' + (data || '-') + '</span>';
-                                }
-                            },
-                            { 
-                                data: 'staffName',
-                                render: function(data) {
-                                    return data || '-';
-                                }
-                            },
-                            { 
-                                data: 'createdAt',
-                                className: 'text-muted'
-                            }
-                        ],
-                        dom: 'lrtip',
-                        drawCallback: function(settings) {
-                            console.log('DataTables draw complete, page:', settings._iDisplayStart / settings._iDisplayLength + 1);
-                        }
-                    });
+            // ===== ACTIVITY NEWSFEED =====
+            const patientId = @(Model.Patient?.Id ?? 0);
+            const feed = document.getElementById('activityFeed');
+            const feedLoading = document.getElementById('feedLoading');
+            const loadMoreContainer = document.getElementById('loadMoreContainer');
+            const btnLoadMore = document.getElementById('btnLoadMore');
+            let currentPage = 0;
+            let activeFilter = 'all';
+            let isLoading = false;
+            let allItems = []; // store all loaded items for client-side filtering
+
+            const typeIcons = {
+                'Post': '📝',
+                'BirthdayGreeting': '🎂',
+                'AppointmentCreated': '📅',
+                'HistoryRecordAdded': '📋',
+                'SurgeryScheduled': '🏥',
+                'PatientRegistered': '👤',
+                'General': '📌'
+            };
+
+            const typeBadgeClass = {
+                'Post': 'bg-primary',
+                'BirthdayGreeting': 'bg-warning text-dark',
+                'AppointmentCreated': 'bg-info text-dark',
+                'HistoryRecordAdded': 'bg-success',
+                'SurgeryScheduled': 'bg-danger',
+                'PatientRegistered': 'bg-secondary',
+                'General': 'bg-dark'
+            };
+
+            function buildImageGrid(images) {
+                if (!images || images.length === 0) return '';
+                const count = images.length;
+
+                if (count === 1) {
+                    return `<div class="feed-images mt-2">
+                        <img src="${images[0].imageUrl}" alt="${images[0].caption || ''}" class="feed-img feed-img-single" onclick="openImageViewer(this.src)" />
+                    </div>`;
                 }
-                </text>
+                if (count === 2) {
+                    return `<div class="feed-images feed-images-2 mt-2">
+                        ${images.map(img => `<img src="${img.imageUrl}" alt="${img.caption || ''}" class="feed-img" onclick="openImageViewer(this.src)" />`).join('')}
+                    </div>`;
+                }
+                // 3+ images: show first 3 in grid, with +N overlay on the 3rd if more
+                const shown = images.slice(0, 3);
+                const extra = count - 3;
+                let html = `<div class="feed-images feed-images-grid mt-2">`;
+                html += `<img src="${shown[0].imageUrl}" alt="${shown[0].caption || ''}" class="feed-img feed-img-main" onclick="openImageViewer(this.src)" />`;
+                html += `<div class="feed-img-side">`;
+                html += `<img src="${shown[1].imageUrl}" alt="${shown[1].caption || ''}" class="feed-img" onclick="openImageViewer(this.src)" />`;
+                html += `<div class="feed-img-last-wrap">`;
+                html += `<img src="${shown[2].imageUrl}" alt="${shown[2].caption || ''}" class="feed-img" onclick="openImageViewer(this.src)" />`;
+                if (extra > 0) {
+                    html += `<div class="feed-img-overlay">+${extra}</div>`;
+                }
+                html += `</div></div></div>`;
+                return html;
             }
+
+            function renderActivityCard(a) {
+                const icon = typeIcons[a.activityType] || '📌';
+                const badgeClass = typeBadgeClass[a.activityType] || 'bg-dark';
+
+                return `
+                <div class="feed-card" data-type="${a.activityType}">
+                    <div class="feed-card-header">
+                        <div class="feed-avatar">${icon}</div>
+                        <div class="feed-meta">
+                            <div class="feed-author">${a.createdBy}</div>
+                            <div class="feed-time">${a.createdDateRelative} · <span class="badge ${badgeClass} badge-sm">${a.activityTypeDisplay}</span></div>
+                        </div>
+                    </div>
+                    <div class="feed-card-body">
+                        <p class="feed-content">${a.contentText}</p>
+                        ${buildImageGrid(a.images)}
+                    </div>
+                    <div class="feed-card-footer">
+                        <span class="text-muted small">${a.createdDate}</span>
+                        ${a.images.length > 0 ? `<span class="text-muted small">${a.images.length} ảnh</span>` : ''}
+                    </div>
+                </div>`;
+            }
+
+            function applyFeedFilter() {
+                const cards = feed.querySelectorAll('.feed-card');
+                cards.forEach(card => {
+                    if (activeFilter === 'all' || card.dataset.type === activeFilter) {
+                        card.style.display = '';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+
+            async function loadActivities() {
+                if (isLoading) return;
+                isLoading = true;
+                currentPage++;
+
+                try {
+                    const res = await fetch(`/Patients/Details?handler=Activities&id=${patientId}&pageNumber=${currentPage}&pageSize=10`);
+                    const json = await res.json();
+
+                    if (feedLoading) feedLoading.style.display = 'none';
+
+                    if (json.data && json.data.length > 0) {
+                        let html = '';
+                        json.data.forEach(a => {
+                            allItems.push(a);
+                            html += renderActivityCard(a);
+                        });
+                        feed.insertAdjacentHTML('beforeend', html);
+                        applyFeedFilter();
+                    }
+
+                    if (json.hasMore) {
+                        loadMoreContainer.style.display = '';
+                    } else {
+                        loadMoreContainer.style.display = 'none';
+                        if (allItems.length > 0) {
+                            feed.insertAdjacentHTML('beforeend',
+                                '<div class="text-center text-muted small py-3">— Đã hiển thị tất cả hoạt động —</div>');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error loading activities:', err);
+                    if (feedLoading) feedLoading.innerHTML = '<span class="text-danger">Lỗi khi tải dữ liệu.</span>';
+                }
+                isLoading = false;
+            }
+
+            // Load first page
+            if (patientId > 0) {
+                loadActivities();
+            }
+
+            // Load more button
+            if (btnLoadMore) {
+                btnLoadMore.addEventListener('click', loadActivities);
+            }
+
+            // Filter buttons
+            document.querySelectorAll('.feed-filter').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.feed-filter').forEach(b => {
+                        b.classList.remove('active', 'btn-outline-primary');
+                        b.classList.add('btn-outline-secondary');
+                    });
+                    this.classList.remove('btn-outline-secondary');
+                    this.classList.add('active', 'btn-outline-primary');
+                    activeFilter = this.dataset.type;
+                    applyFeedFilter();
+                });
+            });
         });
+
+        // Simple image viewer
+        function openImageViewer(src) {
+            const overlay = document.createElement('div');
+            overlay.className = 'feed-image-viewer';
+            overlay.innerHTML = `<div class="feed-image-viewer-backdrop" onclick="this.parentElement.remove()"></div>
+                <img src="${src}" class="feed-image-viewer-img" />
+                <button class="btn btn-sm btn-light feed-image-viewer-close" onclick="this.parentElement.remove()">&times;</button>`;
+            document.body.appendChild(overlay);
+        }
     </script>
 }
 

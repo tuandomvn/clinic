@@ -62,7 +62,7 @@ public class DetailsModel : PageModel
 
             // Lấy Activities theo loại
             Activities = Patient.Activities
-                .OrderByDescending(a => a.CreatedAt)
+                .OrderByDescending(a => a.CreatedDate)
                 .ToList();
 
             _logger.LogInformation("Patient details loaded successfully for ID: {Id}", Id);
@@ -79,8 +79,9 @@ public class DetailsModel : PageModel
     {
         return type switch
         {
-            ActivityType.AppointmentCreated => "Tạo lịch hẹn",
-            ActivityType.AppointmentCompleted => "Hoàn thành khám",
+            ActivityType.Post => "Bài viết",
+            ActivityType.BirthdayGreeting => "Chúc mừng sinh nhật",
+            ActivityType.AppointmentCreated => "Lịch hẹn",
             ActivityType.HistoryRecordAdded => "Thêm kết quả khám",
             ActivityType.SurgeryScheduled => "Sắp xếp phẫu thuật",
             ActivityType.PatientRegistered => "Đăng ký bệnh nhân",
@@ -99,7 +100,7 @@ public class DetailsModel : PageModel
         return "Khác";
     }
 
-    public async Task<IActionResult> OnGetActivitiesAsync(int draw = 1, int start = 0, int length = 5, CancellationToken ct = default)
+    public async Task<IActionResult> OnGetActivitiesAsync(int pageNumber = 1, int pageSize = 10, CancellationToken ct = default)
     {
         if (Id <= 0)
         {
@@ -108,7 +109,6 @@ public class DetailsModel : PageModel
 
         try
         {
-            // Load patient with details to ensure Activities are populated
             var patient = await _patientService.GetByIdWithDetailsAsync(Id, ct);
             if (patient == null)
             {
@@ -116,23 +116,33 @@ public class DetailsModel : PageModel
             }
 
             var activities = patient.Activities
-                .OrderByDescending(a => a.CreatedAt)
+                .OrderByDescending(a => a.CreatedDate)
                 .ToList();
 
             var totalCount = activities.Count;
-            var pagedActivities = activities.Skip(start).Take(length).ToList();
+            var pagedActivities = activities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             var result = new
             {
-                draw,
-                recordsTotal = totalCount,
-                recordsFiltered = totalCount,
                 data = pagedActivities.Select(a => new
                 {
-                    description = a.Description,
-                    staffName = a.Staff?.FullName ?? "-",
-                    createdAt = a.CreatedAt.ToString("MM-dd HH:mm")
-                }).ToArray()
+                    id = a.Id,
+                    contentText = a.ContentText,
+                    createdBy = a.CreatedBy ?? "system",
+                    activityType = a.ActivityType.ToString(),
+                    activityTypeDisplay = GetActivityTypeDisplay(a.ActivityType),
+                    createdDate = a.CreatedDate.ToString("yyyy-MM-dd HH:mm"),
+                    createdDateRelative = GetRelativeTime(a.CreatedDate),
+                    images = (a.Images ?? []).Select(img => new
+                    {
+                        id = img.Id,
+                        imageUrl = img.ImageUrl,
+                        caption = img.Caption
+                    }).ToArray()
+                }).ToArray(),
+                hasMore = (pageNumber * pageSize) < totalCount,
+                totalCount,
+                pageNumber
             };
 
             return new JsonResult(result);
@@ -142,5 +152,16 @@ public class DetailsModel : PageModel
             _logger.LogError(ex, "Error loading activities for patient ID: {Id}", Id);
             return StatusCode(500, new { error = "An error occurred while loading activities" });
         }
+    }
+
+    private static string GetRelativeTime(DateTime date)
+    {
+        var span = DateTime.UtcNow - date;
+        if (span.TotalMinutes < 1) return "Vừa xong";
+        if (span.TotalMinutes < 60) return $"{(int)span.TotalMinutes} phút trước";
+        if (span.TotalHours < 24) return $"{(int)span.TotalHours} giờ trước";
+        if (span.TotalDays < 30) return $"{(int)span.TotalDays} ngày trước";
+        if (span.TotalDays < 365) return $"{(int)(span.TotalDays / 30)} tháng trước";
+        return $"{(int)(span.TotalDays / 365)} năm trước";
     }
 }

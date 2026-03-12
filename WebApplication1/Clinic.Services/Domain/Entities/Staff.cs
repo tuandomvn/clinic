@@ -25,5 +25,4 @@ public class Staff
     public ICollection<HealthRecord> HistoryRecords { get; set; } = new List<HealthRecord>();
     public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     public ICollection<SurgeryScheduleStaff> SurgeryAssignments { get; set; } = new List<SurgeryScheduleStaff>();
-    public ICollection<Activity> Activities { get; set; } = new List<Activity>();
 }

@@ -301,3 +301,175 @@ body {
   color: var(--color-dark);
   text-decoration: none;
 }
+
+/* ===== Activity Newsfeed (Facebook-style) ===== */
+.activity-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.feed-card {
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding: 1rem 0;
+}
+.feed-card:first-child { padding-top: 0; }
+.feed-card:last-child { border-bottom: none; }
+
+.feed-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.5rem;
+}
+
+.feed-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(var(--primary-rgb), 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.feed-meta { flex: 1; min-width: 0; }
+.feed-author {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-dark);
+  line-height: 1.2;
+}
+.feed-time {
+  font-size: 0.78rem;
+  color: #65676b;
+}
+
+.badge-sm {
+  font-size: 0.65rem;
+  padding: 0.15em 0.45em;
+  font-weight: 500;
+  vertical-align: middle;
+}
+
+.feed-card-body { padding-left: 0; }
+.feed-content {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: #1c1e21;
+}
+
+.feed-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 0.35rem;
+}
+
+/* ===== Feed image grid ===== */
+.feed-images { border-radius: 8px; overflow: hidden; }
+
+.feed-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  display: block;
+}
+.feed-img:hover { opacity: 0.88; }
+
+.feed-img-single {
+  max-height: 360px;
+  border-radius: 8px;
+}
+
+.feed-images-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px;
+  border-radius: 8px;
+}
+.feed-images-2 .feed-img { height: 220px; }
+
+.feed-images-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 3px;
+  border-radius: 8px;
+}
+.feed-img-main { height: 260px; }
+.feed-img-side {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 3px;
+}
+.feed-img-side .feed-img { height: 100%; }
+.feed-img-last-wrap { position: relative; overflow: hidden; }
+.feed-img-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* ===== Image viewer lightbox ===== */
+.feed-image-viewer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.feed-image-viewer-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  cursor: pointer;
+}
+.feed-image-viewer-img {
+  position: relative;
+  z-index: 1;
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+}
+.feed-image-viewer-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 2;
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+/* ===== Feed filter buttons ===== */
+.feed-filter {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+}
+
+@media (max-width: 576px) {
+  .feed-img-single { max-height: 240px; }
+  .feed-images-2 .feed-img { height: 150px; }
+  .feed-img-main { height: 180px; }
+  .feed-filter { font-size: 0.72rem; padding: 0.15rem 0.45rem; }
+}

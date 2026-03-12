@@ -8,6 +8,18 @@ namespace Clinic.Web.Services;
 public static class DatabaseSeeder
 {
     /// <summary>
+    /// Drops and recreates the database to apply latest schema and HasData seed.
+    /// Only use in development!
+    /// </summary>
+    public static async Task ResetDatabaseAsync(IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ClinicDbContext>();
+        await db.Database.EnsureDeletedAsync();
+        await db.Database.EnsureCreatedAsync();
+    }
+
+    /// <summary>
     /// Seeds initial admin user if no users exist
     /// </summary>
     public static async Task SeedAdminUserAsync(IServiceProvider serviceProvider)
@@ -59,7 +71,7 @@ public static class DatabaseSeeder
         var db = scope.ServiceProvider.GetRequiredService<ClinicDbContext>();
 
         // Check if appointments already exist
-        if (await db.Appointments.AnyAsync())
+        if (db.Appointments.Count() > 10)
             return;
 
         // Get available patients and staff

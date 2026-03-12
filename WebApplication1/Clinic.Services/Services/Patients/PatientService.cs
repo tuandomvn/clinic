@@ -67,7 +67,8 @@ public sealed class PatientService : IPatientService
     {
         return await _db.Patients
             .AsNoTracking()
-            .Include(p => p.Activities.OrderByDescending(a => a.CreatedAt))
+            .Include(p => p.Activities.OrderByDescending(a => a.CreatedDate))
+                .ThenInclude(a => a.Images)
             .Include(p => p.Appointments.OrderByDescending(a => a.ScheduledAt))
                 .ThenInclude(a => a.Staff)
             .FirstOrDefaultAsync(p => p.Id == id, ct);

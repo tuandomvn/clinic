@@ -20,6 +20,7 @@ public class ClinicDbContext : DbContext
     public DbSet<SurgerySchedule> SurgerySchedules { get; set; }
     public DbSet<SurgeryScheduleStaff> SurgeryScheduleStaff { get; set; }
     public DbSet<Activity> Activities { get; set; }
+    public DbSet<ActivityImage> ActivityImages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -128,11 +129,19 @@ public class ClinicDbContext : DbContext
         modelBuilder.Entity<Activity>(e =>
         {
             e.HasKey(x => x.Id);
-            e.Property(x => x.Description).HasMaxLength(500).IsRequired();
-            e.Property(x => x.EntityType).HasMaxLength(100);
-            e.HasOne(x => x.Staff).WithMany(s => s.Activities).HasForeignKey(x => x.StaffId).OnDelete(DeleteBehavior.SetNull);
+            e.Property(x => x.ContentText).HasMaxLength(2000).IsRequired();
+            e.Property(x => x.CreatedBy).HasMaxLength(200);
             e.HasOne(x => x.Patient).WithMany(p => p.Activities).HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.SetNull);
-            e.HasIndex(x => x.CreatedAt);
+            e.HasOne(x => x.RelatedEncounter).WithMany().HasForeignKey(x => x.RelatedEncounterId).OnDelete(DeleteBehavior.SetNull);
+            e.HasIndex(x => x.CreatedDate);
+        });
+
+        modelBuilder.Entity<ActivityImage>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.ImageUrl).HasMaxLength(500).IsRequired();
+            e.Property(x => x.Caption).HasMaxLength(300);
+            e.HasOne(x => x.Activity).WithMany(a => a.Images).HasForeignKey(x => x.ActivityId).OnDelete(DeleteBehavior.Cascade);
         });
 
         SeedData(modelBuilder);
@@ -223,99 +232,157 @@ public class ClinicDbContext : DbContext
         modelBuilder.Entity<SurgeryScheduleStaff>().HasData(surgeryTeam);
 
         var activities = new List<Activity>();
+        var activityImages = new List<ActivityImage>();
 
-        // Base activities
-        var baseActivities = new[]
+        var patientIds = Enumerable.Range(1, 100).ToList();
+        var staffNames = new[] { "Nguyễn Văn Bác sĩ", "Trần Thị Y tá", "Lê Văn Phẫu thuật", "Phạm Thị Điều dưỡng" };
+        var allTypes = new[]
         {
-            new Activity { Id = 1, ActivityType = ActivityType.PatientRegistered, Description = "Đăng ký bệnh nhân mới: Hoàng Minh Anh", PatientId = 1, EntityType = "Patient", EntityId = 1, CreatedAt = utc },
-            new Activity { Id = 2, ActivityType = ActivityType.AppointmentCreated, Description = "Tạo lịch hẹn tái khám", StaffId = 1, PatientId = 1, EntityType = "Appointment", EntityId = 1, CreatedAt = utc },
-            new Activity { Id = 3, ActivityType = ActivityType.SurgeryScheduled, Description = "Lên lịch phẫu thuật ruột thừa", StaffId = 3, PatientId = 3, EntityType = "SurgerySchedule", EntityId = 1, CreatedAt = new DateTime(2024, 3, 5, 0, 0, 0, DateTimeKind.Utc) },
+            ActivityType.Post,
+            ActivityType.BirthdayGreeting,
+            ActivityType.AppointmentCreated,
+            ActivityType.HistoryRecordAdded,
+            ActivityType.SurgeryScheduled,
+            ActivityType.PatientRegistered,
+            ActivityType.General
         };
-        activities.AddRange(baseActivities);
 
-        // Generate activities for each patient (base + demo)
-        var patientIds = Enumerable.Range(1, 100).ToList(); // 100 patients
-        var activityDescriptions = new[]
+        var contentByType = new Dictionary<ActivityType, string[]>
         {
-            "Tạo lịch hẹn khám bệnh",
-            "Hoàn thành khám bệnh",
-            "Thêm kết quả khám lâm sàng",
-            "Cập nhật thông tin bệnh nhân",
-            "Gửi tin nhắn nhắc lịch khám",
-            "Hủy lịch hẹn",
-            "Rescheduled lịch khám",
-            "Thêm kết quả xét nghiệm",
-            "Tái khám theo hướng dẫn",
-            "Kết thúc điều trị",
-            "Cập nhật thuốc điều trị",
-            "Ghi chú điều trị thêm",
-            "Chuyển bệnh nhân chuyên khoa",
-            "Cập nhật tiền sử bệnh",
-            "Thêm ảnh chẩn đoán hình ảnh",
-            "Yêu cầu tư vấn chuyên khoa",
-            "Hoàn thành đơn thuốc",
-            "Gửi phiếu khám về nhà",
-            "Lên kế hoạch điều trị mới",
-            "Kiểm tra tình trạng sức khỏe định kỳ",
-            "Ghi nhận tăng cân/giảm cân",
-            "Cập nhật tiền sử dị ứng",
-            "Thêm ghi chú y bác sĩ",
-            "Yêu cầu kiểm tra lại",
-            "Sắp xếp nhập viện",
-            "Xuất viện và theo dõi",
-            "Gửi lời mời khám định kỳ",
-            "Cập nhật liên hệ khẩn cấp",
-            "Ghi nhận phản ứng thuốc",
-            "Thêm ghi chú dinh dưỡng",
+            [ActivityType.Post] = [
+                "Hôm nay bệnh nhân đã hồi phục tốt sau phẫu thuật.",
+                "Kết quả xét nghiệm máu bình thường, không có dấu hiệu bất thường.",
+                "Bệnh nhân phản hồi tích cực sau đợt điều trị.",
+                "Cập nhật tình trạng sức khỏe: huyết áp ổn định.",
+                "Ghi nhận tăng cân 2kg sau 1 tháng điều trị.",
+                "Vết thương đã lành tốt, không có dấu hiệu nhiễm trùng.",
+                "Kết quả chụp X-quang cho thấy xương đã liền.",
+                "Bệnh nhân đã hoàn thành liệu trình vật lý trị liệu.",
+                "Ghi nhận phản ứng dị ứng nhẹ với thuốc mới.",
+                "Bệnh nhân cần theo dõi thêm sau khi dùng thuốc mới."
+            ],
+            [ActivityType.BirthdayGreeting] = [
+                "Đã gửi chúc mừng sinh nhật tới bệnh nhân!",
+                "Hệ thống đã gửi lời chúc sinh nhật tự động.",
+                "Đã gửi tin nhắn chúc mừng sinh nhật.",
+                "Chúc bệnh nhân sinh nhật vui vẻ, sức khỏe dồi dào!",
+                "Đã gửi thiệp chúc mừng sinh nhật qua email."
+            ],
+            [ActivityType.AppointmentCreated] = [
+                "Đã book lịch tái khám vào tuần tới.",
+                "Đã đặt lịch khám tổng quát.",
+                "Đã book lịch xét nghiệm định kỳ.",
+                "Đã sắp xếp lịch hẹn kiểm tra sức khỏe.",
+                "Đã đặt lịch tư vấn chuyên khoa.",
+                "Đã book lịch tái khám vào ngày 20/3.",
+                "Đã đặt lịch khám mắt cho bệnh nhân."
+            ],
+            [ActivityType.HistoryRecordAdded] = [
+                "Đã thêm kết quả khám lâm sàng vào hồ sơ.",
+                "Cập nhật kết quả xét nghiệm máu.",
+                "Đã ghi nhận chẩn đoán mới vào hồ sơ bệnh án.",
+                "Thêm kết quả siêu âm vào hồ sơ.",
+                "Đã cập nhật tiền sử bệnh lý.",
+                "Ghi nhận kết quả đo huyết áp.",
+                "Đã thêm ghi chú điều trị vào hồ sơ."
+            ],
+            [ActivityType.SurgeryScheduled] = [
+                "Đã lên lịch phẫu thuật cắt ruột thừa.",
+                "Đã xếp lịch mổ nội soi.",
+                "Đã đặt lịch phẫu thuật chỉnh hình.",
+                "Đã sắp xếp ca mổ tim.",
+                "Đã lên lịch tiểu phẫu.",
+                "Đã xếp lịch phẫu thuật mắt."
+            ],
+            [ActivityType.PatientRegistered] = [
+                "Đăng ký bệnh nhân mới thành công. Hồ sơ đầy đủ.",
+                "Bệnh nhân đã được tiếp nhận và tạo hồ sơ.",
+                "Hoàn tất đăng ký bệnh nhân, đã cấp mã barcode.",
+                "Đã tạo hồ sơ bệnh nhân mới trong hệ thống.",
+                "Tiếp nhận bệnh nhân chuyển viện, đã tạo hồ sơ."
+            ],
+            [ActivityType.General] = [
+                "Cập nhật thông tin liên hệ bệnh nhân.",
+                "Gửi tin nhắn nhắc lịch khám.",
+                "Cập nhật thông tin bảo hiểm y tế.",
+                "Ghi chú điều trị thêm.",
+                "Yêu cầu kiểm tra lại kết quả.",
+                "Chuyển bệnh nhân sang chuyên khoa khác.",
+                "Cập nhật liên hệ khẩn cấp."
+            ]
         };
 
-        var activityTypes = new[] 
-        { 
-            ActivityType.AppointmentCreated, 
-            ActivityType.AppointmentCompleted, 
-            ActivityType.HistoryRecordAdded, 
-            ActivityType.General 
+        var imageCaptions = new[]
+        {
+            "Ảnh chẩn đoán", "Kết quả X-quang", "Ảnh siêu âm", "Ảnh vết thương",
+            "Kết quả xét nghiệm", "Ảnh trước điều trị", "Ảnh sau điều trị",
+            "Ảnh CT scan", "Ảnh MRI", "Ảnh nội soi"
         };
 
-        var staffIds = new[] { 1, 2, 3, 4 };
-        int activityId = 4; // Start after base activities (1,2,3)
+        int activityId = 1;
+        int imageId = 1;
 
         foreach (var patientId in patientIds)
         {
-            var random = new Random(patientId); // Use patientId as seed for consistent results
-            var activitiesPerPatient = random.Next(35, 45); // 35-45 activities per patient
+            var random = new Random(patientId * 31);
+            var activitiesPerPatient = random.Next(38, 43); // ~40 per patient
 
             for (int i = 0; i < activitiesPerPatient; i++)
             {
-                var activityType = activityTypes[random.Next(activityTypes.Length)];
-                var staffId = random.NextDouble() > 0.3 ? (int?)staffIds[random.Next(staffIds.Length)] : null;
-                var description = activityDescriptions[random.Next(activityDescriptions.Length)];
+                var activityType = allTypes[random.Next(allTypes.Length)];
+                var texts = contentByType[activityType];
+                var contentText = texts[random.Next(texts.Length)];
 
-                // Generate date from past (spread across months)
-                var daysAgo = random.Next(1, 300);
-                var activityDate = utc.AddDays(-daysAgo);
+                var createdBy = activityType switch
+                {
+                    ActivityType.BirthdayGreeting => "system",
+                    ActivityType.PatientRegistered => "system",
+                    _ => staffNames[random.Next(staffNames.Length)]
+                };
+
+                var daysAgo = random.Next(1, 365);
+                var activityDate = utc.AddDays(-daysAgo).AddHours(random.Next(7, 18)).AddMinutes(random.Next(0, 60));
+                var currentActivityId = activityId++;
 
                 activities.Add(new Activity
                 {
-                    Id = activityId++,
+                    Id = currentActivityId,
                     ActivityType = activityType,
-                    Description = description,
-                    StaffId = staffId,
+                    ContentText = contentText,
+                    CreatedBy = createdBy,
                     PatientId = patientId,
-                    EntityType = activityType switch
-                    {
-                        ActivityType.AppointmentCreated => "Appointment",
-                        ActivityType.AppointmentCompleted => "Appointment",
-                        ActivityType.HistoryRecordAdded => "HealthRecord",
-                        _ => "General"
-                    },
-                    EntityId = random.Next(1, 10),
-                    CreatedAt = activityDate
+                    CreatedDate = activityDate
                 });
+
+                // Add images: Post ~50%, HistoryRecordAdded ~40%, SurgeryScheduled ~30%, others ~10%
+                var imageChance = activityType switch
+                {
+                    ActivityType.Post => 0.5,
+                    ActivityType.HistoryRecordAdded => 0.4,
+                    ActivityType.SurgeryScheduled => 0.3,
+                    _ => 0.1
+                };
+
+                if (random.NextDouble() < imageChance)
+                {
+                    var imageCount = random.Next(1, 5); // 1-4 images
+                    for (int j = 0; j < imageCount; j++)
+                    {
+                        activityImages.Add(new ActivityImage
+                        {
+                            Id = imageId++,
+                            ActivityId = currentActivityId,
+                            ImageUrl = $"{imageId - 1}.jpg",
+                            Caption = random.NextDouble() > 0.4 ? imageCaptions[random.Next(imageCaptions.Length)] : null,
+                            CreatedDate = activityDate
+                        });
+                    }
+                }
             }
         }
 
         modelBuilder.Entity<Activity>().HasData(activities);
+        modelBuilder.Entity<ActivityImage>().HasData(activityImages);
     }
 
     /// <summary>
