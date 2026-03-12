@@ -1,0 +1,262 @@
+@page
+@{
+    ViewData["Title"] = "Reminder Tasks";
+
+    var tasks = new[]
+    {
+        new { Id = 1, PatientName = "Nguyễn Văn A", Phone = "0901234567", Type = "Follow-up sau mổ", Description = "Tái khám sau phẫu thuật ruột thừa (7 ngày)", DueDate = DateTime.Today, Priority = "High", IsDone = false, DoneBy = "" },
+        new { Id = 2, PatientName = "Trần Thị B", Phone = "0912345678", Type = "Chúc mừng sinh nhật", Description = "Sinh nhật lần thứ 45", DueDate = DateTime.Today, Priority = "Low", IsDone = true, DoneBy = "Dr. VuHuan" },
+        new { Id = 3, PatientName = "Lê Văn C", Phone = "0923456789", Type = "Nhắc lịch tiêm chủng", Description = "Tiêm nhắc lại mũi 3 - Viêm gan B", DueDate = DateTime.Today, Priority = "Medium", IsDone = false, DoneBy = "" },
+        new { Id = 4, PatientName = "Phạm Thị D", Phone = "0934567890", Type = "Xét nghiệm định kỳ", Description = "Xét nghiệm máu định kỳ 3 tháng (tiểu đường)", DueDate = DateTime.Today, Priority = "High", IsDone = false, DoneBy = "" },
+        new { Id = 5, PatientName = "Hoàng Văn E", Phone = "0945678901", Type = "Follow-up sau mổ", Description = "Kiểm tra vết mổ sau 14 ngày - Phẫu thuật gối", DueDate = DateTime.Today, Priority = "High", IsDone = true, DoneBy = "Nurse. Lan" },
+        new { Id = 6, PatientName = "Vũ Thị F", Phone = "0956789012", Type = "Nhắc lịch tiêm chủng", Description = "Tiêm phòng cúm mùa hàng năm", DueDate = DateTime.Today.AddDays(1), Priority = "Medium", IsDone = false, DoneBy = "" },
+        new { Id = 7, PatientName = "Đỗ Văn G", Phone = "0967890123", Type = "Xét nghiệm định kỳ", Description = "Siêu âm gan 6 tháng (viêm gan B mạn)", DueDate = DateTime.Today.AddDays(1), Priority = "High", IsDone = false, DoneBy = "" },
+        new { Id = 8, PatientName = "Ngô Thị H", Phone = "0978901234", Type = "Chúc mừng sinh nhật", Description = "Sinh nhật lần thứ 30", DueDate = DateTime.Today.AddDays(2), Priority = "Low", IsDone = false, DoneBy = "" },
+        new { Id = 9, PatientName = "Bùi Văn I", Phone = "0989012345", Type = "Follow-up sau mổ", Description = "Tái khám sau mổ sỏi thận (1 tháng)", DueDate = DateTime.Today.AddDays(3), Priority = "Medium", IsDone = false, DoneBy = "" },
+        new { Id = 10, PatientName = "Lý Thị K", Phone = "0990123456", Type = "Xét nghiệm định kỳ", Description = "Xét nghiệm chức năng tuyến giáp 6 tháng", DueDate = DateTime.Today.AddDays(5), Priority = "Medium", IsDone = false, DoneBy = "" },
+    };
+
+    var todayCount = tasks.Count(t => t.DueDate == DateTime.Today && !t.IsDone);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="mb-0">Reminder Tasks</h2>
+        <div class="text-muted small">Danh sách nhắc nhở theo dõi bệnh nhân</div>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-danger rounded-pill">@todayCount việc cần làm hôm nay</span>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-3 p-3">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-3">
+            <input class="form-control form-control-sm" placeholder="Tìm theo tên bệnh nhân..." />
+        </div>
+        <div class="col-md-2">
+            <select class="form-select form-select-sm">
+                <option value="">Tất cả loại</option>
+                <option>Follow-up sau mổ</option>
+                <option>Chúc mừng sinh nhật</option>
+                <option>Nhắc lịch tiêm chủng</option>
+                <option>Xét nghiệm định kỳ</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select form-select-sm">
+                <option value="">Tất cả mức độ</option>
+                <option value="High">Cao</option>
+                <option value="Medium">Trung bình</option>
+                <option value="Low">Thấp</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <select class="form-select form-select-sm" id="filterStatus">
+                <option value="">Tất cả</option>
+                <option value="pending" selected>Chưa xong</option>
+                <option value="done">Đã xong</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="date" class="form-control form-control-sm" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        </div>
+    </div>
+</div>
+
+<!-- Task Table -->
+<div class="card p-3">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" id="taskTable">
+            <thead class="table-light">
+                <tr>
+                    <th style="width: 40px;">
+                        <span class="text-muted small">Done</span>
+                    </th>
+                    <th>Bệnh nhân</th>
+                    <th>Loại</th>
+                    <th>Mô tả</th>
+                    <th>Ngày hẹn</th>
+                    <th>Mức độ</th>
+                    <th>Hoàn thành bởi</th>
+                    <th style="width: 60px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var task in tasks)
+                {
+                    var rowClass = task.IsDone ? "text-decoration-line-through text-muted" : "";
+                    var isOverdue = task.DueDate <= DateTime.Today && !task.IsDone;
+                    var isToday = task.DueDate == DateTime.Today;
+
+                    var priorityBadge = task.Priority switch
+                    {
+                        "High" => "bg-danger",
+                        "Medium" => "bg-warning text-dark",
+                        _ => "bg-secondary"
+                    };
+
+                    var typeBadge = task.Type switch
+                    {
+                        "Follow-up sau mổ" => "bg-info text-dark",
+                        "Chúc mừng sinh nhật" => "bg-pink",
+                        "Nhắc lịch tiêm chủng" => "bg-success",
+                        "Xét nghiệm định kỳ" => "bg-primary",
+                        _ => "bg-secondary"
+                    };
+
+                    <tr class="@(task.IsDone ? "table-light" : "")" data-done="@task.IsDone.ToString().ToLower()">
+                        <td>
+                            <div class="form-check d-flex justify-content-center">
+                                <input class="form-check-input task-checkbox" type="checkbox" @(task.IsDone ? "checked" : "") data-task-id="@task.Id" />
+                            </div>
+                        </td>
+                        <td>
+                            <div class="@rowClass">
+                                <div class="fw-semibold">@task.PatientName</div>
+                                <div class="small text-muted">@task.Phone</div>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge @typeBadge" style="font-size: 0.7rem;">@task.Type</span>
+                        </td>
+                        <td>
+                            <span class="@rowClass" style="font-size: 0.85rem;">@task.Description</span>
+                        </td>
+                        <td>
+                            @if (isToday && !task.IsDone)
+                            {
+                                <span class="fw-semibold text-danger">Hôm nay</span>
+                            }
+                            else if (isOverdue)
+                            {
+                                <span class="fw-semibold text-danger">Quá hạn</span>
+                            }
+                            else
+                            {
+                                <span class="@rowClass">@task.DueDate.ToString("dd/MM/yyyy")</span>
+                            }
+                        </td>
+                        <td>
+                            <span class="badge @priorityBadge" style="font-size: 0.65rem;">
+                                @(task.Priority switch { "High" => "Cao", "Medium" => "TB", _ => "Thấp" })
+                            </span>
+                        </td>
+                        <td>
+                            @if (task.IsDone)
+                            {
+                                <span class="small text-muted">@task.DoneBy</span>
+                            }
+                            else
+                            {
+                                <span class="small text-muted">—</span>
+                            }
+                        </td>
+                        <td>
+                            <a class="btn btn-sm btn-outline-primary" href="/Patients/Details?id=@task.Id" style="font-size: 0.7rem; padding: 0.15rem 0.3rem;">Xem</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        .bg-pink {
+            background-color: #e91e8c;
+            color: #fff;
+        }
+        #taskTable {
+            font-size: 0.85rem;
+        }
+        #taskTable thead th {
+            font-size: 0.8rem;
+            font-weight: 600;
+            padding: 0.5rem 0.75rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+        #taskTable tbody td {
+            padding: 0.4rem 0.75rem;
+            vertical-align: middle;
+        }
+        .task-checkbox {
+            width: 1.1rem;
+            height: 1.1rem;
+            cursor: pointer;
+        }
+        .task-checkbox:checked {
+            background-color: #198754;
+            border-color: #198754;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Handle checkbox toggle (mockup only - visual feedback)
+            document.querySelectorAll('.task-checkbox').forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    var row = this.closest('tr');
+                    var cells = row.querySelectorAll('td');
+
+                    if (this.checked) {
+                        row.classList.add('table-light');
+                        row.dataset.done = 'true';
+                        // Add strikethrough
+                        row.querySelectorAll('.fw-semibold, span:not(.badge)').forEach(function (el) {
+                            if (!el.classList.contains('badge') && !el.classList.contains('text-muted')) {
+                                el.classList.add('text-decoration-line-through', 'text-muted');
+                            }
+                        });
+                        // Set done by
+                        cells[6].innerHTML = '<span class="small text-muted">Dr. VuHuan</span>';
+                    } else {
+                        row.classList.remove('table-light');
+                        row.dataset.done = 'false';
+                        // Remove strikethrough
+                        row.querySelectorAll('.text-decoration-line-through').forEach(function (el) {
+                            el.classList.remove('text-decoration-line-through', 'text-muted');
+                        });
+                        cells[6].innerHTML = '<span class="small text-muted">—</span>';
+                    }
+
+                    // Update today count badge
+                    updateTodayCount();
+                });
+            });
+
+            // Filter by status
+            document.getElementById('filterStatus').addEventListener('change', function () {
+                var value = this.value;
+                document.querySelectorAll('#taskTable tbody tr').forEach(function (row) {
+                    if (!value) {
+                        row.style.display = '';
+                    } else if (value === 'done') {
+                        row.style.display = row.dataset.done === 'true' ? '' : 'none';
+                    } else {
+                        row.style.display = row.dataset.done === 'false' ? '' : 'none';
+                    }
+                });
+            });
+
+            // Trigger initial filter
+            document.getElementById('filterStatus').dispatchEvent(new Event('change'));
+
+            function updateTodayCount() {
+                // Count visible unchecked rows (mockup approximation)
+                var count = 0;
+                document.querySelectorAll('#taskTable tbody tr').forEach(function (row) {
+                    var cb = row.querySelector('.task-checkbox');
+                    if (!cb.checked) count++;
+                });
+                var badge = document.querySelector('.badge.bg-danger.rounded-pill');
+                if (badge) badge.textContent = count + ' việc cần làm hôm nay';
+
+                // Update header notification
+                var headerBadge = document.getElementById('taskNotificationBadge');
+                if (headerBadge) headerBadge.textContent = count;
+            }
+        });
+    </script>
+}

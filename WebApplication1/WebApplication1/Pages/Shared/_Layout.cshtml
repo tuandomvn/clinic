@@ -30,8 +30,13 @@
                             <a class="btn btn-outline-primary btn-sm" href="/Patients/Details?id=123" title="Scan mã vạch bệnh nhân">Scan</a>
                         </div>
                     </form>
-                  @*   <a class="btn btn-outline-secondary btn-sm me-2 d-none d-md-inline" href="#">Support</a> *@
-                    <div class="dropdown">
+                  <a class="btn btn-outline-secondary btn-sm me-2 position-relative" href="/Tasks" title="Reminder Tasks">
+                      &#9733;
+                      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="taskNotificationBadge" style="font-size: 0.6rem;">
+                          3
+                      </span>
+                  </a>
+                  <div class="dropdown">
                         <a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
                             Hello, Dr. VuHuan
                         </a>
@@ -58,6 +63,7 @@
                     <a class="nav-link" href="/Operations/SurgeryBooking">Đặt lịch mổ</a>
                     <a class="nav-link" href="/Patients">Patients</a>
                     <a class="nav-link" href="/Staff">Nhân viên</a>
+                    <a class="nav-link" href="/Tasks">Reminder Tasks</a>
                     <a class="nav-link" href="/Settings">Settings</a>
                 </nav>
             </div>
@@ -72,6 +78,7 @@
                     <a class="nav-link" href="/Operations/SurgeryBooking">Đặt lịch mổ</a>
                     <a class="nav-link" href="/Patients">Patients</a>
                     <a class="nav-link" href="/Staff">Nhân viên</a>
+                    <a class="nav-link" href="/Tasks">Reminder Tasks</a>
                     <a class="nav-link" href="">Settings</a>
                 </nav>
             </aside>
