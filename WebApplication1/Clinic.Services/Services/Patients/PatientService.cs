@@ -73,5 +73,37 @@ public sealed class PatientService : IPatientService
                 .ThenInclude(a => a.Staff)
             .FirstOrDefaultAsync(p => p.Id == id, ct);
     }
+
+    public async Task<PatientEntity> CreateAsync(PatientEntity patient, CancellationToken ct = default)
+    {
+        patient.CreatedAt = DateTime.UtcNow;
+        patient.IsActive = true;
+        patient.BarcodeValue ??= Guid.NewGuid().ToString("N")[..12].ToUpperInvariant();
+
+        _db.Patients.Add(patient);
+        await _db.SaveChangesAsync(ct);
+
+        return patient;
+    }
+
+    public async Task<PatientEntity?> UpdateAsync(PatientEntity patient, CancellationToken ct = default)
+    {
+        var existing = await _db.Patients.FindAsync([patient.Id], ct);
+        if (existing is null) return null;
+
+        existing.FullName = patient.FullName;
+        existing.DateOfBirth = patient.DateOfBirth;
+        existing.Gender = patient.Gender;
+        existing.Phone = patient.Phone;
+        existing.Email = patient.Email;
+        existing.Address = patient.Address;
+        existing.IdentityNumber = patient.IdentityNumber;
+        existing.InsuranceNumber = patient.InsuranceNumber;
+        existing.UpdatedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync(ct);
+
+        return existing;
+    }
 }
 

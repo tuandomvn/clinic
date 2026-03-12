@@ -19,5 +19,11 @@ public interface IPatientService
 
     /// <summary>Lấy chi tiết bệnh nhân kèm theo Activities và Appointments.</summary>
     Task<PatientEntity?> GetByIdWithDetailsAsync(int id, CancellationToken ct = default);
+
+    /// <summary>Tạo bệnh nhân mới.</summary>
+    Task<PatientEntity> CreateAsync(PatientEntity patient, CancellationToken ct = default);
+
+    /// <summary>Cập nhật thông tin bệnh nhân.</summary>
+    Task<PatientEntity?> UpdateAsync(PatientEntity patient, CancellationToken ct = default);
 }
 

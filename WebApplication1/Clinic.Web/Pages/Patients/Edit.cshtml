@@ -1,0 +1,79 @@
+@page
+@model Clinic.Web.Pages.Patients.EditModel
+@{
+    ViewData["Title"] = "Chỉnh sửa bệnh nhân";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Chỉnh sửa bệnh nhân</h2>
+    <div>
+        <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=@Model.Input.Id">Quay lại</a>
+    </div>
+</div>
+
+<div class="card p-4">
+    <form method="post">
+        <input type="hidden" asp-for="Input.Id" />
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label asp-for="Input.FullName" class="form-label">Họ tên <span class="text-danger">*</span></label>
+                <input asp-for="Input.FullName" class="form-control" placeholder="Nguyễn Văn A" />
+                <span asp-validation-for="Input.FullName" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="Input.DateOfBirth" class="form-label">Ngày sinh <span class="text-danger">*</span></label>
+                <input asp-for="Input.DateOfBirth" type="date" class="form-control" />
+                <span asp-validation-for="Input.DateOfBirth" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-3">
+                <label asp-for="Input.Gender" class="form-label">Giới tính</label>
+                <select asp-for="Input.Gender" class="form-select">
+                    <option value="">-- Chọn --</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Input.Phone" class="form-label">Số điện thoại</label>
+                <input asp-for="Input.Phone" class="form-control" placeholder="0901234567" />
+                <span asp-validation-for="Input.Phone" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Input.Email" class="form-label">Email</label>
+                <input asp-for="Input.Email" class="form-control" placeholder="email@example.com" />
+                <span asp-validation-for="Input.Email" class="text-danger small"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Input.IdentityNumber" class="form-label">Số CCCD / CMND</label>
+                <input asp-for="Input.IdentityNumber" class="form-control" placeholder="012345678901" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Input.Address" class="form-label">Địa chỉ</label>
+                <input asp-for="Input.Address" class="form-control" placeholder="123 Đường ABC, Quận 1, TP.HCM" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Input.InsuranceNumber" class="form-label">Số BHYT</label>
+                <input asp-for="Input.InsuranceNumber" class="form-control" placeholder="HS1234567890" />
+            </div>
+
+            <div class="col-12 text-end mt-4">
+                <a class="btn btn-outline-secondary me-2" href="/Patients/Details?id=@Model.Input.Id">Hủy</a>
+                <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
