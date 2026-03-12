@@ -45,6 +45,9 @@ var app = builder.Build();
 // Seed initial admin user
 await DatabaseSeeder.SeedAdminUserAsync(app.Services);
 
+// Seed appointments data
+await DatabaseSeeder.SeedAppointmentsAsync(app.Services);
+
 // Configure the HTTP request pipeline.
 // Enable developer exception page in development for better error handling
 if (app.Environment.IsDevelopment())
