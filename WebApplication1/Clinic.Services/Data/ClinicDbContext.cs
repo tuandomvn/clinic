@@ -33,6 +33,7 @@ public class ClinicDbContext : DbContext
             e.Property(x => x.Email).HasMaxLength(200);
             e.Property(x => x.Phone).HasMaxLength(50);
             e.Property(x => x.Specialization).HasMaxLength(200);
+            e.Property(x => x.AvatarPath).HasMaxLength(500);
             e.HasIndex(x => x.Email);
         });
 

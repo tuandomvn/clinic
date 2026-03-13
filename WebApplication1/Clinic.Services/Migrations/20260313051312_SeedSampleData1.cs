@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Clinic.Services.Migrations
 {
     /// <inheritdoc />
-    public partial class SeedSampleData : Migration
+    public partial class SeedSampleData1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -65,6 +65,8 @@ namespace Clinic.Services.Migrations
                     Phone = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Specialization = table.Column<string>(type: "varchar(200)", maxLength: 200, nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AvatarPath = table.Column<string>(type: "varchar(500)", maxLength: 500, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     IsActive = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -444,13 +446,13 @@ namespace Clinic.Services.Migrations
 
             migrationBuilder.InsertData(
                 table: "Staff",
-                columns: new[] { "Id", "CreatedAt", "Email", "FullName", "IsActive", "Phone", "Specialization", "StaffType", "UpdatedAt" },
+                columns: new[] { "Id", "AvatarPath", "CreatedAt", "Email", "FullName", "IsActive", "Phone", "Specialization", "StaffType", "UpdatedAt" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "doctor1@clinic.com", "Nguyễn Văn Bác sĩ", true, "0901234567", "Nội tổng quát", 0, null },
-                    { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "nurse1@clinic.com", "Trần Thị Y tá", true, "0901234568", null, 1, null },
-                    { 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "doctor2@clinic.com", "Lê Văn Phẫu thuật", true, "0901234569", "Ngoại khoa", 0, null },
-                    { 4, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "nurse2@clinic.com", "Phạm Thị Điều dưỡng", true, "0901234570", null, 1, null }
+                    { 1, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "doctor1@clinic.com", "Nguyễn Văn Bác sĩ", true, "0901234567", "Nội tổng quát", 0, null },
+                    { 2, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "nurse1@clinic.com", "Trần Thị Y tá", true, "0901234568", null, 1, null },
+                    { 3, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "doctor2@clinic.com", "Lê Văn Phẫu thuật", true, "0901234569", "Ngoại khoa", 0, null },
+                    { 4, null, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "nurse2@clinic.com", "Phạm Thị Điều dưỡng", true, "0901234570", null, 1, null }
                 });
 
             migrationBuilder.InsertData(
@@ -4491,10 +4493,10 @@ namespace Clinic.Services.Migrations
                 columns: new[] { "Id", "CreatedAt", "IsActive", "LastLoginAt", "PasswordHash", "Role", "StaffId", "UpdatedAt", "Username" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "Iauy6flEZM42aTS7KeaShERRlGzx2yLH20+lw1QP6H1Xawm7uAxkhczLDV0P+m4O", "Doctor", 1, null, "doctor1" },
-                    { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "vcFolDASLOqsAnsNRHcXCO46y+PpKYO2fbcvQlPcQGOj4KtUgxgGHrqDo+vBtSK+", "Nurse", 2, null, "nurse1" },
-                    { 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "+hLvwYSc6lJGZ15UDcYLBKTpBhvT5JUi5pj6poI8UeckbBJ3IBWTbY5rVUDHZb9q", "Doctor", 3, null, "doctor2" },
-                    { 4, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "VrV2cj+u3E+1q6dnLSbOn3RbzukcN2ke0YkBiApX809SCt5haeEFAaz3EAPQuCL6", "Nurse", 4, null, "nurse2" }
+                    { 1, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "JUDdcZHEdfpQ4XOd6cbpDsg7UiopXLgM9K6jMQ1UUSinB9njFjelN03VKqFczYnk", "Doctor", 1, null, "doctor1" },
+                    { 2, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "fDtJK+xNkiiMBIUdMreWd4dsJhapsNKOEOLsi/gogvoQRMWv8ooCi3kWXvf3+lJw", "Nurse", 2, null, "nurse1" },
+                    { 3, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "wNa/RpwUqZW8QKSDHNRbp3asOlhw6wQzIi+oY3WlYBW2G0EJCbkYW9dnsBkp7+c9", "Doctor", 3, null, "doctor2" },
+                    { 4, new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), true, null, "A/N4wkzKRMIn56WM4m3XwddNzpSMj+mJ8DmbbME9TyBIRcmkhZ+F5+FsR0FAXwqd", "Nurse", 4, null, "nurse2" }
                 });
 
             migrationBuilder.InsertData(

@@ -54,7 +54,8 @@ public class IndexModel : PageModel
                 specialization = s.Specialization ?? "-",
                 staffType = s.StaffType.ToString(),
                 phone = s.Phone ?? "-",
-                isActive = s.IsActive
+                isActive = s.IsActive,
+                hasAccount = s.UserAccount is not null
             }).ToArray()
         });
     }

@@ -24,7 +24,7 @@ public sealed class StaffService : IStaffService
     public async Task<(IReadOnlyList<StaffEntity> Items, int FilteredCount, int TotalCount)> SearchPagedAsync(
         int skip, int take, string? search, string? sortBy, bool ascending, CancellationToken ct = default)
     {
-        var query = _db.Staff.AsNoTracking().AsQueryable();
+        var query = _db.Staff.AsNoTracking().Include(s => s.UserAccount).AsQueryable();
         var totalCount = await query.CountAsync(ct);
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -78,6 +78,18 @@ public sealed class StaffService : IStaffService
         existing.Specialization = staff.Specialization;
         existing.StaffType = staff.StaffType;
         existing.IsActive = staff.IsActive;
+        existing.UpdatedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync(ct);
+        return existing;
+    }
+
+    public async Task<StaffEntity?> UpdateAvatarAsync(int staffId, string avatarPath, CancellationToken ct = default)
+    {
+        var existing = await _db.Staff.FindAsync([staffId], ct);
+        if (existing is null) return null;
+
+        existing.AvatarPath = avatarPath;
         existing.UpdatedAt = DateTime.UtcNow;
 
         await _db.SaveChangesAsync(ct);

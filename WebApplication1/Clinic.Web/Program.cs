@@ -6,6 +6,7 @@ using Clinic.Services.Services.Auth;
 using Clinic.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,9 +43,6 @@ builder.Services.AddScoped<IJwtTokenService>(sp => new Clinic.Services.Services.
 
 var app = builder.Build();
 
-// Seed initial admin user
-await DatabaseSeeder.SeedAdminUserAsync(app.Services);
-
 // Seed appointments data
 await DatabaseSeeder.SeedAppointmentsAsync(app.Services);
 
@@ -61,6 +59,16 @@ else
 }
 
 app.UseHttpsRedirection();
+
+// Serve uploaded files from configurable path
+var uploadPath = builder.Configuration["FileStorage:UploadPath"]
+    ?? throw new InvalidOperationException("FileStorage:UploadPath is not configured.");
+Directory.CreateDirectory(uploadPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(uploadPath),
+    RequestPath = ""
+});
 
 app.UseRouting();
 

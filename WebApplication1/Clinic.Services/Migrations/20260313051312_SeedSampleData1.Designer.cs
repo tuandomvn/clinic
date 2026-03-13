@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Services.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    [Migration("20260312124458_SeedSampleData")]
-    partial class SeedSampleData
+    [Migration("20260313051312_SeedSampleData1")]
+    partial class SeedSampleData1
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55152,6 +55152,10 @@ namespace Clinic.Services.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AvatarPath")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -55378,7 +55382,7 @@ namespace Clinic.Services.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "Iauy6flEZM42aTS7KeaShERRlGzx2yLH20+lw1QP6H1Xawm7uAxkhczLDV0P+m4O",
+                            PasswordHash = "JUDdcZHEdfpQ4XOd6cbpDsg7UiopXLgM9K6jMQ1UUSinB9njFjelN03VKqFczYnk",
                             Role = "Doctor",
                             StaffId = 1,
                             Username = "doctor1"
@@ -55388,7 +55392,7 @@ namespace Clinic.Services.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "vcFolDASLOqsAnsNRHcXCO46y+PpKYO2fbcvQlPcQGOj4KtUgxgGHrqDo+vBtSK+",
+                            PasswordHash = "fDtJK+xNkiiMBIUdMreWd4dsJhapsNKOEOLsi/gogvoQRMWv8ooCi3kWXvf3+lJw",
                             Role = "Nurse",
                             StaffId = 2,
                             Username = "nurse1"
@@ -55398,7 +55402,7 @@ namespace Clinic.Services.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "+hLvwYSc6lJGZ15UDcYLBKTpBhvT5JUi5pj6poI8UeckbBJ3IBWTbY5rVUDHZb9q",
+                            PasswordHash = "wNa/RpwUqZW8QKSDHNRbp3asOlhw6wQzIi+oY3WlYBW2G0EJCbkYW9dnsBkp7+c9",
                             Role = "Doctor",
                             StaffId = 3,
                             Username = "doctor2"
@@ -55408,7 +55412,7 @@ namespace Clinic.Services.Migrations
                             Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "VrV2cj+u3E+1q6dnLSbOn3RbzukcN2ke0YkBiApX809SCt5haeEFAaz3EAPQuCL6",
+                            PasswordHash = "A/N4wkzKRMIn56WM4m3XwddNzpSMj+mJ8DmbbME9TyBIRcmkhZ+F5+FsR0FAXwqd",
                             Role = "Nurse",
                             StaffId = 4,
                             Username = "nurse2"

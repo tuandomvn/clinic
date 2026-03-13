@@ -13,6 +13,19 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
 </head>
+@inject Clinic.Services.Services.Staffs.IStaffService StaffService
+@{
+    string? _avatarUrl = null;
+    if (User.Identity?.IsAuthenticated == true)
+    {
+        var sidClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        if (sidClaim is not null && int.TryParse(sidClaim.Value, out var _staffId))
+        {
+            var _staff = await StaffService.GetByIdAsync(_staffId);
+            _avatarUrl = _staff?.AvatarPath;
+        }
+    }
+}
 <body>
     <header>
         <nav class="navbar navbar-light bg-white border-bottom">
@@ -48,8 +61,16 @@
                     @if (User.Identity?.IsAuthenticated == true)
                     {
                         <div class="dropdown">
-                            <a class="btn btn-primary btn-sm dropdown-toggle" href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
-                                👤 @(User.Identity?.Name ?? "User")
+                            <a class="btn btn-sm dropdown-toggle d-flex align-items-center gap-1 p-1 pe-2 border" href="#" role="button" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                                @if (!string.IsNullOrEmpty(_avatarUrl))
+                                {
+                                    <img src="@_avatarUrl" alt="Avatar" class="rounded-circle" style="width: 24px; height: 24px; object-fit: cover;" />
+                                }
+                                else
+                                {
+                                    <span>👤</span>
+                                }
+                                @(User.Identity?.Name ?? "User")
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
