@@ -21,6 +21,37 @@ public sealed class StaffService : IStaffService
             .ToListAsync(ct);
     }
 
+    public async Task<(IReadOnlyList<StaffEntity> Items, int FilteredCount, int TotalCount)> SearchPagedAsync(
+        int skip, int take, string? search, string? sortBy, bool ascending, CancellationToken ct = default)
+    {
+        var query = _db.Staff.AsNoTracking().AsQueryable();
+        var totalCount = await query.CountAsync(ct);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            query = query.Where(s =>
+                s.FullName.ToLower().Contains(term) ||
+                (s.Email != null && s.Email.ToLower().Contains(term)) ||
+                (s.Specialization != null && s.Specialization.ToLower().Contains(term)) ||
+                (s.Phone != null && s.Phone.Contains(term)));
+        }
+
+        query = sortBy switch
+        {
+            "specialization" => ascending ? query.OrderBy(s => s.Specialization) : query.OrderByDescending(s => s.Specialization),
+            "staffType" => ascending ? query.OrderBy(s => s.StaffType) : query.OrderByDescending(s => s.StaffType),
+            "phone" => ascending ? query.OrderBy(s => s.Phone) : query.OrderByDescending(s => s.Phone),
+            "isActive" => ascending ? query.OrderBy(s => s.IsActive) : query.OrderByDescending(s => s.IsActive),
+            _ => ascending ? query.OrderBy(s => s.FullName) : query.OrderByDescending(s => s.FullName)
+        };
+
+        var filteredCount = await query.CountAsync(ct);
+        var items = await query.Skip(skip).Take(take).ToListAsync(ct);
+
+        return (items, filteredCount, totalCount);
+    }
+
     public async Task<StaffEntity?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         return await _db.Staff
