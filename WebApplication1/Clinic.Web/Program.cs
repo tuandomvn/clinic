@@ -6,6 +6,7 @@ using Clinic.Services.Services.Auth;
 using Clinic.Web.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Clinic.Services.Services.Tasks;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,6 +39,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IReminderTaskService, ReminderTaskService>();
 builder.Services.AddScoped<IPasswordHasher>(sp => new Clinic.Services.Services.Auth.PasswordHasher());
 builder.Services.AddScoped<IJwtTokenService>(sp => new Clinic.Services.Services.Auth.JwtTokenService());
 

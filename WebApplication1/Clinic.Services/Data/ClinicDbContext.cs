@@ -21,6 +21,7 @@ public class ClinicDbContext : DbContext
     public DbSet<SurgeryScheduleStaff> SurgeryScheduleStaff { get; set; }
     public DbSet<Activity> Activities { get; set; }
     public DbSet<ActivityImage> ActivityImages { get; set; }
+    public DbSet<ReminderTask> ReminderTasks { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -142,6 +143,15 @@ public class ClinicDbContext : DbContext
             e.Property(x => x.ImageUrl).HasMaxLength(500).IsRequired();
             e.Property(x => x.Caption).HasMaxLength(300);
             e.HasOne(x => x.Activity).WithMany(a => a.Images).HasForeignKey(x => x.ActivityId).OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<ReminderTask>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Description).HasMaxLength(500).IsRequired();
+            e.HasOne(x => x.Patient).WithMany().HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => x.DueDate);
+            e.HasIndex(x => x.IsDone);
         });
 
         SeedData(modelBuilder);
@@ -383,6 +393,97 @@ public class ClinicDbContext : DbContext
 
         modelBuilder.Entity<Activity>().HasData(activities);
         modelBuilder.Entity<ActivityImage>().HasData(activityImages);
+
+        // Seed ReminderTasks (~100)
+        var reminderTasks = new List<ReminderTask>();
+        var taskDescriptions = new Dictionary<ReminderTaskType, string[]>
+        {
+            [ReminderTaskType.FollowUp] = [
+                "Tái khám sau phẫu thuật ruột thừa (7 ngày)",
+                "Kiểm tra vết mổ sau 14 ngày - Phẫu thuật gối",
+                "Tái khám sau mổ sỏi thận (1 tháng)",
+                "Tái khám sau phẫu thuật mắt (2 tuần)",
+                "Kiểm tra hồi phục sau nội soi dạ dày",
+                "Tái khám sau điều trị viêm phổi",
+                "Kiểm tra sau phẫu thuật tim (1 tháng)",
+                "Follow-up sau cắt amidan (10 ngày)"
+            ],
+            [ReminderTaskType.BirthdayGreeting] = [
+                "Gửi lời chúc sinh nhật",
+                "Chúc mừng sinh nhật bệnh nhân",
+                "Gửi thiệp chúc mừng sinh nhật qua email",
+                "Gọi điện chúc mừng sinh nhật"
+            ],
+            [ReminderTaskType.VaccinationReminder] = [
+                "Tiêm nhắc lại mũi 3 - Viêm gan B",
+                "Tiêm phòng cúm mùa hàng năm",
+                "Tiêm vaccine COVID-19 mũi tăng cường",
+                "Tiêm phòng uốn ván nhắc lại",
+                "Tiêm vaccine phế cầu khuẩn",
+                "Tiêm nhắc lại sởi - quai bị - rubella"
+            ],
+            [ReminderTaskType.PeriodicTest] = [
+                "Xét nghiệm máu định kỳ 3 tháng (tiểu đường)",
+                "Siêu âm gan 6 tháng (viêm gan B mạn)",
+                "Xét nghiệm chức năng tuyến giáp 6 tháng",
+                "Nội soi đại tràng định kỳ (1 năm)",
+                "Xét nghiệm mỡ máu định kỳ 6 tháng",
+                "Chụp X-quang phổi định kỳ hàng năm",
+                "Xét nghiệm HbA1c 3 tháng",
+                "Đo mật độ xương định kỳ"
+            ],
+            [ReminderTaskType.General] = [
+                "Nhắc bệnh nhân uống thuốc đúng liều",
+                "Cập nhật thông tin bảo hiểm y tế",
+                "Gửi kết quả xét nghiệm qua email",
+                "Liên hệ bệnh nhân xác nhận lịch hẹn",
+                "Nhắc bệnh nhân mang theo hồ sơ cũ"
+            ]
+        };
+
+        var taskRandom = new Random(42);
+        var allTaskTypes = Enum.GetValues<ReminderTaskType>();
+        var priorities = Enum.GetValues<TaskPriority>();
+
+        for (int i = 1; i <= 100; i++)
+        {
+            var taskType = allTaskTypes[taskRandom.Next(allTaskTypes.Length)];
+            var descs = taskDescriptions[taskType];
+            var desc = descs[taskRandom.Next(descs.Length)];
+            var pid = taskRandom.Next(1, 51); // patients 1-50
+            var daysOffset = taskRandom.Next(-10, 15); // some overdue, some today, some future
+            var dueDate = utc.AddDays(daysOffset).Date;
+            var priority = taskType switch
+            {
+                ReminderTaskType.FollowUp => TaskPriority.High,
+                ReminderTaskType.PeriodicTest => priorities[taskRandom.Next(1, 3)], // Medium or High
+                ReminderTaskType.BirthdayGreeting => TaskPriority.Low,
+                _ => priorities[taskRandom.Next(priorities.Length)]
+            };
+            var isDone = daysOffset < -3 ? taskRandom.NextDouble() > 0.3 : // older → more likely done
+                         daysOffset < 0 ? taskRandom.NextDouble() > 0.6 :
+                         taskRandom.NextDouble() > 0.85;
+            var doneByStaffId = isDone ? staffIds[taskRandom.Next(staffIds.Length)] : (int?)null;
+            var doneAt = isDone ? dueDate.AddHours(taskRandom.Next(8, 17)) : (DateTime?)null;
+            var createdBy = taskType == ReminderTaskType.BirthdayGreeting ? -1 : staffIds[taskRandom.Next(staffIds.Length)];
+
+            reminderTasks.Add(new ReminderTask
+            {
+                Id = i,
+                PatientId = pid,
+                TaskType = taskType,
+                Description = desc,
+                DueDate = dueDate,
+                Priority = priority,
+                IsDone = isDone,
+                DoneByStaffId = doneByStaffId,
+                DoneAt = doneAt,
+                CreatedBy = createdBy,
+                CreatedAt = dueDate.AddDays(-taskRandom.Next(3, 14))
+            });
+        }
+
+        modelBuilder.Entity<ReminderTask>().HasData(reminderTasks);
     }
 
     /// <summary>

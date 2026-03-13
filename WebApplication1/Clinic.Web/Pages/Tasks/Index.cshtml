@@ -1,22 +1,7 @@
 @page
+@model Clinic.Web.Pages.Tasks.IndexModel
 @{
     ViewData["Title"] = "Reminder Tasks";
-
-    var tasks = new[]
-    {
-        new { Id = 1, PatientName = "Nguyễn Văn A", Phone = "0901234567", Type = "Follow-up sau mổ", Description = "Tái khám sau phẫu thuật ruột thừa (7 ngày)", DueDate = DateTime.Today, Priority = "High", IsDone = false, DoneBy = "" },
-        new { Id = 2, PatientName = "Trần Thị B", Phone = "0912345678", Type = "Chúc mừng sinh nhật", Description = "Sinh nhật lần thứ 45", DueDate = DateTime.Today, Priority = "Low", IsDone = true, DoneBy = "Dr. VuHuan" },
-        new { Id = 3, PatientName = "Lê Văn C", Phone = "0923456789", Type = "Nhắc lịch tiêm chủng", Description = "Tiêm nhắc lại mũi 3 - Viêm gan B", DueDate = DateTime.Today, Priority = "Medium", IsDone = false, DoneBy = "" },
-        new { Id = 4, PatientName = "Phạm Thị D", Phone = "0934567890", Type = "Xét nghiệm định kỳ", Description = "Xét nghiệm máu định kỳ 3 tháng (tiểu đường)", DueDate = DateTime.Today, Priority = "High", IsDone = false, DoneBy = "" },
-        new { Id = 5, PatientName = "Hoàng Văn E", Phone = "0945678901", Type = "Follow-up sau mổ", Description = "Kiểm tra vết mổ sau 14 ngày - Phẫu thuật gối", DueDate = DateTime.Today, Priority = "High", IsDone = true, DoneBy = "Nurse. Lan" },
-        new { Id = 6, PatientName = "Vũ Thị F", Phone = "0956789012", Type = "Nhắc lịch tiêm chủng", Description = "Tiêm phòng cúm mùa hàng năm", DueDate = DateTime.Today.AddDays(1), Priority = "Medium", IsDone = false, DoneBy = "" },
-        new { Id = 7, PatientName = "Đỗ Văn G", Phone = "0967890123", Type = "Xét nghiệm định kỳ", Description = "Siêu âm gan 6 tháng (viêm gan B mạn)", DueDate = DateTime.Today.AddDays(1), Priority = "High", IsDone = false, DoneBy = "" },
-        new { Id = 8, PatientName = "Ngô Thị H", Phone = "0978901234", Type = "Chúc mừng sinh nhật", Description = "Sinh nhật lần thứ 30", DueDate = DateTime.Today.AddDays(2), Priority = "Low", IsDone = false, DoneBy = "" },
-        new { Id = 9, PatientName = "Bùi Văn I", Phone = "0989012345", Type = "Follow-up sau mổ", Description = "Tái khám sau mổ sỏi thận (1 tháng)", DueDate = DateTime.Today.AddDays(3), Priority = "Medium", IsDone = false, DoneBy = "" },
-        new { Id = 10, PatientName = "Lý Thị K", Phone = "0990123456", Type = "Xét nghiệm định kỳ", Description = "Xét nghiệm chức năng tuyến giáp 6 tháng", DueDate = DateTime.Today.AddDays(5), Priority = "Medium", IsDone = false, DoneBy = "" },
-    };
-
-    var todayCount = tasks.Count(t => t.DueDate == DateTime.Today && !t.IsDone);
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -25,7 +10,7 @@
         <div class="text-muted small">Danh sách nhắc nhở theo dõi bệnh nhân</div>
     </div>
     <div class="d-flex align-items-center gap-2">
-        <span class="badge bg-danger rounded-pill">@todayCount việc cần làm hôm nay</span>
+        <span class="badge bg-danger rounded-pill" id="todayBadge">@Model.TodayPendingCount việc cần làm hôm nay</span>
     </div>
 </div>
 
@@ -33,23 +18,16 @@
 <div class="card mb-3 p-3">
     <div class="row g-3 align-items-center">
         <div class="col-md-3">
-            <input class="form-control form-control-sm" placeholder="Tìm theo tên bệnh nhân..." />
+            <input id="taskSearch" class="form-control form-control-sm" placeholder="Tìm theo tên bệnh nhân, SĐT..." />
         </div>
         <div class="col-md-2">
-            <select class="form-select form-select-sm">
+            <select class="form-select form-select-sm" id="filterType">
                 <option value="">Tất cả loại</option>
-                <option>Follow-up sau mổ</option>
-                <option>Chúc mừng sinh nhật</option>
-                <option>Nhắc lịch tiêm chủng</option>
-                <option>Xét nghiệm định kỳ</option>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select form-select-sm">
-                <option value="">Tất cả mức độ</option>
-                <option value="High">Cao</option>
-                <option value="Medium">Trung bình</option>
-                <option value="Low">Thấp</option>
+                <option value="FollowUp">Follow-up sau mổ</option>
+                <option value="BirthdayGreeting">Chúc mừng sinh nhật</option>
+                <option value="VaccinationReminder">Nhắc lịch tiêm chủng</option>
+                <option value="PeriodicTest">Xét nghiệm định kỳ</option>
+                <option value="General">Khác</option>
             </select>
         </div>
         <div class="col-md-2">
@@ -59,116 +37,45 @@
                 <option value="done">Đã xong</option>
             </select>
         </div>
-        <div class="col-md-2">
-            <input type="date" class="form-control form-control-sm" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
-        </div>
     </div>
 </div>
 
+@Html.AntiForgeryToken()
+
 <!-- Task Table -->
 <div class="card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <button class="btn btn-sm btn-success" id="btnMarkDone" disabled>
+                <i class="bi bi-check2-square"></i> Đã hoàn thành
+            </button>
+            <span class="small text-muted ms-2" id="selectedCount"></span>
+        </div>
+    </div>
     <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0" id="taskTable">
+        <table id="taskTable" class="table table-hover align-middle mb-0" style="width:100%">
             <thead class="table-light">
                 <tr>
-                    <th style="width: 40px;">
-                        <span class="text-muted small">Done</span>
+                    <th data-orderable="false" style="width:36px;">
+                        <input class="form-check-input" type="checkbox" id="checkAll" title="Chọn tất cả" />
                     </th>
                     <th>Bệnh nhân</th>
                     <th>Loại</th>
                     <th>Mô tả</th>
                     <th>Ngày hẹn</th>
                     <th>Mức độ</th>
-                    <th>Hoàn thành bởi</th>
-                    <th style="width: 60px;"></th>
+                    <th data-orderable="false">Trạng thái</th>
+                    <th data-orderable="false">Hoàn thành bởi</th>
+                    <th data-orderable="false" style="width:60px;"></th>
                 </tr>
             </thead>
-            <tbody>
-                @foreach (var task in tasks)
-                {
-                    var rowClass = task.IsDone ? "text-decoration-line-through text-muted" : "";
-                    var isOverdue = task.DueDate <= DateTime.Today && !task.IsDone;
-                    var isToday = task.DueDate == DateTime.Today;
-
-                    var priorityBadge = task.Priority switch
-                    {
-                        "High" => "bg-danger",
-                        "Medium" => "bg-warning text-dark",
-                        _ => "bg-secondary"
-                    };
-
-                    var typeBadge = task.Type switch
-                    {
-                        "Follow-up sau mổ" => "bg-info text-dark",
-                        "Chúc mừng sinh nhật" => "bg-pink",
-                        "Nhắc lịch tiêm chủng" => "bg-success",
-                        "Xét nghiệm định kỳ" => "bg-primary",
-                        _ => "bg-secondary"
-                    };
-
-                    <tr class="@(task.IsDone ? "table-light" : "")" data-done="@task.IsDone.ToString().ToLower()">
-                        <td>
-                            <div class="form-check d-flex justify-content-center">
-                                <input class="form-check-input task-checkbox" type="checkbox" @(task.IsDone ? "checked" : "") data-task-id="@task.Id" />
-                            </div>
-                        </td>
-                        <td>
-                            <div class="@rowClass">
-                                <div class="fw-semibold">@task.PatientName</div>
-                                <div class="small text-muted">@task.Phone</div>
-                            </div>
-                        </td>
-                        <td>
-                            <span class="badge @typeBadge" style="font-size: 0.7rem;">@task.Type</span>
-                        </td>
-                        <td>
-                            <span class="@rowClass" style="font-size: 0.85rem;">@task.Description</span>
-                        </td>
-                        <td>
-                            @if (isToday && !task.IsDone)
-                            {
-                                <span class="fw-semibold text-danger">Hôm nay</span>
-                            }
-                            else if (isOverdue)
-                            {
-                                <span class="fw-semibold text-danger">Quá hạn</span>
-                            }
-                            else
-                            {
-                                <span class="@rowClass">@task.DueDate.ToString("dd/MM/yyyy")</span>
-                            }
-                        </td>
-                        <td>
-                            <span class="badge @priorityBadge" style="font-size: 0.65rem;">
-                                @(task.Priority switch { "High" => "Cao", "Medium" => "TB", _ => "Thấp" })
-                            </span>
-                        </td>
-                        <td>
-                            @if (task.IsDone)
-                            {
-                                <span class="small text-muted">@task.DoneBy</span>
-                            }
-                            else
-                            {
-                                <span class="small text-muted">—</span>
-                            }
-                        </td>
-                        <td>
-                            <a class="btn btn-sm btn-outline-primary" href="/Patients/Details?id=@task.Id" style="font-size: 0.7rem; padding: 0.15rem 0.3rem;">Xem</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
+            <tbody></tbody>
         </table>
     </div>
 </div>
 
 @section Scripts {
     <style>
-        .bg-pink {
-            background-color: #e91e8c;
-            color: #fff;
-        }
         #taskTable {
             font-size: 0.85rem;
         }
@@ -177,10 +84,21 @@
             font-weight: 600;
             padding: 0.5rem 0.75rem;
             border-bottom: 2px solid #dee2e6;
+            user-select: none;
+        }
+        #taskTable thead th:hover {
+            background-color: #e9ecef;
         }
         #taskTable tbody td {
             padding: 0.4rem 0.75rem;
             vertical-align: middle;
+        }
+        #taskTable tbody tr:hover {
+            background-color: #f8f9fa !important;
+        }
+        .bg-pink {
+            background-color: #e91e8c;
+            color: #fff;
         }
         .task-checkbox {
             width: 1.1rem;
@@ -191,72 +109,316 @@
             background-color: #198754;
             border-color: #198754;
         }
+        #checkAll {
+            width: 1.1rem;
+            height: 1.1rem;
+            cursor: pointer;
+        }
+        .dataTables_info {
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0 !important;
+            margin: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination {
+            margin: 0;
+            gap: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_length {
+            font-size: 0.8rem;
+            margin: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_length label {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 0;
+            white-space: nowrap;
+            font-size: 0.8rem;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            padding: 0.2rem 1.5rem 0.2rem 0.4rem;
+            font-size: 0.8rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.2rem;
+            height: 28px;
+            width: 60px;
+        }
+        .dataTables_wrapper {
+            position: relative;
+        }
+        .dataTables_wrapper .row:last-child {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+            padding: 0.5rem 0 !important;
+            margin: 0 !important;
+            border-top: 1px solid #dee2e6;
+            width: 100%;
+            min-height: 32px;
+        }
+        .dataTables_wrapper .row:last-child > div {
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            gap: 1rem !important;
+            flex: 1 1 auto;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        .dataTables_wrapper .dataTables_length {
+            padding: 0 !important;
+            margin: 0 !important;
+            flex: 0 0 auto;
+            order: 1;
+        }
+        .dataTables_wrapper .dataTables_info {
+            padding: 0 !important;
+            margin: 0 !important;
+            flex: 1 1 auto;
+            order: 2;
+            text-align: center;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            padding: 0 !important;
+            margin: 0 !important;
+            flex: 0 0 auto;
+            order: 3;
+            gap: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination {
+            margin: 0;
+            gap: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.05rem 0.15rem;
+            font-size: 0.65rem;
+            min-width: 18px;
+            height: 18px;
+            line-height: 18px;
+            margin: 0 !important;
+            border-radius: 0.1rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item {
+            margin: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item + .page-item .page-link {
+            margin-left: -1px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link {
+            padding: 0.15rem 0.45rem !important;
+            font-size: 0.8rem !important;
+            line-height: 1.3 !important;
+            min-width: auto !important;
+            border-radius: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item:first-child .page-link {
+            border-top-left-radius: 0.2rem !important;
+            border-bottom-left-radius: 0.2rem !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item:last-child .page-link {
+            border-top-right-radius: 0.2rem !important;
+            border-bottom-right-radius: 0.2rem !important;
+        }
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Handle checkbox toggle (mockup only - visual feedback)
-            document.querySelectorAll('.task-checkbox').forEach(function (checkbox) {
-                checkbox.addEventListener('change', function () {
-                    var row = this.closest('tr');
-                    var cells = row.querySelectorAll('td');
+            var typeBadgeClass = {
+                'FollowUp': 'bg-info text-dark',
+                'BirthdayGreeting': 'bg-pink',
+                'VaccinationReminder': 'bg-success',
+                'PeriodicTest': 'bg-primary',
+                'General': 'bg-secondary'
+            };
+            var priorityBadgeClass = {
+                'High': 'bg-danger',
+                'Medium': 'bg-warning text-dark',
+                'Low': 'bg-secondary'
+            };
 
-                    if (this.checked) {
-                        row.classList.add('table-light');
-                        row.dataset.done = 'true';
-                        // Add strikethrough
-                        row.querySelectorAll('.fw-semibold, span:not(.badge)').forEach(function (el) {
-                            if (!el.classList.contains('badge') && !el.classList.contains('text-muted')) {
-                                el.classList.add('text-decoration-line-through', 'text-muted');
-                            }
-                        });
-                        // Set done by
-                        cells[6].innerHTML = '<span class="small text-muted">Dr. VuHuan</span>';
-                    } else {
-                        row.classList.remove('table-light');
-                        row.dataset.done = 'false';
-                        // Remove strikethrough
-                        row.querySelectorAll('.text-decoration-line-through').forEach(function (el) {
-                            el.classList.remove('text-decoration-line-through', 'text-muted');
-                        });
-                        cells[6].innerHTML = '<span class="small text-muted">—</span>';
+            var table = $('#taskTable').DataTable({
+                serverSide: true,
+                processing: true,
+                pageLength: 10,
+                paging: true,
+                searching: false,
+                ordering: true,
+                order: [[4, 'asc']],
+                info: true,
+                language: {
+                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+                },
+                ajax: {
+                    url: '/Tasks?handler=TaskList',
+                    type: 'GET',
+                    data: function (d) {
+                        d.search = document.getElementById('taskSearch').value;
+                        d.filterType = document.getElementById('filterType').value;
+                        d.filterStatus = document.getElementById('filterStatus').value;
+                        return d;
+                    },
+                    dataSrc: 'data',
+                    error: function (xhr, status, error) {
+                        console.error('DataTables error:', error, xhr);
                     }
-
-                    // Update today count badge
-                    updateTodayCount();
-                });
+                },
+                columns: [
+                    {
+                        data: null,
+                        render: function (d) {
+                            if (d.isDone) return '';
+                            return '<input class="form-check-input task-checkbox" type="checkbox" value="' + d.id + '" />';
+                        },
+                        orderable: false,
+                        searchable: false,
+                        className: 'text-center'
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            var cls = d.isDone ? 'text-decoration-line-through text-muted' : '';
+                            return '<div class="' + cls + '">' +
+                                       '<div class="fw-semibold">' + d.patientName + '</div>' +
+                                       '<div class="small text-muted">' + d.patientPhone + '</div>' +
+                                   '</div>';
+                        },
+                        orderable: true
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            var badge = typeBadgeClass[d.taskType] || 'bg-secondary';
+                            return '<span class="badge ' + badge + '" style="font-size:0.7rem;">' + d.taskTypeDisplay + '</span>';
+                        },
+                        orderable: true
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            var cls = d.isDone ? 'text-decoration-line-through text-muted' : '';
+                            return '<span class="' + cls + '" style="font-size:0.85rem;">' + d.description + '</span>';
+                        },
+                        orderable: false
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            if (d.isDone) return '<span class="text-decoration-line-through text-muted">' + d.dueDate + '</span>';
+                            if (d.isToday) return '<span class="fw-semibold text-danger">Hôm nay</span>';
+                            if (d.isOverdue) return '<span class="fw-semibold text-danger">Quá hạn</span>';
+                            return d.dueDate;
+                        },
+                        orderable: true
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            var badge = priorityBadgeClass[d.priority] || 'bg-secondary';
+                            return '<span class="badge ' + badge + '" style="font-size:0.65rem;">' + d.priorityDisplay + '</span>';
+                        },
+                        orderable: true
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            if (d.isDone) return '<span class="badge bg-success" style="font-size:0.65rem;">Đã xong</span>';
+                            return '<span class="badge bg-outline-warning text-warning border border-warning" style="font-size:0.65rem;">Chưa xong</span>';
+                        },
+                        orderable: false
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            return '<span class="small text-muted">' + d.doneBy + '</span>';
+                        },
+                        orderable: false
+                    },
+                    {
+                        data: null,
+                        render: function (d) {
+                            return '<a class="btn btn-sm btn-outline-primary" href="/Patients/Details?id=' + d.patientId + '" style="font-size:0.7rem;padding:0.15rem 0.3rem;">Xem</a>';
+                        },
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                dom: '<"row"<"col-sm-12"f>>rt<"row"<"col-sm-12"<"dataTables_length"l><"dataTables_info"i><"dataTables_paginate"p>>>',
+                drawCallback: function () {
+                    // Uncheck header checkbox on redraw
+                    $('#checkAll').prop('checked', false);
+                    updateSelectedCount();
+                }
             });
 
-            // Filter by status
-            document.getElementById('filterStatus').addEventListener('change', function () {
-                var value = this.value;
-                document.querySelectorAll('#taskTable tbody tr').forEach(function (row) {
-                    if (!value) {
-                        row.style.display = '';
-                    } else if (value === 'done') {
-                        row.style.display = row.dataset.done === 'true' ? '' : 'none';
-                    } else {
-                        row.style.display = row.dataset.done === 'false' ? '' : 'none';
-                    }
-                });
+            // Select all checkbox
+            $('#checkAll').on('change', function () {
+                var checked = this.checked;
+                $('#taskTable tbody .task-checkbox').prop('checked', checked);
+                updateSelectedCount();
             });
 
-            // Trigger initial filter
-            document.getElementById('filterStatus').dispatchEvent(new Event('change'));
+            // Individual checkbox change
+            $('#taskTable').on('change', '.task-checkbox', function () {
+                var allChecked = $('#taskTable tbody .task-checkbox').length === $('#taskTable tbody .task-checkbox:checked').length;
+                $('#checkAll').prop('checked', allChecked);
+                updateSelectedCount();
+            });
 
-            function updateTodayCount() {
-                // Count visible unchecked rows (mockup approximation)
-                var count = 0;
-                document.querySelectorAll('#taskTable tbody tr').forEach(function (row) {
-                    var cb = row.querySelector('.task-checkbox');
-                    if (!cb.checked) count++;
-                });
-                var badge = document.querySelector('.badge.bg-danger.rounded-pill');
-                if (badge) badge.textContent = count + ' việc cần làm hôm nay';
-
-                // Update header notification
-                var headerBadge = document.getElementById('taskNotificationBadge');
-                if (headerBadge) headerBadge.textContent = count;
+            function updateSelectedCount() {
+                var count = $('#taskTable tbody .task-checkbox:checked').length;
+                $('#btnMarkDone').prop('disabled', count === 0);
+                $('#selectedCount').text(count > 0 ? 'Đã chọn ' + count + ' task' : '');
             }
+
+            // Bulk mark done
+            $('#btnMarkDone').on('click', function () {
+                var ids = [];
+                $('#taskTable tbody .task-checkbox:checked').each(function () {
+                    ids.push(parseInt($(this).val()));
+                });
+                if (ids.length === 0) return;
+
+                var btn = $(this);
+                btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status"></span> Đang xử lý...');
+
+                $.ajax({
+                    url: '/Tasks?handler=MarkDone',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    headers: { 'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val() },
+                    data: JSON.stringify({ ids: ids }),
+                    success: function (res) {
+                        if (res.success) {
+                            table.ajax.reload(null, false);
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Mark done error:', xhr);
+                        alert('Lỗi khi cập nhật trạng thái.');
+                    },
+                    complete: function () {
+                        btn.prop('disabled', false).html('<i class="bi bi-check2-square"></i> Đã hoàn thành');
+                        updateSelectedCount();
+                    }
+                });
+            });
+
+            // Search with debounce
+            var searchTimeout;
+            document.getElementById('taskSearch').addEventListener('input', function () {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(function () { table.ajax.reload(); }, 400);
+            });
+
+            // Filter dropdowns
+            document.getElementById('filterType').addEventListener('change', function () { table.ajax.reload(); });
+            document.getElementById('filterStatus').addEventListener('change', function () { table.ajax.reload(); });
         });
     </script>
 }
