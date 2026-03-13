@@ -4,6 +4,8 @@ using Clinic.Services.Services.Patients;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Clinic.Web.Pages.Patients;
 
@@ -126,26 +128,37 @@ public class DetailsModel : PageModel
                 .OrderByDescending(a => a.CreatedDate)
                 .ToList();
 
+            // Build StaffId → (FullName, AvatarPath) dictionary
+            var staffMap = await _dbContext.Staff
+                .AsNoTracking()
+                .Select(s => new { s.Id, s.FullName, s.AvatarPath })
+                .ToDictionaryAsync(s => s.Id, s => new { s.FullName, s.AvatarPath }, ct);
+
             var totalCount = activities.Count;
             var pagedActivities = activities.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
             var result = new
             {
-                data = pagedActivities.Select(a => new
+                data = pagedActivities.Select(a =>
                 {
-                    id = a.Id,
-                    contentText = a.ContentText,
-                    createdBy = a.CreatedBy ?? "system",
-                    activityType = a.ActivityType.ToString(),
-                    activityTypeDisplay = GetActivityTypeDisplay(a.ActivityType),
-                    createdDate = a.CreatedDate.ToString("yyyy-MM-dd HH:mm"),
-                    createdDateRelative = GetRelativeTime(a.CreatedDate),
-                    images = (a.Images ?? []).Select(img => new
+                    var staff = a.CreatedBy > 0 && staffMap.TryGetValue(a.CreatedBy, out var s) ? s : null;
+                    return new
                     {
-                        id = img.Id,
-                        imageUrl = img.ImageUrl,
-                        caption = img.Caption
-                    }).ToArray()
+                        id = a.Id,
+                        contentText = a.ContentText,
+                        createdBy = staff?.FullName ?? "Hệ thống",
+                        avatarUrl = staff?.AvatarPath,
+                        activityType = a.ActivityType.ToString(),
+                        activityTypeDisplay = GetActivityTypeDisplay(a.ActivityType),
+                        createdDate = a.CreatedDate.ToString("yyyy-MM-dd HH:mm"),
+                        createdDateRelative = GetRelativeTime(a.CreatedDate),
+                        images = (a.Images ?? []).Select(img => new
+                        {
+                            id = img.Id,
+                            imageUrl = img.ImageUrl,
+                            caption = img.Caption
+                        }).ToArray()
+                    };
                 }).ToArray(),
                 hasMore = (pageNumber * pageSize) < totalCount,
                 totalCount,
@@ -174,11 +187,31 @@ public class DetailsModel : PageModel
 
         try
         {
+            // Get current staff info for CreatedBy and avatar
+            int createdByStaffId = -1;
+            string createdByName = "Hệ thống";
+            string? avatarUrl = null;
+            var staffIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (staffIdClaim is not null && int.TryParse(staffIdClaim.Value, out var currentStaffId))
+            {
+                var currentStaff = await _dbContext.Staff
+                    .AsNoTracking()
+                    .Where(s => s.Id == currentStaffId)
+                    .Select(s => new { s.FullName, s.AvatarPath })
+                    .FirstOrDefaultAsync(ct);
+                if (currentStaff is not null)
+                {
+                    createdByStaffId = currentStaffId;
+                    createdByName = currentStaff.FullName;
+                    avatarUrl = currentStaff.AvatarPath;
+                }
+            }
+
             var activity = new Activity
             {
                 ActivityType = ActivityType.Post,
                 ContentText = contentText.Trim(),
-                CreatedBy = User.Identity?.Name ?? "Unknown",
+                CreatedBy = createdByStaffId,
                 PatientId = patientId,
                 CreatedDate = DateTime.UtcNow
             };
@@ -221,7 +254,8 @@ public class DetailsModel : PageModel
             {
                 id = activity.Id,
                 contentText = activity.ContentText,
-                createdBy = activity.CreatedBy,
+                createdBy = createdByName,
+                avatarUrl,
                 activityType = activity.ActivityType.ToString(),
                 activityTypeDisplay = GetActivityTypeDisplay(activity.ActivityType),
                 createdDate = activity.CreatedDate.ToString("yyyy-MM-dd HH:mm"),

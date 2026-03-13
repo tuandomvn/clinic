@@ -436,11 +436,14 @@ else
                 const icon = typeIcons[a.activityType] || '📌';
                 const badgeClass = typeBadgeClass[a.activityType] || 'bg-dark';
                 const galleryId = 'gallery-' + a.id;
+                const avatarHtml = a.avatarUrl
+                    ? `<img src="${a.avatarUrl}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />`
+                    : icon;
 
                 return `
                 <div class="feed-card" data-type="${a.activityType}">
                     <div class="feed-card-header">
-                        <div class="feed-avatar">${icon}</div>
+                        <div class="feed-avatar">${avatarHtml}</div>
                         <div class="feed-meta">
                             <div class="feed-author">${a.createdBy}</div>
                             <div class="feed-time">${a.createdDateRelative} · <span class="badge ${badgeClass} badge-sm">${a.activityTypeDisplay}</span></div>

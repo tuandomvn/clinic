@@ -131,7 +131,6 @@ public class ClinicDbContext : DbContext
         {
             e.HasKey(x => x.Id);
             e.Property(x => x.ContentText).HasMaxLength(2000).IsRequired();
-            e.Property(x => x.CreatedBy).HasMaxLength(200);
             e.HasOne(x => x.Patient).WithMany(p => p.Activities).HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.SetNull);
             e.HasOne(x => x.RelatedEncounter).WithMany().HasForeignKey(x => x.RelatedEncounterId).OnDelete(DeleteBehavior.SetNull);
             e.HasIndex(x => x.CreatedDate);
@@ -236,7 +235,7 @@ public class ClinicDbContext : DbContext
         var activityImages = new List<ActivityImage>();
 
         var patientIds = Enumerable.Range(1, 100).ToList();
-        var staffNames = new[] { "Nguyễn Văn Bác sĩ", "Trần Thị Y tá", "Lê Văn Phẫu thuật", "Phạm Thị Điều dưỡng" };
+        var staffIds = new[] { 1, 2, 3, 4 };
         var allTypes = new[]
         {
             ActivityType.Post,
@@ -336,9 +335,9 @@ public class ClinicDbContext : DbContext
 
                 var createdBy = activityType switch
                 {
-                    ActivityType.BirthdayGreeting => "system",
-                    ActivityType.PatientRegistered => "system",
-                    _ => staffNames[random.Next(staffNames.Length)]
+                    ActivityType.BirthdayGreeting => -1,
+                    ActivityType.PatientRegistered => -1,
+                    _ => staffIds[random.Next(staffIds.Length)]
                 };
 
                 var daysAgo = random.Next(1, 365);
