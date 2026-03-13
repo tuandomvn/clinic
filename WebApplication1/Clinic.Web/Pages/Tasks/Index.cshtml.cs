@@ -104,30 +104,22 @@ public class IndexModel : PageModel
         if (request.Ids is not { Length: > 0 })
             return BadRequest(new { error = "Chưa chọn task nào." });
 
-        var ids = request.Ids.ToList();
-        var tasks = await _dbContext.ReminderTasks
-            .Where(t => ids.Contains(t.Id) && !t.IsDone)
-            .ToListAsync(ct);
-
-        if (tasks.Count == 0)
-            return new JsonResult(new { success = true, updated = 0 });
-
         int? staffId = null;
         var staffIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
         if (staffIdClaim is not null && int.TryParse(staffIdClaim.Value, out var sid))
             staffId = sid;
 
-        var now = DateTime.UtcNow;
-        foreach (var task in tasks)
-        {
-            task.IsDone = true;
-            task.DoneAt = now;
-            task.DoneByStaffId = staffId;
-        }
+        var updated = await _taskService.MarkDoneAsync(request.Ids, staffId, ct);
+        return new JsonResult(new { success = true, updated });
+    }
 
-        await _dbContext.SaveChangesAsync(ct);
+    public async Task<IActionResult> OnPostMarkUndoneAsync([FromBody] MarkDoneRequest request, CancellationToken ct = default)
+    {
+        if (request.Ids is not { Length: > 0 })
+            return BadRequest(new { error = "Chưa chọn task nào." });
 
-        return new JsonResult(new { success = true, updated = tasks.Count });
+        var updated = await _taskService.MarkUndoneAsync(request.Ids, ct);
+        return new JsonResult(new { success = true, updated });
     }
 
     public record MarkDoneRequest(int[] Ids);

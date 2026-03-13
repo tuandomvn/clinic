@@ -63,4 +63,47 @@ public sealed class ReminderTaskService : IReminderTaskService
 
         return (items, filteredCount, totalCount);
     }
+
+    public async Task<int> MarkDoneAsync(IEnumerable<int> ids, int? staffId, CancellationToken ct = default)
+    {
+        var idList = ids.ToList();
+        var tasks = await _db.ReminderTasks
+            .Where(t => idList.Contains(t.Id) && !t.IsDone)
+            .ToListAsync(ct);
+
+        if (tasks.Count == 0)
+            return 0;
+
+        var now = DateTime.UtcNow;
+        foreach (var task in tasks)
+        {
+            task.IsDone = true;
+            task.DoneAt = now;
+            task.DoneByStaffId = staffId;
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return tasks.Count;
+    }
+
+    public async Task<int> MarkUndoneAsync(IEnumerable<int> ids, CancellationToken ct = default)
+    {
+        var idList = ids.ToList();
+        var tasks = await _db.ReminderTasks
+            .Where(t => idList.Contains(t.Id) && t.IsDone)
+            .ToListAsync(ct);
+
+        if (tasks.Count == 0)
+            return 0;
+
+        foreach (var task in tasks)
+        {
+            task.IsDone = false;
+            task.DoneAt = null;
+            task.DoneByStaffId = null;
+        }
+
+        await _db.SaveChangesAsync(ct);
+        return tasks.Count;
+    }
 }
