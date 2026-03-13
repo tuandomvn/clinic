@@ -22,14 +22,14 @@
 <div class="row g-4">
     <div class="col-md-3">
         <div class="card p-4 text-center">
-            <div class="mb-3">
+            <div class="mb-3" id="avatarPreviewContainer">
                 @if (!string.IsNullOrEmpty(Model.AvatarUrl))
                 {
-                    <img src="@Model.AvatarUrl" alt="Avatar" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;" />
+                    <img id="avatarPreviewImg" src="@Model.AvatarUrl" alt="Avatar" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;" />
                 }
                 else
                 {
-                    <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto text-white" style="width: 120px; height: 120px; font-size: 2.5rem;">
+                    <div id="avatarPlaceholder" class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto text-white" style="width: 120px; height: 120px; font-size: 2.5rem;">
                         @(Model.Input.FullName.Length > 0 ? Model.Input.FullName[0] : '?')
                     </div>
                 }
@@ -40,8 +40,8 @@
                 <div class="mb-2">
                     <input type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" class="form-control form-control-sm" id="avatarInput" />
                 </div>
-                <div class="small text-muted mb-2">JPG, PNG hoặc WebP. Tối đa 2MB.</div>
-                <button type="submit" class="btn btn-sm btn-outline-primary w-100">Cập nhật ảnh</button>
+                <div class="small text-muted mb-2">JPG hoặc PNG. Tối đa 2MB.</div>
+                <button type="submit" class="btn btn-sm btn-outline-primary w-100">Lưu</button>
             </form>
         </div>
     </div>
@@ -97,6 +97,23 @@
                 if (this.files[0].size > 2 * 1024 * 1024) {
                     alert('File ảnh không được vượt quá 2MB.');
                     this.value = '';
+                    return;
+                }
+                var previewUrl = URL.createObjectURL(this.files[0]);
+                var img = document.getElementById('avatarPreviewImg');
+                if (img) {
+                    img.src = previewUrl;
+                } else {
+                    var container = document.getElementById('avatarPreviewContainer');
+                    var placeholder = document.getElementById('avatarPlaceholder');
+                    if (placeholder) placeholder.style.display = 'none';
+                    img = document.createElement('img');
+                    img.id = 'avatarPreviewImg';
+                    img.alt = 'Avatar';
+                    img.className = 'rounded-circle';
+                    img.style.cssText = 'width:120px;height:120px;object-fit:cover;';
+                    img.src = previewUrl;
+                    container.appendChild(img);
                 }
             }
         });
