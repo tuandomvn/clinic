@@ -1,39 +1,20 @@
 @page
 @model Clinic.Web.Pages.Patients.IndexModel
 @{
-    ViewData["Title"] = "Patients";
+    ViewData["Title"] = "Bệnh nhân";
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Patients</h2>
+    <h2 class="mb-0">Bệnh nhân</h2>
     <div>
-        <a class="btn btn-sm btn-primary" href="/Patients/Create">New Patient</a>
+        <a class="btn btn-sm btn-primary" href="/Patients/Create">Thêm bệnh nhân</a>
     </div>
 </div>
-
-<style>
-    .table-patients thead tr {
-        /* nền header dùng màu dark olive từ color palette */
-        background-color: #363B2C;
-    }
-
-    .table-patients thead .sortable-header:hover {
-    }
-
-    .pagination .page-link {
-        color: var(--bs-primary);
-    }
-
-    .pagination .page-item.active .page-link {
-        background-color: var(--bs-primary);
-        border-color: var(--bs-primary);
-    }
-</style>
 
 <div class="card mb-3 p-3">
     <div class="row g-3 align-items-center">
         <div class="col-md-5">
-            <input class="form-control" placeholder="Search by name or ID" />
+            <input id="patientSearch" class="form-control" placeholder="Tìm theo tên, SĐT, email hoặc CMND/CCCD" />
         </div>
     </div>
 </div>
@@ -41,164 +22,270 @@
 <div class="row g-4">
     <div class="col-lg-12">
         <div class="card p-3">
-            <h5 class="mb-3">Patient List</h5>
-            <div class="d-flex justify-content-between align-items-center mb-2 small text-muted">
-                <div>
-                    Showing @Model.Patients.Count of @Model.TotalCount patients
-                </div>
-                <div>
-                    Page @Model.CurrentPage of @Model.TotalPages
-                </div>
-            </div>
+            <h5 class="mb-3">Danh sách bệnh nhân</h5>
             <div class="table-responsive">
-                <table class="table align-middle table-patients">
+                <table id="patientTable" class="table table-striped table-hover" style="width:100%">
                     <thead>
                         <tr>
-                            <th>
-                                <a class="sortable-header @(Model.SortBy == "name" ? "active" : "")"
-                                   asp-page="./Index"
-                                   asp-route-pageNumber="1"
-                                   asp-route-sortBy="name"
-                                   asp-route-sortDir="@(Model.SortBy == "name" && Model.SortDir == "asc" ? "desc" : "asc")">
-                                    Patient
-                                    @if (Model.SortBy == "name")
-                                    {
-                                        <span class="sort-icon">@((Model.SortDir == "asc") ? "▲" : "▼")</span>
-                                    }
-                                </a>
-                            </th>
-                            <th>
-                                <a class="sortable-header @(Model.SortBy == "phone" ? "active" : "")"
-                                   asp-page="./Index"
-                                   asp-route-pageNumber="1"
-                                   asp-route-sortBy="phone"
-                                   asp-route-sortDir="@(Model.SortBy == "phone" && Model.SortDir == "asc" ? "desc" : "asc")">
-                                    Phone
-                                    @if (Model.SortBy == "phone")
-                                    {
-                                        <span class="sort-icon">@((Model.SortDir == "asc") ? "▲" : "▼")</span>
-                                    }
-                                </a>
-                            </th>
-                            <th>
-                                <a class="sortable-header @(Model.SortBy == "lastvisit" ? "active" : "")"
-                                   asp-page="./Index"
-                                   asp-route-pageNumber="1"
-                                   asp-route-sortBy="lastvisit"
-                                   asp-route-sortDir="@(Model.SortBy == "lastvisit" && Model.SortDir == "asc" ? "desc" : "asc")">
-                                    Last visit
-                                    @if (Model.SortBy == "lastvisit")
-                                    {
-                                        <span class="sort-icon">@((Model.SortDir == "asc") ? "▲" : "▼")</span>
-                                    }
-                                </a>
-                            </th>
-                            <th>Ngày tái khám (dự tính)</th>
-                            <th>Confirm (từ khách hàng)</th>
-                            <th>Actions</th>
+                            <th>Bệnh nhân</th>
+                            <th>Điện thoại</th>
+                            <th>Ngày sinh</th>
+                            <th>Giới tính</th>
+                            <th>Ngày tạo</th>
+                            <th>Trạng thái</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
-                        @if (Model.Patients.Any())
-                        {
-                            foreach (var p in Model.Patients)
-                            {
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="https://via.placeholder.com/44" class="rounded-circle me-2" alt="">
-                                            <div>
-                                                <div class="fw-semibold">
-                                                    <a class="text-decoration-none patient-link" href="/Patients/Details?id=@p.Id">@p.FullName</a>
-                                                </div>
-                                                <div class="small text-muted">PT-@p.Id.ToString("D5")</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>@p.Phone</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td><span class="badge bg-secondary">N/A</span></td>
-                                    <td>
-                                        <a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Edit?id=@p.Id">Edit</a>
-                                        <a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=@p.Id">Details</a>
-                                    </td>
-                                </tr>
-                            }
-                        }
-                        else
-                        {
-                            <tr>
-                                <td colspan="6" class="text-center text-muted">Không có bệnh nhân nào.</td>
-                            </tr>
-                        }
                     </tbody>
                 </table>
             </div>
-
-                        @if (Model.TotalPages > 1)
-            {
-                <nav aria-label="Patient pagination">
-                    <ul class="pagination pagination-sm justify-content-end mt-3">
-                        <li class="page-item @(Model.CurrentPage <= 1 ? "disabled" : "")">
-                            <a class="page-link"
-                               asp-page="./Index"
-                               asp-route-pageNumber="@(Model.CurrentPage - 1)"
-                               asp-route-sortBy="@Model.SortBy"
-                               asp-route-sortDir="@Model.SortDir">Previous</a>
-                        </li>
-                        @{
-                            var startPage = Math.Max(1, Model.CurrentPage - 2);
-                            var endPage = Math.Min(Model.TotalPages, Model.CurrentPage + 2);
-                        }
-                        @if (startPage > 1)
-                        {
-                            <li class="page-item @(1 == Model.CurrentPage ? "active" : "")">
-                                <a class="page-link"
-                                   asp-page="./Index"
-                                   asp-route-pageNumber="1"
-                                   asp-route-sortBy="@Model.SortBy"
-                                   asp-route-sortDir="@Model.SortDir">1</a>
-                            </li>
-                            @if (startPage > 2)
-                            {
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            }
-                        }
-                        @for (var i = startPage; i <= endPage; i++)
-                        {
-                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
-                                <a class="page-link"
-                                   asp-page="./Index"
-                                   asp-route-pageNumber="@i"
-                                   asp-route-sortBy="@Model.SortBy"
-                                   asp-route-sortDir="@Model.SortDir">@i</a>
-                            </li>
-                        }
-                        @if (endPage < Model.TotalPages)
-                        {
-                            @if (endPage < Model.TotalPages - 1)
-                            {
-                                <li class="page-item disabled"><span class="page-link">...</span></li>
-                            }
-                            <li class="page-item @(Model.TotalPages == Model.CurrentPage ? "active" : "")">
-                                <a class="page-link"
-                                   asp-page="./Index"
-                                   asp-route-pageNumber="@Model.TotalPages"
-                                   asp-route-sortBy="@Model.SortBy"
-                                   asp-route-sortDir="@Model.SortDir">@Model.TotalPages</a>
-                            </li>
-                        }
-                        <li class="page-item @(Model.CurrentPage >= Model.TotalPages ? "disabled" : "")">
-                            <a class="page-link"
-                               asp-page="./Index"
-                               asp-route-pageNumber="@(Model.CurrentPage + 1)"
-                               asp-route-sortBy="@Model.SortBy"
-                               asp-route-sortDir="@Model.SortDir">Next</a>
-                        </li>
-                    </ul>
-                </nav>
-            }
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <style>
+        #patientTable {
+            font-size: 0.875rem;
+        }
+        #patientTable thead {
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+        }
+        #patientTable thead th {
+            padding: 0.75rem;
+            vertical-align: middle;
+            font-weight: 600;
+            color: #212529;
+            border-bottom: 2px solid #dee2e6;
+            user-select: none;
+        }
+        #patientTable thead th:hover {
+            background-color: #e9ecef;
+        }
+        #patientTable thead th.sorting::after,
+        #patientTable thead th.sorting_asc::after,
+        #patientTable thead th.sorting_desc::after {
+            content: '';
+            margin-left: 0.5rem;
+        }
+        #patientTable tbody td {
+            padding: 0.4rem 0.75rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #dee2e6;
+        }
+        #patientTable tbody tr:hover {
+            background-color: #f8f9fa !important;
+        }
+        #patientTable .small {
+            font-size: 0.75rem;
+        }
+        #patientTable .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        .dataTables_info {
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 0 !important;
+            margin: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination {
+            margin: 0;
+            gap: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_length {
+            font-size: 0.8rem;
+            margin: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_length label {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            margin: 0;
+            white-space: nowrap;
+            font-size: 0.8rem;
+        }
+        .dataTables_wrapper .dataTables_length select {
+            padding: 0.2rem 1.5rem 0.2rem 0.4rem;
+            font-size: 0.8rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.2rem;
+            height: 28px;
+            width: 60px;
+        }
+        .dataTables_wrapper {
+            position: relative;
+        }
+        .dataTables_wrapper .row:last-child {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+            padding: 0.5rem 0 !important;
+            margin: 0 !important;
+            border-top: 1px solid #dee2e6;
+            width: 100%;
+            min-height: 32px;
+        }
+        .dataTables_wrapper .row:last-child > div {
+            display: flex !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            gap: 1rem !important;
+            flex: 1 1 auto;
+            max-width: 100% !important;
+            width: 100% !important;
+        }
+        .dataTables_wrapper .dataTables_length {
+            padding: 0 !important;
+            margin: 0 !important;
+            flex: 0 0 auto;
+            order: 1;
+        }
+        .dataTables_wrapper .dataTables_info {
+            padding: 0 !important;
+            margin: 0 !important;
+            flex: 1 1 auto;
+            order: 2;
+            text-align: center;
+        }
+        .dataTables_wrapper .dataTables_paginate {
+            padding: 0 !important;
+            margin: 0 !important;
+            flex: 0 0 auto;
+            order: 3;
+            gap: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination {
+            margin: 0;
+            gap: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 0.05rem 0.15rem;
+            font-size: 0.65rem;
+            min-width: 18px;
+            height: 18px;
+            line-height: 18px;
+            margin: 0 !important;
+            border-radius: 0.1rem;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item {
+            margin: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item + .page-item .page-link {
+            margin-left: -1px !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item .page-link {
+            padding: 0.15rem 0.45rem !important;
+            font-size: 0.8rem !important;
+            line-height: 1.3 !important;
+            min-width: auto !important;
+            border-radius: 0 !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item:first-child .page-link {
+            border-top-left-radius: 0.2rem !important;
+            border-bottom-left-radius: 0.2rem !important;
+        }
+        .dataTables_wrapper .dataTables_paginate .pagination .page-item:last-child .page-link {
+            border-top-right-radius: 0.2rem !important;
+            border-bottom-right-radius: 0.2rem !important;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            if (document.getElementById('patientTable')) {
+                $('#patientTable').DataTable({
+                    serverSide: true,
+                    processing: true,
+                    pageLength: 10,
+                    paging: true,
+                    searching: false,
+                    ordering: true,
+                    order: [[0, 'asc']],
+                    info: true,
+                    language: {
+                        url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/vi.json'
+                    },
+                    ajax: {
+                        url: '/Patients?handler=PatientList',
+                        type: 'GET',
+                        data: function (d) {
+                            d.search = document.getElementById('patientSearch').value;
+                            return d;
+                        },
+                        dataSrc: 'data',
+                        error: function (xhr, status, error) {
+                            console.error('DataTables error:', error, xhr);
+                        }
+                    },
+                    columns: [
+                        {
+                            data: null,
+                            render: function (data) {
+                                return '<div class="fw-semibold">' +
+                                           '<a class="text-decoration-none" href="/Patients/Details?id=' + data.id + '">' + data.fullName + '</a>' +
+                                       '</div>' +
+                                       '<div class="small text-muted">' + data.patientCode + '</div>';
+                            },
+                            orderable: true
+                        },
+                        {
+                            data: 'phone',
+                            orderable: true
+                        },
+                        {
+                            data: 'dateOfBirth',
+                            orderable: true
+                        },
+                        {
+                            data: 'gender',
+                            orderable: true
+                        },
+                        {
+                            data: 'createdAt',
+                            orderable: true
+                        },
+                        {
+                            data: null,
+                            render: function (data) {
+                                if (data.isActive) {
+                                    return '<span class="badge bg-success">Hoạt động</span>';
+                                }
+                                return '<span class="badge bg-secondary">Ngưng</span>';
+                            },
+                            orderable: false
+                        },
+                        {
+                            data: null,
+                            render: function (data) {
+                                return '<a class="btn btn-sm btn-outline-primary me-1" href="/Patients/Edit?id=' + data.id + '">Edit</a>' +
+                                       '<a class="btn btn-sm btn-outline-secondary" href="/Patients/Details?id=' + data.id + '">Details</a>';
+                            },
+                            orderable: false,
+                            searchable: false
+                        }
+                    ],
+                    dom: '<"row"<"col-sm-12"f>>rt<"row"<"col-sm-12"<"dataTables_length"l><"dataTables_info"i><"dataTables_paginate"p>>>',
+                    drawCallback: function (settings) {
+                        console.log('Patient DataTables draw complete');
+                    }
+                });
+
+                var searchTimeout;
+                document.getElementById('patientSearch').addEventListener('input', function () {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(function () {
+                        $('#patientTable').DataTable().ajax.reload();
+                    }, 400);
+                });
+            }
+        });
+    </script>
+}

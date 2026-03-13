@@ -56,6 +56,37 @@ public sealed class PatientService : IPatientService
         return (items, totalCount);
     }
 
+    public async Task<(IReadOnlyList<PatientEntity> Items, int FilteredCount, int TotalCount)> SearchPagedAsync(
+        int skip, int take, string? search, string? sortBy, bool ascending, CancellationToken ct = default)
+    {
+        var query = _db.Patients.AsNoTracking().AsQueryable();
+        var totalCount = await query.CountAsync(ct);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim().ToLower();
+            query = query.Where(p =>
+                p.FullName.ToLower().Contains(term) ||
+                (p.Phone != null && p.Phone.Contains(term)) ||
+                (p.Email != null && p.Email.ToLower().Contains(term)) ||
+                (p.IdentityNumber != null && p.IdentityNumber.Contains(term)));
+        }
+
+        query = sortBy switch
+        {
+            "phone" => ascending ? query.OrderBy(p => p.Phone) : query.OrderByDescending(p => p.Phone),
+            "dateOfBirth" => ascending ? query.OrderBy(p => p.DateOfBirth) : query.OrderByDescending(p => p.DateOfBirth),
+            "gender" => ascending ? query.OrderBy(p => p.Gender) : query.OrderByDescending(p => p.Gender),
+            "createdAt" => ascending ? query.OrderBy(p => p.CreatedAt) : query.OrderByDescending(p => p.CreatedAt),
+            _ => ascending ? query.OrderBy(p => p.FullName) : query.OrderByDescending(p => p.FullName)
+        };
+
+        var filteredCount = await query.CountAsync(ct);
+        var items = await query.Skip(skip).Take(take).ToListAsync(ct);
+
+        return (items, filteredCount, totalCount);
+    }
+
     public async Task<PatientEntity?> GetByIdAsync(int id, CancellationToken ct = default)
     {
         return await _db.Patients

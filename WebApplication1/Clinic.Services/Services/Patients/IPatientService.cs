@@ -14,6 +14,10 @@ public interface IPatientService
         bool ascending,
         CancellationToken ct = default);
 
+    /// <summary>Tìm kiếm + phân trang cho DataTables server-side.</summary>
+    Task<(IReadOnlyList<PatientEntity> Items, int FilteredCount, int TotalCount)> SearchPagedAsync(
+        int skip, int take, string? search, string? sortBy, bool ascending, CancellationToken ct = default);
+
     /// <summary>Lấy chi tiết bệnh nhân theo ID.</summary>
     Task<PatientEntity?> GetByIdAsync(int id, CancellationToken ct = default);
 

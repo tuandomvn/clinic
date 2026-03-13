@@ -1,13 +1,15 @@
 using Clinic.Services.Services.Patients;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using PatientEntity = Clinic.Services.Domain.Entities.Patient;
 
 namespace Clinic.Web.Pages.Patients;
 
 [Authorize]
 public class IndexModel : PageModel
 {
+    private static readonly string[] ColumnMap = ["fullName", "phone", "dateOfBirth", "gender", "createdAt"];
+
     private readonly IPatientService _patientService;
 
     public IndexModel(IPatientService patientService)
@@ -15,28 +17,48 @@ public class IndexModel : PageModel
         _patientService = patientService;
     }
 
-    public IReadOnlyList<PatientEntity> Patients { get; private set; } = Array.Empty<PatientEntity>();
-
-    public int CurrentPage { get; private set; }
-    public int PageSize { get; private set; } = 10;
-    public int TotalCount { get; private set; }
-    public int TotalPages { get; private set; }
-
-    public string SortBy { get; private set; } = "name";
-    public string SortDir { get; private set; } = "asc";
-
-    public async Task OnGetAsync(int pageNumber = 1, string? sortBy = "name", string? sortDir = "asc", CancellationToken ct = default)
+    public void OnGet()
     {
-        CurrentPage = pageNumber <= 0 ? 1 : pageNumber;
+    }
 
-        SortBy = string.IsNullOrWhiteSpace(sortBy) ? "name" : sortBy.ToLowerInvariant();
-        SortDir = string.IsNullOrWhiteSpace(sortDir) ? "asc" : sortDir.ToLowerInvariant();
-        var ascending = SortDir != "desc";
+    public async Task<IActionResult> OnGetPatientListAsync(
+        int draw = 1,
+        int start = 0,
+        int length = 10,
+        string? search = null,
+        CancellationToken ct = default)
+    {
+        var orderColumn = HttpContext.Request.Query["order[0][column]"].ToString();
+        var orderDir = HttpContext.Request.Query["order[0][dir]"].ToString();
+        bool ascending = !orderDir.Equals("desc", StringComparison.OrdinalIgnoreCase);
 
-        var (items, total) = await _patientService.GetPagedAsync(CurrentPage, PageSize, SortBy, ascending, ct);
-        Patients = items;
-        TotalCount = total;
-        TotalPages = (int)Math.Ceiling(total / (double)PageSize);
+        string? sortBy = null;
+        if (int.TryParse(orderColumn, out int colIndex) && colIndex >= 0 && colIndex < ColumnMap.Length)
+        {
+            sortBy = ColumnMap[colIndex];
+        }
+
+        var (items, filteredCount, totalCount) = await _patientService.SearchPagedAsync(
+            start, length, search, sortBy, ascending, ct);
+
+        return new JsonResult(new
+        {
+            draw,
+            recordsTotal = totalCount,
+            recordsFiltered = filteredCount,
+            data = items.Select(p => new
+            {
+                id = p.Id,
+                fullName = p.FullName,
+                patientCode = $"PT-{p.Id:D5}",
+                phone = p.Phone ?? "-",
+                dateOfBirth = p.DateOfBirth.ToString("dd/MM/yyyy"),
+                gender = p.Gender ?? "-",
+                email = p.Email ?? "-",
+                isActive = p.IsActive,
+                createdAt = p.CreatedAt.ToString("dd/MM/yyyy")
+            }).ToArray()
+        });
     }
 }
 
