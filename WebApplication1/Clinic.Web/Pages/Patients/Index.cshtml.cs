@@ -1,9 +1,11 @@
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Clinic.Services.Services.Patients;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using PatientEntity = Clinic.Services.Domain.Entities.Patient;
 
-namespace WebApplication1.Pages.Patients;
+namespace Clinic.Web.Pages.Patients;
 
+[Authorize]
 public class IndexModel : PageModel
 {
     private readonly IPatientService _patientService;
