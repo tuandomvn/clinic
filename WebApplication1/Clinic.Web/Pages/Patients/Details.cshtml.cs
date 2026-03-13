@@ -13,12 +13,16 @@ public class DetailsModel : PageModel
     private readonly IPatientService _patientService;
     private readonly ClinicDbContext _dbContext;
     private readonly ILogger<DetailsModel> _logger;
+    private readonly string _uploadPath;
 
-    public DetailsModel(IPatientService patientService, ClinicDbContext dbContext, ILogger<DetailsModel> logger)
+    public DetailsModel(IPatientService patientService, ClinicDbContext dbContext,
+        ILogger<DetailsModel> logger, IConfiguration configuration)
     {
         _patientService = patientService;
         _dbContext = dbContext;
         _logger = logger;
+        _uploadPath = configuration["FileStorage:UploadPath"]
+            ?? throw new InvalidOperationException("FileStorage:UploadPath is not configured.");
     }
 
     public Patient? Patient { get; set; }
@@ -157,9 +161,13 @@ public class DetailsModel : PageModel
         }
     }
 
-    public async Task<IActionResult> OnPostCreateActivityAsync([FromBody] CreateActivityRequest request, CancellationToken ct = default)
+    public async Task<IActionResult> OnPostCreateActivityAsync(CancellationToken ct = default)
     {
-        if (request.PatientId <= 0 || string.IsNullOrWhiteSpace(request.ContentText))
+        var patientIdStr = Request.Form["patientId"].ToString();
+        var contentText = Request.Form["contentText"].ToString();
+
+        if (!int.TryParse(patientIdStr, out var patientId) || patientId <= 0
+            || string.IsNullOrWhiteSpace(contentText))
         {
             return BadRequest(new { error = "Nội dung không được để trống." });
         }
@@ -169,11 +177,42 @@ public class DetailsModel : PageModel
             var activity = new Activity
             {
                 ActivityType = ActivityType.Post,
-                ContentText = request.ContentText.Trim(),
+                ContentText = contentText.Trim(),
                 CreatedBy = User.Identity?.Name ?? "Unknown",
-                PatientId = request.PatientId,
+                PatientId = patientId,
                 CreatedDate = DateTime.UtcNow
             };
+
+            // Handle uploaded images
+            var files = Request.Form.Files;
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+            var activityImagesDir = Path.Combine(_uploadPath, "activities");
+            Directory.CreateDirectory(activityImagesDir);
+
+            var savedImages = new List<ActivityImage>();
+
+            foreach (var file in files)
+            {
+                if (file.Length <= 0 || file.Length > 5 * 1024 * 1024) continue;
+
+                var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (!allowedExtensions.Contains(ext)) continue;
+
+                var fileName = $"act-{Guid.NewGuid():N}{ext}";
+                var filePath = Path.Combine(activityImagesDir, fileName);
+
+                await using var stream = new FileStream(filePath, FileMode.Create);
+                await file.CopyToAsync(stream, ct);
+
+                var image = new ActivityImage
+                {
+                    ImageUrl = $"/activities/{fileName}",
+                    Caption = file.FileName,
+                    CreatedDate = DateTime.UtcNow
+                };
+                activity.Images.Add(image);
+                savedImages.Add(image);
+            }
 
             _dbContext.Activities.Add(activity);
             await _dbContext.SaveChangesAsync(ct);
@@ -187,22 +226,21 @@ public class DetailsModel : PageModel
                 activityTypeDisplay = GetActivityTypeDisplay(activity.ActivityType),
                 createdDate = activity.CreatedDate.ToString("yyyy-MM-dd HH:mm"),
                 createdDateRelative = GetRelativeTime(activity.CreatedDate),
-                images = Array.Empty<object>()
+                images = savedImages.Select(img => new
+                {
+                    id = img.Id,
+                    imageUrl = img.ImageUrl,
+                    caption = img.Caption
+                }).ToArray()
             };
 
             return new JsonResult(result);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating activity for patient ID: {PatientId}", request.PatientId);
+            _logger.LogError(ex, "Error creating activity for patient ID: {PatientId}", patientId);
             return StatusCode(500, new { error = "Lỗi khi tạo bài viết." });
         }
-    }
-
-    public class CreateActivityRequest
-    {
-        public int PatientId { get; set; }
-        public string ContentText { get; set; } = string.Empty;
     }
 
     private static string GetRelativeTime(DateTime date)

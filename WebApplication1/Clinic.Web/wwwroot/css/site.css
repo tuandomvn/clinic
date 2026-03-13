@@ -332,7 +332,7 @@ body {
 .feed-card {
   background: #fff;
   border-bottom: 1px solid rgba(0,0,0,0.08);
-  padding: 1rem 0;
+  padding: 1rem 0 1rem 1rem;
 }
 .feed-card:first-child { padding-top: 0; }
 .feed-card:last-child { border-bottom: none; }
@@ -476,6 +476,47 @@ body {
   align-items: center;
   justify-content: center;
   padding: 0;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: none;
+}
+.feed-image-viewer-close:hover { background: rgba(0,0,0,0.7); color: #fff; }
+
+.feed-image-viewer-prev,
+.feed-image-viewer-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  font-size: 1.6rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  border: none;
+  transition: background 0.15s;
+}
+.feed-image-viewer-prev { left: 16px; }
+.feed-image-viewer-next { right: 16px; }
+.feed-image-viewer-prev:hover,
+.feed-image-viewer-next:hover { background: rgba(0,0,0,0.7); color: #fff; }
+
+.feed-image-viewer-counter {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: #fff;
+  font-size: 0.9rem;
+  background: rgba(0,0,0,0.5);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
 }
 
 /* ===== Feed filter buttons ===== */

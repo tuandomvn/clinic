@@ -166,11 +166,18 @@ else
                             <textarea id="postContent" class="form-control form-control-sm" rows="2"
                                 placeholder="Viết ghi chú về bệnh nhân @Model.Patient.FullName..."
                                 style="resize: vertical;"></textarea>
-                            <div class="d-flex justify-content-end mt-2 gap-2">
-                                <span id="postCharCount" class="text-muted small align-self-center"></span>
-                                <button class="btn btn-primary btn-sm px-3" id="btnPost" disabled>
-                                    Đăng
+                            <div id="imagePreviewContainer" class="d-flex flex-wrap gap-2 mt-2" style="display:none !important;"></div>
+                            <input type="file" id="postImages" multiple accept="image/*" style="display:none;" />
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="btnPickImages" title="Thêm ảnh">
+                                    📷 Ảnh
                                 </button>
+                                <div class="d-flex gap-2 align-items-center">
+                                    <span id="postCharCount" class="text-muted small"></span>
+                                    <button class="btn btn-primary btn-sm px-3" id="btnPost" disabled>
+                                        Đăng
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -239,12 +246,61 @@ else
             const postContent = document.getElementById('postContent');
             const btnPost = document.getElementById('btnPost');
             const postCharCount = document.getElementById('postCharCount');
+            const btnPickImages = document.getElementById('btnPickImages');
+            const postImagesInput = document.getElementById('postImages');
+            const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+            let selectedFiles = [];
+
+            function updatePostButton() {
+                const hasText = postContent.value.trim().length > 0;
+                const hasImages = selectedFiles.length > 0;
+                btnPost.disabled = !hasText && !hasImages;
+            }
+
+            function renderImagePreviews() {
+                imagePreviewContainer.innerHTML = '';
+                if (selectedFiles.length === 0) {
+                    imagePreviewContainer.style.display = 'none';
+                    return;
+                }
+                imagePreviewContainer.style.cssText = 'display: flex !important;';
+                selectedFiles.forEach((file, i) => {
+                    const url = URL.createObjectURL(file);
+                    const wrap = document.createElement('div');
+                    wrap.className = 'position-relative';
+                    wrap.style.cssText = 'width:72px;height:72px;';
+                    wrap.innerHTML = `<img src="${url}" style="width:72px;height:72px;object-fit:cover;border-radius:6px;border:1px solid #dee2e6;" />
+                        <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                            style="width:20px;height:20px;padding:0;font-size:0.65rem;line-height:20px;border-radius:50%;transform:translate(30%,-30%);"
+                            data-remove-idx="${i}">&times;</button>`;
+                    imagePreviewContainer.appendChild(wrap);
+                });
+                // Remove button handler
+                imagePreviewContainer.querySelectorAll('[data-remove-idx]').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        selectedFiles.splice(parseInt(this.dataset.removeIdx), 1);
+                        renderImagePreviews();
+                        updatePostButton();
+                    });
+                });
+            }
+
+            if (btnPickImages && postImagesInput) {
+                btnPickImages.addEventListener('click', () => postImagesInput.click());
+                postImagesInput.addEventListener('change', function () {
+                    const newFiles = Array.from(this.files).filter(f => f.size <= 5 * 1024 * 1024);
+                    selectedFiles = selectedFiles.concat(newFiles);
+                    renderImagePreviews();
+                    updatePostButton();
+                    this.value = '';
+                });
+            }
 
             if (postContent && btnPost) {
                 postContent.addEventListener('input', function () {
                     const len = this.value.trim().length;
-                    btnPost.disabled = len === 0;
                     postCharCount.textContent = len > 0 ? `${len} ký tự` : '';
+                    updatePostButton();
                 });
 
                 // Auto-expand textarea
@@ -255,20 +311,24 @@ else
 
                 btnPost.addEventListener('click', async function () {
                     const text = postContent.value.trim();
-                    if (!text) return;
+                    if (!text && selectedFiles.length === 0) return;
 
                     btnPost.disabled = true;
                     btnPost.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span>';
 
                     try {
                         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                        const formData = new FormData();
+                        formData.append('patientId', patientId);
+                        formData.append('contentText', text);
+                        selectedFiles.forEach(f => formData.append('files', f));
+
                         const res = await fetch(`/Patients/Details?handler=CreateActivity`, {
                             method: 'POST',
                             headers: {
-                                'Content-Type': 'application/json',
                                 'RequestVerificationToken': token || ''
                             },
-                            body: JSON.stringify({ patientId: patientId, contentText: text })
+                            body: formData
                         });
 
                         if (!res.ok) throw new Error('Post failed');
@@ -289,6 +349,8 @@ else
                         postContent.value = '';
                         postContent.style.height = 'auto';
                         postCharCount.textContent = '';
+                        selectedFiles = [];
+                        renderImagePreviews();
                     } catch (err) {
                         console.error('Error posting activity:', err);
                         alert('Lỗi khi đăng bài viết. Vui lòng thử lại.');
@@ -337,31 +399,34 @@ else
                 'General': 'bg-dark'
             };
 
-            function buildImageGrid(images) {
+            function buildImageGrid(images, galleryId) {
                 if (!images || images.length === 0) return '';
+                // Store images for lightbox navigation
+                window._galleries = window._galleries || {};
+                window._galleries[galleryId] = images.map(img => img.imageUrl);
                 const count = images.length;
 
                 if (count === 1) {
                     return `<div class="feed-images mt-2">
-                        <img src="${images[0].imageUrl}" alt="${images[0].caption || ''}" class="feed-img feed-img-single" onclick="openImageViewer(this.src)" />
+                        <img src="${images[0].imageUrl}" alt="${images[0].caption || ''}" class="feed-img feed-img-single" onclick="openImageViewer('${galleryId}', 0)" />
                     </div>`;
                 }
                 if (count === 2) {
                     return `<div class="feed-images feed-images-2 mt-2">
-                        ${images.map(img => `<img src="${img.imageUrl}" alt="${img.caption || ''}" class="feed-img" onclick="openImageViewer(this.src)" />`).join('')}
+                        ${images.map((img, i) => `<img src="${img.imageUrl}" alt="${img.caption || ''}" class="feed-img" onclick="openImageViewer('${galleryId}', ${i})" />`).join('')}
                     </div>`;
                 }
                 // 3+ images: show first 3 in grid, with +N overlay on the 3rd if more
                 const shown = images.slice(0, 3);
                 const extra = count - 3;
                 let html = `<div class="feed-images feed-images-grid mt-2">`;
-                html += `<img src="${shown[0].imageUrl}" alt="${shown[0].caption || ''}" class="feed-img feed-img-main" onclick="openImageViewer(this.src)" />`;
+                html += `<img src="${shown[0].imageUrl}" alt="${shown[0].caption || ''}" class="feed-img feed-img-main" onclick="openImageViewer('${galleryId}', 0)" />`;
                 html += `<div class="feed-img-side">`;
-                html += `<img src="${shown[1].imageUrl}" alt="${shown[1].caption || ''}" class="feed-img" onclick="openImageViewer(this.src)" />`;
+                html += `<img src="${shown[1].imageUrl}" alt="${shown[1].caption || ''}" class="feed-img" onclick="openImageViewer('${galleryId}', 1)" />`;
                 html += `<div class="feed-img-last-wrap">`;
-                html += `<img src="${shown[2].imageUrl}" alt="${shown[2].caption || ''}" class="feed-img" onclick="openImageViewer(this.src)" />`;
+                html += `<img src="${shown[2].imageUrl}" alt="${shown[2].caption || ''}" class="feed-img" onclick="openImageViewer('${galleryId}', 2)" />`;
                 if (extra > 0) {
-                    html += `<div class="feed-img-overlay">+${extra}</div>`;
+                    html += `<div class="feed-img-overlay" onclick="openImageViewer('${galleryId}', 2)">+${extra}</div>`;
                 }
                 html += `</div></div></div>`;
                 return html;
@@ -370,6 +435,7 @@ else
             function renderActivityCard(a) {
                 const icon = typeIcons[a.activityType] || '📌';
                 const badgeClass = typeBadgeClass[a.activityType] || 'bg-dark';
+                const galleryId = 'gallery-' + a.id;
 
                 return `
                 <div class="feed-card" data-type="${a.activityType}">
@@ -382,7 +448,7 @@ else
                     </div>
                     <div class="feed-card-body">
                         <p class="feed-content">${a.contentText}</p>
-                        ${buildImageGrid(a.images)}
+                        ${buildImageGrid(a.images, galleryId)}
                     </div>
                     <div class="feed-card-footer">
                         <span class="text-muted small">${a.createdDate}</span>
@@ -464,14 +530,61 @@ else
             });
         });
 
-        // Simple image viewer
-        function openImageViewer(src) {
+        // Image lightbox with Previous / Next navigation
+        function openImageViewer(galleryId, index) {
+            const images = (window._galleries || {})[galleryId];
+            if (!images || images.length === 0) return;
+
+            let current = index;
+
+            // Remove existing viewer if any
+            const existing = document.getElementById('imgViewerOverlay');
+            if (existing) existing.remove();
+
             const overlay = document.createElement('div');
+            overlay.id = 'imgViewerOverlay';
             overlay.className = 'feed-image-viewer';
-            overlay.innerHTML = `<div class="feed-image-viewer-backdrop" onclick="this.parentElement.remove()"></div>
-                <img src="${src}" class="feed-image-viewer-img" />
-                <button class="btn btn-sm btn-light feed-image-viewer-close" onclick="this.parentElement.remove()">&times;</button>`;
+            overlay.innerHTML = `
+                <div class="feed-image-viewer-backdrop"></div>
+                <img class="feed-image-viewer-img" />
+                <div class="feed-image-viewer-counter"></div>
+                <button class="btn feed-image-viewer-close">&times;</button>
+                <button class="btn feed-image-viewer-prev">&#10094;</button>
+                <button class="btn feed-image-viewer-next">&#10095;</button>`;
             document.body.appendChild(overlay);
+
+            const img = overlay.querySelector('.feed-image-viewer-img');
+            const counter = overlay.querySelector('.feed-image-viewer-counter');
+            const btnPrev = overlay.querySelector('.feed-image-viewer-prev');
+            const btnNext = overlay.querySelector('.feed-image-viewer-next');
+            const btnClose = overlay.querySelector('.feed-image-viewer-close');
+            const backdrop = overlay.querySelector('.feed-image-viewer-backdrop');
+
+            function show(i) {
+                current = i;
+                img.src = images[current];
+                counter.textContent = images.length > 1 ? `${current + 1} / ${images.length}` : '';
+                btnPrev.style.display = images.length > 1 ? '' : 'none';
+                btnNext.style.display = images.length > 1 ? '' : 'none';
+            }
+
+            function close() { overlay.remove(); document.removeEventListener('keydown', onKey); }
+            function prev() { show((current - 1 + images.length) % images.length); }
+            function next() { show((current + 1) % images.length); }
+
+            function onKey(e) {
+                if (e.key === 'Escape') close();
+                else if (e.key === 'ArrowLeft') prev();
+                else if (e.key === 'ArrowRight') next();
+            }
+
+            backdrop.addEventListener('click', close);
+            btnClose.addEventListener('click', close);
+            btnPrev.addEventListener('click', function (e) { e.stopPropagation(); prev(); });
+            btnNext.addEventListener('click', function (e) { e.stopPropagation(); next(); });
+            document.addEventListener('keydown', onKey);
+
+            show(current);
         }
     </script>
 }
