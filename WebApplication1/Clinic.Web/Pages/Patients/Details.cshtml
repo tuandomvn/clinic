@@ -18,7 +18,10 @@ else
         <div>
             <a class="btn btn-sm btn-outline-secondary me-2" href="/Patients">Quay lại</a>
             <a class="btn btn-sm btn-primary" href="/Appointments/Create?patientId=@Model.Patient.Id">Hẹn mới</a>
-            <a class="btn btn-sm btn-primary" href="/Visits/HealthRecord?appointmentId=&patientId=@Model.Patient.Id">Khám bệnh</a>
+            <form method="post" asp-page-handler="CreateVisit" class="d-inline">
+                <input type="hidden" name="id" value="@Model.Patient.Id" />
+                <button type="submit" class="btn btn-sm btn-primary">Khám bệnh</button>
+            </form>
         </div>
     </div>
 

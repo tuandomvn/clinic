@@ -277,6 +277,30 @@ public class DetailsModel : PageModel
         }
     }
 
+    public async Task<IActionResult> OnPostCreateVisitAsync(CancellationToken ct = default)
+    {
+        if (Id <= 0)
+            return BadRequest();
+
+        int staffId = 1; // default
+        var staffIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (staffIdClaim is not null && int.TryParse(staffIdClaim.Value, out var sid))
+            staffId = sid;
+
+        var record = new HealthRecord
+        {
+            PatientId = Id,
+            StaffId = staffId,
+            VisitDate = DateTime.UtcNow,
+            CreatedAt = DateTime.UtcNow
+        };
+
+        _dbContext.HistoryRecords.Add(record);
+        await _dbContext.SaveChangesAsync(ct);
+
+        return RedirectToPage("/Visits/HealthRecord", new { id = record.Id });
+    }
+
     private static string GetRelativeTime(DateTime date)
     {
         var span = DateTime.UtcNow - date;

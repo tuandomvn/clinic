@@ -4,6 +4,7 @@ using Clinic.Services.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Services.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    partial class ClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260313153535_AddClinicalExam")]
+    partial class AddClinicalExam
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56530,46 +56533,6 @@ namespace Clinic.Services.Migrations
                         });
                 });
 
-            modelBuilder.Entity("Clinic.Services.Domain.Entities.ServiceOrder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("HealthRecordId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Notes")
-                        .HasMaxLength(1000)
-                        .HasColumnType("varchar(1000)");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ServiceName")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("varchar(300)");
-
-                    b.Property<decimal?>("UnitPrice")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("HealthRecordId");
-
-                    b.ToTable("ServiceOrders");
-                });
-
             modelBuilder.Entity("Clinic.Services.Domain.Entities.Staff", b =>
                 {
                     b.Property<int>("Id")
@@ -56808,7 +56771,7 @@ namespace Clinic.Services.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "tok0Ee0/1jksC/QThROL30lpd8pST/NY4rsxRJD8DNoX0YfvY3I08wLo1hRtq8Je",
+                            PasswordHash = "OS+BeqeVbGmSJK4/Y55rn4KN3D9MCelHh5ChQ7o6tGg+/hIJDGQoOh6oHJtbHJ9/",
                             Role = "Doctor",
                             StaffId = 1,
                             Username = "doctor1"
@@ -56818,7 +56781,7 @@ namespace Clinic.Services.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "K5DmNNbDUgUbB+mOiNJpYHdbkjiwTwycdKdn6oRSi/PFcjsgQtmV4PSugmBp9DhH",
+                            PasswordHash = "w8wvkDXsgqD7dLEA6Hr4N1D/jcwTL0vxhQz/mbDRvkAUAH9zfINLY26ATYxVSY/J",
                             Role = "Nurse",
                             StaffId = 2,
                             Username = "nurse1"
@@ -56828,7 +56791,7 @@ namespace Clinic.Services.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "qbDSXTvZ0wJ09hHGYrgQ8S3fJcuotixI5R/a8XT0t7g1D9HU12cDy5QgY+0wVZ7z",
+                            PasswordHash = "Xf7HIc9EkhHB2S3LKty06Q+sE9eUzqYh5SfZP6HfZdlFwpta4PJ0FFZ+dNUhdrSM",
                             Role = "Doctor",
                             StaffId = 3,
                             Username = "doctor2"
@@ -56838,7 +56801,7 @@ namespace Clinic.Services.Migrations
                             Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "K101tkg5at70YXdK/uibRYRDXIpiSrZy313qUhl7APCaH9uqylDTw5PyK9doPmIC",
+                            PasswordHash = "zY4QQnwn2YKe1FQmM9/cYGfIZVnmlqeW0M7OXMTTOJAY8PNgzJuyH0klKwcNUJr2",
                             Role = "Nurse",
                             StaffId = 4,
                             Username = "nurse2"
@@ -56944,17 +56907,6 @@ namespace Clinic.Services.Migrations
                     b.Navigation("Patient");
                 });
 
-            modelBuilder.Entity("Clinic.Services.Domain.Entities.ServiceOrder", b =>
-                {
-                    b.HasOne("Clinic.Services.Domain.Entities.HealthRecord", "HealthRecord")
-                        .WithMany("ServiceOrders")
-                        .HasForeignKey("HealthRecordId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("HealthRecord");
-                });
-
             modelBuilder.Entity("Clinic.Services.Domain.Entities.SurgerySchedule", b =>
                 {
                     b.HasOne("Clinic.Services.Domain.Entities.Patient", "Patient")
@@ -57006,8 +56958,6 @@ namespace Clinic.Services.Migrations
                     b.Navigation("ClinicalExams");
 
                     b.Navigation("Prescriptions");
-
-                    b.Navigation("ServiceOrders");
                 });
 
             modelBuilder.Entity("Clinic.Services.Domain.Entities.Patient", b =>

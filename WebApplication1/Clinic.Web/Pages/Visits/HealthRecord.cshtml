@@ -1,12 +1,17 @@
 @page
+@using Clinic.Services.Domain.Entities
+@model Clinic.Web.Pages.Visits.HealthRecordModel
 @{
     ViewData["Title"] = "Health Record";
+    var r = Model.Record;
+    var patient = r.Patient;
+    var staff = r.Staff;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Kết quả chẩn đoán / Hồ sơ sức khỏe</h2>
     <div>
-        <a class="btn btn-sm btn-outline-secondary me-2" href="/Patients/Details?id=123">Back</a>
+        <a class="btn btn-sm btn-outline-secondary me-2" href="/Patients/Details?id=@patient.Id">Back</a>
     </div>
 </div>
 <div class="card p-3 mb-4">
@@ -15,230 +20,574 @@
             <!-- Nav tabs -->
             <ul class="nav nav-tabs mb-3" id="diagnosisTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="treatment-tab" data-bs-toggle="tab" data-bs-target="#treatment" type="button" role="tab" aria-controls="treatment" aria-selected="true">Báo cáo y tế</button>
+                    <button class="nav-link" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button" role="tab" aria-controls="labs" aria-selected="false">Khám lâm sàng</button>
                 </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="services-tab" data-bs-toggle="tab" data-bs-target="#services" type="button" role="tab" aria-controls="services" aria-selected="false">Dịch vụ chỉ định</button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="labs-tab" data-bs-toggle="tab" data-bs-target="#labs" type="button" role="tab" aria-controls="labs" aria-selected="false">Kết quả xét nghiệm</button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="imaging-tab" data-bs-toggle="tab" data-bs-target="#imaging" type="button" role="tab" aria-controls="imaging" aria-selected="false">Kết quả chẩn đoán hình ảnh</button>
-                </li>
-                
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">Y lệnh nội trú</button>
-                </li>
-                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="prescription-tab" data-bs-toggle="tab" data-bs-target="#prescription" type="button" role="tab" aria-controls="prescription" aria-selected="false">Đơn thuốc</button>
                 </li>
-
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="treatment-tab" data-bs-toggle="tab" data-bs-target="#treatment" type="button" role="tab" aria-controls="treatment" aria-selected="true">Báo cáo y tế</button>
+                </li>
                 <li class="nav-item" role="presentation">
                     <button class="nav-link" id="followup-tab" data-bs-toggle="tab" data-bs-target="#followup" type="button" role="tab" aria-controls="followup" aria-selected="false">Theo dõi</button>
                 </li>
             </ul>
 
+            <div class="mb-3">
+                <button class="btn btn-primary" onclick="window.print()">In Báo cáo</button>
+            </div>
+
             <!-- Tab panes -->
             <div class="tab-content">
+                <!-- Báo cáo y tế (active) -->
                 <div class="tab-pane fade show active" id="treatment" role="tabpanel" aria-labelledby="treatment-tab">
+                    @Html.AntiForgeryToken()
                     <div class="row">
                         <div class="col-md-8">
                             <h5>Thông tin bệnh nhân</h5>
                             <div class="d-flex align-items-center mb-2">
                                 <div>
-                                    <div class="fw-semibold">Nguyen Van A</div>
-                                    <div class="small text-muted">ID: PT-00123 — 1988-04-12 — Male</div>
+                                    <div class="fw-semibold">@patient.FullName</div>
+                                    <div class="small text-muted">
+                                        ID: @patient.Id
+                                        — @patient.DateOfBirth.ToString("yyyy-MM-dd")
+                                        — @(patient.Gender ?? "-")
+                                    </div>
                                 </div>
-
-                
                             </div>
 
                             <h6 class="mt-3">Tóm tắt khám</h6>
-                            <p class="text-muted">Bác sĩ: Dr. Tran Thi B — 2026-03-05 09:30</p>
+                            <p class="text-muted">
+                                Bác sĩ: @staff.FullName — @r.VisitDate.ToString("yyyy-MM-dd HH:mm")
+                            </p>
 
-                            <h6 class="mt-3">Khám lâm sàng</h6>
-                            <ol>
-                                <li>Khám toàn thân: tỉnh táo, tiếp xúc tốt</li>
-                                <li>Da: màu sắc bình thường, không phù.</li>
-                                <li>Nhiệt độ, mạch, huyết áp bình thường.</li>
-                            </ol>
+                            <div class="mb-3">
+                                <label for="inputDiagnosis" class="form-label fw-semibold">Chẩn đoán</label>
+                                <textarea id="inputDiagnosis" class="form-control" rows="3" placeholder="Nhập chẩn đoán...">@(r.Diagnosis ?? "")</textarea>
+                            </div>
 
-                            <h6>Chuẩn đoán</h6>
-                            <p>Viêm họng cấp do virus. Không có dấu hiệu biến chứng. Khuyến nghị nghỉ ngơi, bù nước và theo dõi sốt.</p>
+                            <div class="mb-3">
+                                <label for="inputSymptoms" class="form-label fw-semibold">Triệu chứng</label>
+                                <textarea id="inputSymptoms" class="form-control" rows="3" placeholder="Nhập triệu chứng...">@(r.Symptoms ?? "")</textarea>
+                            </div>
 
-                            <h6 class="mt-3">Kế hoạch điều trị</h6>
-                            <ol>
-                                <li>Chăm sóc triệu chứng, hạ sốt khi cần.</li>
-                                <li>Uống nhiều nước, súc miệng nước muối ấm.</li>
-                                <li>Tá hẹn kiểm tra lại nếu sốt &gt; 3 ngày hoặc xuất hiện khó thở.</li>
-                            </ol>
+                            <div class="mb-3">
+                                <label for="inputNotes" class="form-label fw-semibold">Ghi chú</label>
+                                <textarea id="inputNotes" class="form-control" rows="3" placeholder="Nhập ghi chú...">@(r.Notes ?? "")</textarea>
+                            </div>
 
-                            <h6>Dặn dò</h6>
-                            <p>Khuyến nghị nghỉ ngơi, bù nước và theo dõi sốt.</p>
-
-                            <h6>Tái khám</h6>
-                            <p>Ngày 20/12/2025.</p>
+                            <div class="d-flex align-items-center gap-2">
+                                <button class="btn btn-primary" id="btnSaveRecord">
+                                    <i class="bi bi-floppy"></i> Lưu
+                                </button>
+                                <span class="small text-success d-none" id="saveSuccess">
+                                    <i class="bi bi-check-circle"></i> Đã lưu thành công
+                                </span>
+                            </div>
                         </div>
 
                         <div class="col-md-4">
                             <h6>Chẩn đoán nhanh</h6>
                             <div class="card p-3 mb-3">
-                                <div class="fw-semibold">Chuẩn đoán chính</div>
-                                <div class="text-muted small">Viêm họng cấp</div>
+                                <div class="fw-semibold">Chẩn đoán chính</div>
+                                <div class="text-muted small" id="previewDiagnosis">@(r.Diagnosis ?? "Chưa có")</div>
                             </div>
 
                             <h6>Triệu chứng chính</h6>
-                            <div class="small text-muted">Ho, sốt nhẹ, đau họng</div>
+                            <div class="small text-muted" id="previewSymptoms">@(r.Symptoms ?? "Chưa có")</div>
 
                             <h6 class="mt-3">Ghi chú bác sĩ</h6>
-                            <div class="small text-muted">Bệnh nhân được khuyến nghị nghỉ ngơi và theo dõi. Không kê kháng sinh ngay.</div>
+                            <div class="small text-muted" id="previewNotes">@(r.Notes ?? "Chưa có")</div>
                         </div>
                     </div>
                 </div>
 
+                <!-- Khám lâm sàng -->
+                @{
+                    var exam = r.ClinicalExams.FirstOrDefault();
+                }
+                <div class="tab-pane fade" id="labs" role="tabpanel" aria-labelledby="labs-tab">
+                    <h6 class="mb-3">Sinh hiệu</h6>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered align-middle mb-0" style="font-size:0.85rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:180px;">Chỉ số</th>
+                                    <th>Giá trị</th>
+                                    <th style="width:100px;">Đơn vị</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold">Nhiệt độ</td>
+                                    <td><input type="number" step="0.1" class="form-control form-control-sm exam-input" id="examTemperature" value="@(exam?.Temperature)" placeholder="37.0" /></td>
+                                    <td class="text-muted">°C</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Huyết áp</td>
+                                    <td><input type="text" class="form-control form-control-sm exam-input" id="examBloodPressure" value="@(exam?.BloodPressure)" placeholder="120/80" /></td>
+                                    <td class="text-muted">mmHg</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Mạch</td>
+                                    <td><input type="number" class="form-control form-control-sm exam-input" id="examHeartRate" value="@(exam?.HeartRate)" placeholder="72" /></td>
+                                    <td class="text-muted">lần/phút</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Nhịp thở</td>
+                                    <td><input type="number" class="form-control form-control-sm exam-input" id="examRespiratoryRate" value="@(exam?.RespiratoryRate)" placeholder="18" /></td>
+                                    <td class="text-muted">lần/phút</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">SpO2</td>
+                                    <td><input type="number" step="0.1" class="form-control form-control-sm exam-input" id="examSpO2" value="@(exam?.SpO2)" placeholder="98" /></td>
+                                    <td class="text-muted">%</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Cân nặng</td>
+                                    <td><input type="number" step="0.1" class="form-control form-control-sm exam-input" id="examWeight" value="@(exam?.Weight)" placeholder="60" /></td>
+                                    <td class="text-muted">kg</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Chiều cao</td>
+                                    <td><input type="number" step="0.1" class="form-control form-control-sm exam-input" id="examHeight" value="@(exam?.Height)" placeholder="165" /></td>
+                                    <td class="text-muted">cm</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h6 class="mb-3">Khám tổng quát</h6>
+                    <div class="table-responsive mb-3">
+                        <table class="table table-bordered align-middle mb-0" style="font-size:0.85rem;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:180px;">Hạng mục</th>
+                                    <th>Mô tả</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-semibold">Toàn thân</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examGeneralCondition" rows="2" placeholder="Tỉnh táo, tiếp xúc tốt...">@(exam?.GeneralCondition)</textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Da, niêm mạc</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examSkinExam" rows="2" placeholder="Màu sắc bình thường, không phù...">@(exam?.SkinExam)</textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Đầu, cổ</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examHeadNeckExam" rows="2" placeholder="Hạch không sưng...">@(exam?.HeadNeckExam)</textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Ngực, phổi</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examChestExam" rows="2" placeholder="Phổi trong, rì rào phế nang rõ...">@(exam?.ChestExam)</textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Bụng</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examAbdomenExam" rows="2" placeholder="Bụng mềm, không đau...">@(exam?.AbdomenExam)</textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Chi, cơ xương khớp</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examExtremitiesExam" rows="2" placeholder="Vận động bình thường...">@(exam?.ExtremitiesExam)</textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Thần kinh</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examNeurologyExam" rows="2" placeholder="Phản xạ bình thường...">@(exam?.NeurologyExam)</textarea></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-semibold">Khám khác</td>
+                                    <td><textarea class="form-control form-control-sm exam-input" id="examOtherFindings" rows="2" placeholder="Ghi chú thêm...">@(exam?.OtherFindings)</textarea></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-primary" id="btnSaveExam">
+                            <i class="bi bi-floppy"></i> Lưu khám lâm sàng
+                        </button>
+                        <span class="small text-success d-none" id="saveExamSuccess">
+                            <i class="bi bi-check-circle"></i> Đã lưu thành công
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Dịch vụ chỉ định -->
                 <div class="tab-pane fade" id="services" role="tabpanel" aria-labelledby="services-tab">
                     <h6 class="mb-3">Dịch vụ chỉ định</h6>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
+                    <div class="table-responsive mb-3">
+                        <table class="table table-bordered align-middle mb-0" style="font-size:0.85rem;" id="serviceTable">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Dịch vụ</th>
-                                    <th>Mô tả</th>
+                                    <th style="width:30px;">#</th>
+                                    <th>Tên dịch vụ</th>
+                                    <th style="width:80px;">Số lượng</th>
+                                    <th style="width:130px;">Đơn giá</th>
                                     <th>Ghi chú</th>
+                                    <th style="width:50px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Khám tai mũi họng</td>
-                                    <td>Khám lâm sàng chuyên khoa</td>
-                                    <td>-</td>
-                                </tr>
-                                <tr>
-                                    <td>Xét nghiệm nhanh</td>
-                                    <td>Test virus</td>
-                                    <td>Kết quả dương tính</td>
-                                </tr>
+                                @if (r.ServiceOrders.Any())
+                                {
+                                    var sIdx = 0;
+                                    @foreach (var s in r.ServiceOrders)
+                                    {
+                                        sIdx++;
+                                        <tr>
+                                            <td class="text-center svc-row-num">@sIdx</td>
+                                            <td><input type="text" class="form-control form-control-sm svc-name" value="@s.ServiceName" placeholder="Tên dịch vụ..." /></td>
+                                            <td><input type="number" min="1" class="form-control form-control-sm svc-qty" value="@s.Quantity" /></td>
+                                            <td><input type="number" step="1000" min="0" class="form-control form-control-sm svc-price" value="@(s.UnitPrice?.ToString("0"))" placeholder="0" /></td>
+                                            <td><input type="text" class="form-control form-control-sm svc-notes" value="@s.Notes" placeholder="Ghi chú..." /></td>
+                                            <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger btn-remove-svc" title="Xóa"><i class="bi bi-trash"></i></button></td>
+                                        </tr>
+                                    }
+                                }
                             </tbody>
                         </table>
                     </div>
-                </div>
-
-                <div class="tab-pane fade" id="labs" role="tabpanel" aria-labelledby="labs-tab">
-                    <h6 class="mb-3">Kết quả xét nghiệm</h6>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Xét nghiệm</th>
-                                    <th>Kết quả</th>
-                                    <th>Tham chiếu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>CRP</td>
-                                    <td>3.2 mg/L</td>
-                                    <td>&lt;5 mg/L</td>
-                                </tr>
-                                <tr>
-                                    <td>WBC</td>
-                                    <td>6.8 x10<sup>9</sup>/L</td>
-                                    <td>4.0 - 11.0 x10<sup>9</sup>/L</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-3">
-                        <a class="btn btn-primary" href="/Visits/NextAppointment?appointmentId=3">Upload</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-success" id="btnAddService"><i class="bi bi-plus-lg"></i> Thêm dịch vụ</button>
+                        <button class="btn btn-primary" id="btnSaveServices"><i class="bi bi-floppy"></i> Lưu dịch vụ</button>
+                        <span class="small text-success d-none" id="saveServicesSuccess"><i class="bi bi-check-circle"></i> Đã lưu thành công</span>
                     </div>
                 </div>
 
-                <div class="tab-pane fade" id="imaging" role="tabpanel" aria-labelledby="imaging-tab">
-                    <h6 class="mb-3">Kết quả chẩn đoán hình ảnh</h6>
-                    @* <p class="text-muted">Không có kết quả hình ảnh chỉ định cho lần khám này.</p> *@
-                    <!-- Example image card -->
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="card p-2 mb-2">
-                                <img src="~/images/473020376_122134386002459489_5010187318207915830_n.jpg" />
-                                <div class="small text-muted mt-2">Chest X-ray — 2026-03-05</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-3">
-                        <a class="btn btn-primary" href="/Visits/NextAppointment?appointmentId=3">Upload</a>
-                    </div>
-                </div>
-
-                <div class="tab-pane fade" id="orders" role="tabpanel" aria-labelledby="orders-tab">
-                    <h6 class="mb-3">Y lệnh nội trú</h6>
-                    <p class="text-muted">Không có y lệnh nội trú cho bệnh nhân này.</p>
-                </div>
-
+                <!-- Đơn thuốc -->
                 <div class="tab-pane fade" id="prescription" role="tabpanel" aria-labelledby="prescription-tab">
                     <h6 class="mb-3">Đơn thuốc</h6>
-                    <div class="table-responsive">
-                        <table class="table align-middle">
-                            <thead>
+                    <div class="table-responsive mb-3">
+                        <table class="table table-bordered align-middle mb-0" style="font-size:0.85rem;" id="prescriptionTable">
+                            <thead class="table-light">
                                 <tr>
-                                    <th>Thuốc</th>
-                                    <th>Liều</th>
-                                    <th>Số lượng</th>
+                                    <th style="width:30px;">#</th>
+                                    <th>Tên thuốc</th>
+                                    <th style="width:110px;">Liều dùng</th>
+                                    <th style="width:110px;">Tần suất</th>
+                                    <th style="width:100px;">Thời gian</th>
                                     <th>Hướng dẫn</th>
+                                    <th style="width:50px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Paracetamol 500mg</td>
-                                    <td>1 viên</td>
-                                    <td>10</td>
-                                    <td>Uống khi sốt, mỗi 4-6 giờ nếu cần</td>
-                                </tr>
-                                <tr>
-                                    <td>Thuốc ho dạng siro</td>
-                                    <td>10 ml</td>
-                                    <td>1 chai</td>
-                                    <td>Uống 3 lần/ngày sau ăn</td>
-                                </tr>
+                                @if (r.Prescriptions.Any())
+                                {
+                                    var pIdx = 0;
+                                    @foreach (var p in r.Prescriptions)
+                                    {
+                                        pIdx++;
+                                        <tr>
+                                            <td class="text-center rx-row-num">@pIdx</td>
+                                            <td><input type="text" class="form-control form-control-sm rx-name" value="@p.MedicineName" placeholder="Tên thuốc..." /></td>
+                                            <td><input type="text" class="form-control form-control-sm rx-dosage" value="@p.Dosage" placeholder="1 viên" /></td>
+                                            <td><input type="text" class="form-control form-control-sm rx-frequency" value="@p.Frequency" placeholder="3 lần/ngày" /></td>
+                                            <td><input type="text" class="form-control form-control-sm rx-duration" value="@p.Duration" placeholder="5 ngày" /></td>
+                                            <td><input type="text" class="form-control form-control-sm rx-instructions" value="@p.Instructions" placeholder="Uống sau ăn..." /></td>
+                                            <td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger btn-remove-rx" title="Xóa"><i class="bi bi-trash"></i></button></td>
+                                        </tr>
+                                    }
+                                }
                             </tbody>
                         </table>
                     </div>
-                    <div class="mt-3">
-                        <a class="btn btn-primary" href="/Visits/NextAppointment?appointmentId=3">Upload</a>
+                    <div class="d-flex align-items-center gap-2">
+                        <button class="btn btn-sm btn-outline-success" id="btnAddPrescription"><i class="bi bi-plus-lg"></i> Thêm thuốc</button>
+                        <button class="btn btn-primary" id="btnSavePrescriptions"><i class="bi bi-floppy"></i> Lưu đơn thuốc</button>
+                        <span class="small text-success d-none" id="savePrescriptionsSuccess"><i class="bi bi-check-circle"></i> Đã lưu thành công</span>
                     </div>
                 </div>
 
+                <!-- Theo dõi (placeholder) -->
                 <div class="tab-pane fade" id="followup" role="tabpanel" aria-labelledby="followup-tab">
-                    <h6 class="mb-3">Uống thuốc được 3 ngày</h6>
-                    <p class="text-muted">Thuốc đáp ứng tốt.</p>
-
-                    <h6 class="mb-3">Theo dõi — Hình ảnh sau mổ / sau khám</h6>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="card p-2">
-                                <img src="~/images/472915922_122134386536459489_2197837183295026075_n.jpg" />
-                                <div class="small text-muted mt-2">Hình ảnh sau mổ — 2026-03-08 (Cập nhật: Điều dưỡng Hồng)</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="card p-2">
-                                <img src="~/images/473020376_122134386002459489_5010187318207915830_n.jpg" />
-                                <div class="small text-muted mt-2">Hình ảnh sau khám — 2026-03-05 (Bác sĩ: Tran Thi B)</div>
-                            </div>
-                        </div>
-
-                        <div class="col-12 mt-2">
-                            <div class="d-flex gap-2">
-                                <a class="btn btn-sm btn-outline-primary">Upload image</a>
-                            </div>
-                        </div>
-                    </div>
+                    <p class="text-muted">Chưa có dữ liệu theo dõi.</p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var inputDiagnosis = document.getElementById('inputDiagnosis');
+            var inputSymptoms = document.getElementById('inputSymptoms');
+            var inputNotes = document.getElementById('inputNotes');
+            var previewDiagnosis = document.getElementById('previewDiagnosis');
+            var previewSymptoms = document.getElementById('previewSymptoms');
+            var previewNotes = document.getElementById('previewNotes');
+
+            function updatePreview() {
+                previewDiagnosis.textContent = inputDiagnosis.value.trim() || 'Chưa có';
+                previewSymptoms.textContent = inputSymptoms.value.trim() || 'Chưa có';
+                previewNotes.textContent = inputNotes.value.trim() || 'Chưa có';
+            }
+
+            inputDiagnosis.addEventListener('input', updatePreview);
+            inputSymptoms.addEventListener('input', updatePreview);
+            inputNotes.addEventListener('input', updatePreview);
+
+            document.getElementById('btnSaveRecord').addEventListener('click', function () {
+                var btn = this;
+                var successMsg = document.getElementById('saveSuccess');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang lưu...';
+                successMsg.classList.add('d-none');
+
+                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                fetch('/Visits/HealthRecord?id=@r.Id&handler=Save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token || ''
+                    },
+                    body: JSON.stringify({
+                        id: @r.Id,
+                        diagnosis: inputDiagnosis.value,
+                        symptoms: inputSymptoms.value,
+                        notes: inputNotes.value
+                    })
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        successMsg.classList.remove('d-none');
+                        setTimeout(function () { successMsg.classList.add('d-none'); }, 3000);
+                    } else {
+                        alert('Lỗi khi lưu dữ liệu.');
+                    }
+                })
+                .catch(function () {
+                    alert('Lỗi khi lưu dữ liệu.');
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-floppy"></i> Lưu';
+                });
+            });
+                    document.getElementById('btnSaveExam').addEventListener('click', function () {
+                        var btn = this;
+                        var successMsg = document.getElementById('saveExamSuccess');
+                        btn.disabled = true;
+                        btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang lưu...';
+                        successMsg.classList.add('d-none');
+
+                        var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+                        function numVal(id) { var v = document.getElementById(id).value; return v === '' ? null : Number(v); }
+                        function strVal(id) { return document.getElementById(id).value || null; }
+
+                        fetch('/Visits/HealthRecord?id=@r.Id&handler=SaveExam', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': token || ''
+                            },
+                            body: JSON.stringify({
+                                temperature: numVal('examTemperature'),
+                                bloodPressure: strVal('examBloodPressure'),
+                                heartRate: numVal('examHeartRate'),
+                                respiratoryRate: numVal('examRespiratoryRate'),
+                                spO2: numVal('examSpO2'),
+                                weight: numVal('examWeight'),
+                                height: numVal('examHeight'),
+                                generalCondition: strVal('examGeneralCondition'),
+                                skinExam: strVal('examSkinExam'),
+                                headNeckExam: strVal('examHeadNeckExam'),
+                                chestExam: strVal('examChestExam'),
+                                abdomenExam: strVal('examAbdomenExam'),
+                                extremitiesExam: strVal('examExtremitiesExam'),
+                                neurologyExam: strVal('examNeurologyExam'),
+                                otherFindings: strVal('examOtherFindings')
+                            })
+                        })
+                        .then(function (res) { return res.json(); })
+                        .then(function (data) {
+                            if (data.success) {
+                                successMsg.classList.remove('d-none');
+                                setTimeout(function () { successMsg.classList.add('d-none'); }, 3000);
+                            } else {
+                                alert('Lỗi khi lưu dữ liệu khám lâm sàng.');
+                            }
+                        })
+                        .catch(function () {
+                            alert('Lỗi khi lưu dữ liệu khám lâm sàng.');
+                        })
+                        .finally(function () {
+                            btn.disabled = false;
+                            btn.innerHTML = '<i class="bi bi-floppy"></i> Lưu khám lâm sàng';
+                        });
+                    });
+
+            // ========== Đơn thuốc (Prescription) ==========
+            function reindexPrescription() {
+                var rows = document.querySelectorAll('#prescriptionTable tbody tr');
+                rows.forEach(function (row, i) {
+                    row.querySelector('.rx-row-num').textContent = i + 1;
+                });
+            }
+
+            function createPrescriptionRow() {
+                var tbody = document.querySelector('#prescriptionTable tbody');
+                var num = tbody.rows.length + 1;
+                var tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td class="text-center rx-row-num">' + num + '</td>' +
+                    '<td><input type="text" class="form-control form-control-sm rx-name" placeholder="Tên thuốc..." /></td>' +
+                    '<td><input type="text" class="form-control form-control-sm rx-dosage" placeholder="1 viên" /></td>' +
+                    '<td><input type="text" class="form-control form-control-sm rx-frequency" placeholder="3 lần/ngày" /></td>' +
+                    '<td><input type="text" class="form-control form-control-sm rx-duration" placeholder="5 ngày" /></td>' +
+                    '<td><input type="text" class="form-control form-control-sm rx-instructions" placeholder="Uống sau ăn..." /></td>' +
+                    '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger btn-remove-rx" title="Xóa"><i class="bi bi-trash"></i></button></td>';
+                tbody.appendChild(tr);
+            }
+
+            document.getElementById('btnAddPrescription').addEventListener('click', function () {
+                createPrescriptionRow();
+            });
+
+            document.getElementById('prescriptionTable').addEventListener('click', function (e) {
+                var btn = e.target.closest('.btn-remove-rx');
+                if (btn) {
+                    btn.closest('tr').remove();
+                    reindexPrescription();
+                }
+            });
+
+            document.getElementById('btnSavePrescriptions').addEventListener('click', function () {
+                var btn = this;
+                var successMsg = document.getElementById('savePrescriptionsSuccess');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang lưu...';
+                successMsg.classList.add('d-none');
+
+                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                var items = [];
+                document.querySelectorAll('#prescriptionTable tbody tr').forEach(function (row) {
+                    var name = row.querySelector('.rx-name').value.trim();
+                    if (name) {
+                        items.push({
+                            medicineName: name,
+                            dosage: row.querySelector('.rx-dosage').value.trim() || null,
+                            frequency: row.querySelector('.rx-frequency').value.trim() || null,
+                            duration: row.querySelector('.rx-duration').value.trim() || null,
+                            instructions: row.querySelector('.rx-instructions').value.trim() || null
+                        });
+                    }
+                });
+
+                fetch('/Visits/HealthRecord?id=@r.Id&handler=SavePrescriptions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token || ''
+                    },
+                    body: JSON.stringify({ items: items })
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        successMsg.classList.remove('d-none');
+                        setTimeout(function () { successMsg.classList.add('d-none'); }, 3000);
+                    } else {
+                        alert('Lỗi khi lưu đơn thuốc.');
+                    }
+                })
+                .catch(function () {
+                    alert('Lỗi khi lưu đơn thuốc.');
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-floppy"></i> Lưu đơn thuốc';
+                });
+            });
+
+            // ========== Dịch vụ chỉ định (Service Orders) ==========
+            function reindexService() {
+                var rows = document.querySelectorAll('#serviceTable tbody tr');
+                rows.forEach(function (row, i) {
+                    row.querySelector('.svc-row-num').textContent = i + 1;
+                });
+            }
+
+            function createServiceRow() {
+                var tbody = document.querySelector('#serviceTable tbody');
+                var num = tbody.rows.length + 1;
+                var tr = document.createElement('tr');
+                tr.innerHTML =
+                    '<td class="text-center svc-row-num">' + num + '</td>' +
+                    '<td><input type="text" class="form-control form-control-sm svc-name" placeholder="Tên dịch vụ..." /></td>' +
+                    '<td><input type="number" min="1" class="form-control form-control-sm svc-qty" value="1" /></td>' +
+                    '<td><input type="number" step="1000" min="0" class="form-control form-control-sm svc-price" placeholder="0" /></td>' +
+                    '<td><input type="text" class="form-control form-control-sm svc-notes" placeholder="Ghi chú..." /></td>' +
+                    '<td class="text-center"><button type="button" class="btn btn-sm btn-outline-danger btn-remove-svc" title="Xóa"><i class="bi bi-trash"></i></button></td>';
+                tbody.appendChild(tr);
+            }
+
+            document.getElementById('btnAddService').addEventListener('click', function () {
+                createServiceRow();
+            });
+
+            document.getElementById('serviceTable').addEventListener('click', function (e) {
+                var btn = e.target.closest('.btn-remove-svc');
+                if (btn) {
+                    btn.closest('tr').remove();
+                    reindexService();
+                }
+            });
+
+            document.getElementById('btnSaveServices').addEventListener('click', function () {
+                var btn = this;
+                var successMsg = document.getElementById('saveServicesSuccess');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang lưu...';
+                successMsg.classList.add('d-none');
+
+                var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+                var items = [];
+                document.querySelectorAll('#serviceTable tbody tr').forEach(function (row) {
+                    var name = row.querySelector('.svc-name').value.trim();
+                    if (name) {
+                        var priceVal = row.querySelector('.svc-price').value;
+                        items.push({
+                            serviceName: name,
+                            quantity: parseInt(row.querySelector('.svc-qty').value) || 1,
+                            unitPrice: priceVal === '' ? null : Number(priceVal),
+                            notes: row.querySelector('.svc-notes').value.trim() || null
+                        });
+                    }
+                });
+
+                fetch('/Visits/HealthRecord?id=@r.Id&handler=SaveServices', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': token || ''
+                    },
+                    body: JSON.stringify({ items: items })
+                })
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    if (data.success) {
+                        successMsg.classList.remove('d-none');
+                        setTimeout(function () { successMsg.classList.add('d-none'); }, 3000);
+                    } else {
+                        alert('Lỗi khi lưu dịch vụ chỉ định.');
+                    }
+                })
+                .catch(function () {
+                    alert('Lỗi khi lưu dịch vụ chỉ định.');
+                })
+                .finally(function () {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-floppy"></i> Lưu dịch vụ';
+                });
+            });
+                });
+            </script>
+        }

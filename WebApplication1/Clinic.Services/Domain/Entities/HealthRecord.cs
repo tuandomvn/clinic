@@ -16,4 +16,6 @@ public class HealthRecord
     public Staff Staff { get; set; } = null!;
 
     public ICollection<Prescription> Prescriptions { get; set; } = new List<Prescription>();
+    public ICollection<ClinicalExam> ClinicalExams { get; set; } = new List<ClinicalExam>();
+    public ICollection<ServiceOrder> ServiceOrders { get; set; } = new List<ServiceOrder>();
 }

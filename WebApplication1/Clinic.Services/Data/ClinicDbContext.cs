@@ -22,6 +22,8 @@ public class ClinicDbContext : DbContext
     public DbSet<Activity> Activities { get; set; }
     public DbSet<ActivityImage> ActivityImages { get; set; }
     public DbSet<ReminderTask> ReminderTasks { get; set; }
+    public DbSet<ClinicalExam> ClinicalExams { get; set; }
+    public DbSet<ServiceOrder> ServiceOrders { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -152,6 +154,42 @@ public class ClinicDbContext : DbContext
             e.HasOne(x => x.Patient).WithMany().HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.Cascade);
             e.HasIndex(x => x.DueDate);
             e.HasIndex(x => x.IsDone);
+        });
+
+        modelBuilder.Entity<ClinicalExam>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.BloodPressure).HasMaxLength(20);
+            e.Property(x => x.Temperature).HasPrecision(4, 1);
+            e.Property(x => x.SpO2).HasPrecision(4, 1);
+            e.Property(x => x.Weight).HasPrecision(5, 1);
+            e.Property(x => x.Height).HasPrecision(5, 1);
+            e.Property(x => x.GeneralCondition).HasMaxLength(1000);
+            e.Property(x => x.SkinExam).HasMaxLength(1000);
+            e.Property(x => x.HeadNeckExam).HasMaxLength(1000);
+            e.Property(x => x.ChestExam).HasMaxLength(1000);
+            e.Property(x => x.AbdomenExam).HasMaxLength(1000);
+            e.Property(x => x.ExtremitiesExam).HasMaxLength(1000);
+            e.Property(x => x.NeurologyExam).HasMaxLength(1000);
+            e.Property(x => x.OtherFindings).HasMaxLength(2000);
+            e.HasOne(x => x.HealthRecord)
+                .WithMany(hr => hr.ClinicalExams)
+                .HasForeignKey(x => x.HealthRecordId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => x.HealthRecordId);
+        });
+
+        modelBuilder.Entity<ServiceOrder>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.ServiceName).HasMaxLength(300).IsRequired();
+            e.Property(x => x.UnitPrice).HasPrecision(18, 2);
+            e.Property(x => x.Notes).HasMaxLength(1000);
+            e.HasOne(x => x.HealthRecord)
+                .WithMany(hr => hr.ServiceOrders)
+                .HasForeignKey(x => x.HealthRecordId)
+                .OnDelete(DeleteBehavior.Cascade);
+            e.HasIndex(x => x.HealthRecordId);
         });
 
         SeedData(modelBuilder);
