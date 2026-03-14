@@ -80,71 +80,33 @@ else
             <div class="card p-3 mb-4">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="mb-0">Lịch sử khám</h5>
-                    <div class="d-flex flex-wrap align-items-center gap-2 small">
-                        <span class="fw-semibold me-1">Loại Activity:</span>
-                        <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypePost" value="Post" checked />
-                            <label class="form-check-label" for="filterTypePost">Bài viết</label>
-                        </div>
-                        <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeBirthday" value="BirthdayGreeting" checked />
-                            <label class="form-check-label" for="filterTypeBirthday">Chúc mừng SN</label>
-                        </div>
-                        <div class="form-check form-check-inline mb-0">
-                            <input class="form-check-input visit-type-filter" type="checkbox" id="filterTypeAppointment" value="Appointment" checked />
-                            <label class="form-check-label" for="filterTypeAppointment">Lịch hẹn</label>
-                        </div>
-                    </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table align-middle" id="visitHistoryTable">
-                        <thead>
+                    <table class="table table-hover align-middle mb-0" id="visitHistoryTable" style="font-size:0.85rem;">
+                        <thead class="table-light">
                             <tr>
-                                <th>Ngày</th>
+                                <th>Ngày khám</th>
                                 <th>Bác sĩ</th>
-                                <th>Tóm tắt</th>
-                                <th>Loại</th>
-                                <th></th>
+                                <th>Chẩn đoán</th>
+                                <th>Triệu chứng</th>
+                                <th style="width:80px;"></th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (Model.VisitHistory.Any())
-                            {
-                                @foreach (var appointment in Model.VisitHistory)
-                                {
-                                    var visitType = "General";
-                                    var displayType = "Khác";
-
-                                    if (appointment.Status == global::Clinic.Services.Domain.Entities.AppointmentStatus.Completed)
-                                    {
-                                        visitType = "AppointmentCompleted";
-                                        displayType = "Khám bệnh";
-                                    }
-                                    else if (appointment.Status == global::Clinic.Services.Domain.Entities.AppointmentStatus.InProgress)
-                                    {
-                                        visitType = "AppointmentCompleted";
-                                        displayType = "Khám bệnh";
-                                    }
-
-                                    <tr data-visit-type="@visitType">
-                                        <td>@appointment.ScheduledAt.ToString("yyyy-MM-dd HH:mm")</td>
-                                        <td>@(appointment.Staff?.FullName ?? "-")</td>
-                                        <td>@(appointment.Reason ?? appointment.Notes ?? "-")</td>
-                                        <td class="visit-type">@displayType</td>
-                                        <td>
-                                            <a class="btn btn-sm btn-outline-primary" href="/Appointments/@appointment.Id">Chi tiết</a>
-                                        </td>
-                                    </tr>
-                                }
-                            }
-                            else
-                            {
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted">Không có lịch sử khám.</td>
-                                </tr>
-                            }
+                        <tbody id="visitHistoryBody">
+                            <tr>
+                                <td colspan="5" class="text-center py-3">
+                                    <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                    <span class="ms-2 text-muted">Đang tải...</span>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
+                </div>
+                <div class="d-flex justify-content-between align-items-center mt-2" id="visitHistoryPager" style="display:none !important;">
+                    <div class="small text-muted" id="visitHistoryInfo"></div>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0" id="visitHistoryPages"></ul>
+                    </nav>
                 </div>
             </div>
 
@@ -205,8 +167,10 @@ else
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment-with-locales.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            moment.locale('vi');
             // Generate barcode
             const barcodeElement = document.getElementById('barcode-@Model.Patient.Id');
             const barcodeValue = '@Model.Patient.BarcodeValue';
@@ -226,24 +190,73 @@ else
                 }
             }
 
-            // Visit history filter
-            const checkboxes = document.querySelectorAll('.visit-type-filter');
-            const rows = document.querySelectorAll('#visitHistoryTable tbody tr');
+            const patientId = @(Model.Patient?.Id ?? 0);
 
-            function applyFilter() {
-                const activeTypes = Array.from(checkboxes)
-                    .filter(cb => cb.checked)
-                    .map(cb => cb.value);
+            // ===== VISIT HISTORY (AJAX PAGING) =====
+            let visitPage = 1;
+            const visitPageSize = 10;
+            const visitBody = document.getElementById('visitHistoryBody');
+            const visitPager = document.getElementById('visitHistoryPager');
+            const visitInfo = document.getElementById('visitHistoryInfo');
+            const visitPages = document.getElementById('visitHistoryPages');
 
-                rows.forEach(row => {
-                    const type = row.dataset.visitType;
-                    if (!type) { row.style.display = ''; return; }
-                    row.style.display = (activeTypes.length === 0) ? 'none' : (activeTypes.includes(type) ? '' : 'none');
-                });
+            async function loadVisitHistory(page) {
+                visitPage = page;
+                try {
+                    const res = await fetch(`/Patients/Details?handler=VisitHistory&id=${patientId}&pageNumber=${page}&pageSize=${visitPageSize}`);
+                    const json = await res.json();
+
+                    if (!json.data || json.data.length === 0) {
+                        visitBody.innerHTML = '<tr><td colspan="5" class="text-center text-muted py-3">Không có lịch sử khám.</td></tr>';
+                        visitPager.style.cssText = 'display:none !important;';
+                        return;
+                    }
+
+                    let html = '';
+                    json.data.forEach(function (r) {
+                        const diagnosis = r.diagnosis || '-';
+                        const symptoms = r.symptoms || '-';
+                        const m = moment(r.visitDate, 'YYYY-MM-DD HH:mm');
+                        const dateDisplay = '<span title="' + m.format('DD/MM/YYYY HH:mm') + '">' + m.fromNow() + '</span>';
+                        html += '<tr>' +
+                            '<td>' + dateDisplay + '</td>' +
+                            '<td>' + r.staffName + '</td>' +
+                            '<td>' + diagnosis + '</td>' +
+                            '<td class="small text-muted">' + symptoms + '</td>' +
+                            '<td><a class="btn btn-sm btn-outline-primary" href="/Visits/HealthRecord?id=' + r.id + '" style="font-size:0.75rem;padding:0.15rem 0.4rem;">Chi tiết</a></td>' +
+                            '</tr>';
+                    });
+                    visitBody.innerHTML = html;
+
+                    // Pager
+                    const start = (json.pageNumber - 1) * json.pageSize + 1;
+                    const end = Math.min(json.pageNumber * json.pageSize, json.totalCount);
+                    visitInfo.textContent = 'Hiển thị ' + start + '-' + end + ' / ' + json.totalCount + ' lần khám';
+
+                    let pagesHtml = '';
+                    pagesHtml += '<li class="page-item ' + (json.pageNumber <= 1 ? 'disabled' : '') + '">' +
+                        '<a class="page-link" href="javascript:void(0)" onclick="loadVisitHistory(' + (json.pageNumber - 1) + ')">&laquo;</a></li>';
+                    for (let i = 1; i <= json.totalPages; i++) {
+                        pagesHtml += '<li class="page-item ' + (i === json.pageNumber ? 'active' : '') + '">' +
+                            '<a class="page-link" href="javascript:void(0)" onclick="loadVisitHistory(' + i + ')">' + i + '</a></li>';
+                    }
+                    pagesHtml += '<li class="page-item ' + (json.pageNumber >= json.totalPages ? 'disabled' : '') + '">' +
+                        '<a class="page-link" href="javascript:void(0)" onclick="loadVisitHistory(' + (json.pageNumber + 1) + ')">&raquo;</a></li>';
+                    visitPages.innerHTML = pagesHtml;
+
+                    visitPager.style.cssText = json.totalPages > 1 ? '' : 'display:none !important;';
+                } catch (err) {
+                    console.error('Error loading visit history:', err);
+                    visitBody.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-3">Lỗi khi tải dữ liệu.</td></tr>';
+                }
             }
 
-            checkboxes.forEach(cb => cb.addEventListener('change', applyFilter));
-            applyFilter();
+            // Expose globally for inline onclick
+            window.loadVisitHistory = loadVisitHistory;
+
+            if (patientId > 0) {
+                loadVisitHistory(1);
+            }
 
             // ===== POST COMPOSER =====
             const postContent = document.getElementById('postContent');
@@ -372,7 +385,6 @@ else
             }
 
             // ===== ACTIVITY NEWSFEED =====
-            const patientId = @(Model.Patient?.Id ?? 0);
             const feed = document.getElementById('activityFeed');
             const feedLoading = document.getElementById('feedLoading');
             const loadMoreContainer = document.getElementById('loadMoreContainer');

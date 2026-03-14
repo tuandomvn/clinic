@@ -30,7 +30,6 @@ public class DetailsModel : PageModel
     public Patient? Patient { get; set; }
     public Appointment? NextAppointment { get; set; }
     public IReadOnlyList<Activity> Activities { get; set; } = new List<Activity>();
-    public IReadOnlyList<Appointment> VisitHistory { get; set; } = new List<Appointment>();
 
     [BindProperty(SupportsGet = true)]
     public int Id { get; set; }
@@ -61,13 +60,6 @@ public class DetailsModel : PageModel
                              a.Status == AppointmentStatus.CheckedIn))
                 .OrderBy(a => a.ScheduledAt)
                 .FirstOrDefault();
-
-            // Lấy lịch sử khám (Appointments đã hoàn thành hoặc đang tiến hành)
-            VisitHistory = Patient.Appointments
-                .Where(a => a.Status == AppointmentStatus.Completed || 
-                            a.Status == AppointmentStatus.InProgress)
-                .OrderByDescending(a => a.ScheduledAt)
-                .ToList();
 
             // Lấy Activities theo loại
             Activities = Patient.Activities
@@ -299,6 +291,41 @@ public class DetailsModel : PageModel
         await _dbContext.SaveChangesAsync(ct);
 
         return RedirectToPage("/Visits/HealthRecord", new { id = record.Id });
+    }
+
+    public async Task<IActionResult> OnGetVisitHistoryAsync(int pageNumber = 1, int pageSize = 5, CancellationToken ct = default)
+    {
+        if (Id <= 0)
+            return BadRequest();
+
+        var query = _dbContext.HistoryRecords
+            .AsNoTracking()
+            .Where(r => r.PatientId == Id)
+            .OrderByDescending(r => r.VisitDate);
+
+        var totalCount = await query.CountAsync(ct);
+
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .Select(r => new
+            {
+                r.Id,
+                visitDate = r.VisitDate.ToString("yyyy-MM-dd HH:mm"),
+                staffName = r.Staff.FullName,
+                diagnosis = r.Diagnosis ?? "",
+                symptoms = r.Symptoms ?? ""
+            })
+            .ToListAsync(ct);
+
+        return new JsonResult(new
+        {
+            data = items,
+            totalCount,
+            pageNumber,
+            pageSize,
+            totalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+        });
     }
 
     private static string GetRelativeTime(DateTime date)
