@@ -14,4 +14,7 @@ public interface IReminderTaskService
 
     /// <summary>Đánh dấu chưa hoàn thành các task theo danh sách Id.</summary>
     Task<int> MarkUndoneAsync(IEnumerable<int> ids, CancellationToken ct = default);
+
+    /// <summary>Tạo mới một reminder task.</summary>
+    Task<TaskEntity> CreateAsync(TaskEntity task, CancellationToken ct = default);
 }

@@ -11,6 +11,7 @@
     </div>
     <div class="d-flex align-items-center gap-2">
         <span class="badge bg-danger rounded-pill" id="todayBadge">@Model.TodayPendingCount việc cần làm hôm nay</span>
+        <a class="btn btn-sm btn-primary" href="/Tasks/Create"><i class="bi bi-plus-circle me-1"></i>Tạo task mới</a>
     </div>
 </div>
 
@@ -78,6 +79,8 @@
 </div>
 
 @section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment-with-locales.min.js"></script>
+    <script>moment.locale('vi');</script>
     <style>
         #taskTable {
             font-size: 0.85rem;
@@ -311,10 +314,18 @@
                     {
                         data: null,
                         render: function (d) {
-                            if (d.isDone) return '<span class="text-decoration-line-through text-muted">' + d.dueDate + '</span>';
-                            if (d.isToday) return '<span class="fw-semibold text-danger">Hôm nay</span>';
-                            if (d.isOverdue) return '<span class="fw-semibold text-danger">Quá hạn</span>';
-                            return d.dueDate;
+                            var dateStr = d.dueDate;
+                            var parts = dateStr.split('/');
+                            var isoDate = parts[2] + '-' + parts[1] + '-' + parts[0];
+                            var m = moment(isoDate, 'YYYY-MM-DD');
+                            var relative = m.isValid() ? m.fromNow() : '';
+                            if (d.isDone) {
+                                return '<div class="text-decoration-line-through text-muted">' + dateStr + '</div><small class="text-muted">' + relative + '</small>';
+                            }
+                            if (d.isOverdue) {
+                                return '<div class="text-danger fw-semibold">' + dateStr + '</div><small class="text-muted">' + relative + '</small>';
+                            }
+                            return '<div>' + dateStr + '</div><small class="text-muted">' + relative + '</small>';
                         },
                         orderable: true
                     },
@@ -401,12 +412,13 @@
                     data: JSON.stringify({ ids: ids }),
                     success: function (res) {
                         if (res.success) {
+                            toastr.success('Đã đánh dấu hoàn thành ' + res.updated + ' task.');
                             table.ajax.reload(null, false);
                         }
                     },
                     error: function (xhr) {
                         console.error('Mark done error:', xhr);
-                        alert('Lỗi khi cập nhật trạng thái.');
+                        toastr.error('Lỗi khi cập nhật trạng thái.');
                     },
                     complete: function () {
                         btn.prop('disabled', false).html('<i class="bi bi-check2-square"></i> Đã hoàn thành');
@@ -434,12 +446,13 @@
                     data: JSON.stringify({ ids: ids }),
                     success: function (res) {
                         if (res.success) {
+                            toastr.success('Đã chuyển ' + res.updated + ' task về chưa hoàn thành.');
                             table.ajax.reload(null, false);
                         }
                     },
                     error: function (xhr) {
                         console.error('Mark undone error:', xhr);
-                        alert('Lỗi khi cập nhật trạng thái.');
+                        toastr.error('Lỗi khi cập nhật trạng thái.');
                     },
                     complete: function () {
                         btn.prop('disabled', false).html('<i class="bi bi-arrow-counterclockwise"></i> Chưa hoàn thành');

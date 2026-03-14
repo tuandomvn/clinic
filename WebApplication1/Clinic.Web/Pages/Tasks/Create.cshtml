@@ -1,0 +1,200 @@
+@page
+@model Clinic.Web.Pages.Tasks.CreateModel
+@{
+    ViewData["Title"] = "Tạo Reminder Task";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Tạo task nhắc nhở mới</h2>
+    <div>
+        <a class="btn btn-sm btn-outline-secondary" href="/Tasks">Quay lại</a>
+    </div>
+</div>
+
+<div class="card p-3">
+    @Html.AntiForgeryToken()
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="d-flex align-items-center mb-1">
+                <label class="form-label mb-0 me-auto">Bệnh nhân</label>
+            </div>
+            <div class="position-relative">
+                <input type="text" id="patientSearch" class="form-control" placeholder="Nhập tên hoặc SĐT bệnh nhân..." autocomplete="off" />
+                <input type="hidden" id="patientId" />
+                <div id="patientDropdown" class="dropdown-menu w-100" style="max-height:250px;overflow-y:auto;"></div>
+            </div>
+            <div id="patientInfo" class="small text-muted mt-1" style="display:none;"></div>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Ngày hẹn</label>
+            <input type="date" id="dueDate" class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Loại task</label>
+            <select id="taskType" class="form-select">
+                <option value="">-- Chọn loại --</option>
+                <option value="FollowUp">Follow-up sau mổ</option>
+                <option value="BirthdayGreeting">Chúc mừng sinh nhật</option>
+                <option value="VaccinationReminder">Nhắc lịch tiêm chủng</option>
+                <option value="PeriodicTest">Xét nghiệm định kỳ</option>
+                <option value="General">Khác</option>
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Mức độ</label>
+            <select id="priority" class="form-select">
+                <option value="Low">Thấp</option>
+                <option value="Medium" selected>Trung bình</option>
+                <option value="High">Cao</option>
+            </select>
+        </div>
+
+        <div class="col-md-9">
+            <label class="form-label">Mô tả</label>
+            <input type="text" id="description" class="form-control" placeholder="VD: Gọi điện nhắc tái khám, chúc sinh nhật..." />
+        </div>
+
+        <div class="col-12 text-end">
+            <button type="button" class="btn btn-primary" id="submitBtn" disabled>
+                Tạo task
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const patientSearch = document.getElementById('patientSearch');
+    const patientIdInput = document.getElementById('patientId');
+    const patientDropdown = document.getElementById('patientDropdown');
+    const patientInfo = document.getElementById('patientInfo');
+    const dueDateInput = document.getElementById('dueDate');
+    const taskTypeSelect = document.getElementById('taskType');
+    const prioritySelect = document.getElementById('priority');
+    const descriptionInput = document.getElementById('description');
+    const submitBtn = document.getElementById('submitBtn');
+
+    let searchTimeout = null;
+
+    // Set default date to today
+    dueDateInput.value = new Date().toISOString().split('T')[0];
+
+    // ===== PATIENT SEARCH (AUTOCOMPLETE) =====
+    patientSearch.addEventListener('input', function () {
+        if (patientIdInput.value) {
+            patientIdInput.value = '';
+            patientInfo.style.display = 'none';
+            updateSubmitBtn();
+        }
+
+        clearTimeout(searchTimeout);
+        const term = this.value.trim();
+        if (term.length < 2) {
+            patientDropdown.classList.remove('show');
+            return;
+        }
+        searchTimeout = setTimeout(async function () {
+            try {
+                const res = await fetch('/Tasks/Create?handler=SearchPatients&term=' + encodeURIComponent(term));
+                const data = await res.json();
+                patientDropdown.innerHTML = '';
+                if (data.length === 0) {
+                    patientDropdown.innerHTML = '<div class="dropdown-item text-muted">Không tìm thấy</div>' +
+                        '<a class="dropdown-item text-primary fw-semibold" href="/Patients/Create" target="_blank"><i class="bi bi-plus-circle me-1"></i>Thêm bệnh nhân mới</a>';
+                } else {
+                    data.forEach(function (p) {
+                        const item = document.createElement('a');
+                        item.className = 'dropdown-item';
+                        item.href = 'javascript:void(0)';
+                        item.innerHTML = '<div class="fw-semibold">' + p.fullName + '</div><div class="small text-muted">ID: ' + p.id + (p.phone ? ' · ' + p.phone : '') + ' · ' + p.dateOfBirth + '</div>';
+                        item.addEventListener('click', function () {
+                            patientIdInput.value = p.id;
+                            patientSearch.value = p.fullName;
+                            patientInfo.textContent = 'ID: ' + p.id + (p.phone ? ' · SĐT: ' + p.phone : '') + ' · Ngày sinh: ' + p.dateOfBirth;
+                            patientInfo.style.display = '';
+                            patientDropdown.classList.remove('show');
+                            updateSubmitBtn();
+                        });
+                        patientDropdown.appendChild(item);
+                    });
+                }
+                patientDropdown.classList.add('show');
+            } catch (err) {
+                console.error('Error searching patients:', err);
+            }
+        }, 300);
+    });
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function (e) {
+        if (!patientSearch.contains(e.target) && !patientDropdown.contains(e.target)) {
+            patientDropdown.classList.remove('show');
+        }
+    });
+
+    // ===== SUBMIT =====
+    function updateSubmitBtn() {
+        submitBtn.disabled = !(patientIdInput.value && dueDateInput.value && taskTypeSelect.value);
+    }
+
+    dueDateInput.addEventListener('change', updateSubmitBtn);
+    taskTypeSelect.addEventListener('change', updateSubmitBtn);
+
+    submitBtn.addEventListener('click', async function () {
+        var pid = patientIdInput.value;
+        var dueDate = dueDateInput.value;
+        var taskType = taskTypeSelect.value;
+        var priority = prioritySelect.value;
+        var description = descriptionInput.value.trim();
+
+        if (!pid || !dueDate || !taskType) {
+            toastr.warning('Vui lòng điền đầy đủ thông tin.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status"></span> Đang xử lý...';
+
+        try {
+            var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+            var formData = new URLSearchParams();
+            formData.append('patientId', pid);
+            formData.append('taskType', taskType);
+            formData.append('priority', priority);
+            formData.append('dueDate', dueDate);
+            formData.append('description', description);
+
+            var res = await fetch('/Tasks/Create', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': token
+                },
+                body: formData.toString()
+            });
+
+            var json = await res.json();
+
+            if (!res.ok || !json.success) {
+                toastr.error(json.error || 'Lỗi khi tạo task.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Tạo task';
+                return;
+            }
+
+            toastr.success('Tạo task thành công!');
+            setTimeout(function() { window.location.href = '/Tasks'; }, 1500);
+        } catch (err) {
+            console.error('Error creating task:', err);
+            toastr.error('Lỗi khi tạo task.');
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = 'Tạo task';
+        }
+    });
+});
+</script>
+}

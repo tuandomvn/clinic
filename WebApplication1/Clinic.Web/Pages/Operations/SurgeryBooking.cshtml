@@ -1,4 +1,5 @@
 @page
+@model Clinic.Web.Pages.Operations.SurgeryBookingModel
 @{
     ViewData["Title"] = "Đặt lịch mổ";
 }
@@ -7,6 +8,7 @@
     <h2 class="mb-0">Đặt lịch mổ</h2>
     <div>
         <a class="btn btn-sm btn-outline-secondary" href="/Appointments">Quay lại</a>
+        <a class="btn btn-sm btn-primary" href="/Patients/Create" target="_blank"><i class="bi bi-plus-circle me-1"></i>Thêm bệnh nhân mới</a>
     </div>
 </div>
 
@@ -14,8 +16,15 @@
     <form id="surgeryForm">
         <div class="row g-3">
             <div class="col-md-6">
-                <label class="form-label">Bệnh nhân (ID hoặc tên)</label>
-                <input type="text" id="patient" class="form-control" placeholder="PT-00123 hoặc tên bệnh nhân" />
+                <div class="d-flex align-items-center mb-1">
+                    <label class="form-label mb-0 me-auto">Bệnh nhân</label>
+                </div>
+                <div class="position-relative">
+                    <input type="text" id="patient" class="form-control" placeholder="Nhập tên hoặc SĐT bệnh nhân..." autocomplete="off" />
+                    <input type="hidden" id="patientId" />
+                    <div id="patientDropdown" class="dropdown-menu w-100" style="max-height:250px;overflow-y:auto;"></div>
+                </div>
+                <div id="patientInfo" class="small text-muted mt-1" style="display:none;"></div>
             </div>
 
             <div class="col-md-3">
@@ -208,17 +217,76 @@
 
     document.getElementById('submitSurgery').addEventListener('click', function(){
         const patient = document.getElementById('patient').value.trim();
+        const patientIdVal = document.getElementById('patientId').value;
         const date = document.getElementById('date').value;
         const room = document.getElementById('room').value;
         const staff = Array.from(document.querySelectorAll('#staffList input[type=checkbox]:checked')).map(i=>i.dataset.id);
         const selected = document.querySelector('#groupSlots .slot-btn.active');
-        if (!patient) { alert('Vui lòng nhập thông tin bệnh nhân.'); return; }
-        if (!date) { alert('Vui lòng chọn ngày.'); return; }
-        if (!room) { alert('Vui lòng chọn phòng mổ.'); return; }
-        if (staff.length === 0) { alert('Vui lòng chọn ít nhất 1 bác sĩ hoặc điều dưỡng.'); return; }
-        if (!selected) { alert('Vui lòng chọn ca mổ phù hợp cho cả nhóm.'); return; }
-        alert('Đặt mổ thành công:\nBệnh nhân: ' + patient + '\nNgày: ' + date + '\nPhòng: ' + roomsInfo[room].name + '\nĐội ngũ: ' + staff.map(s=>staffInfo[s].name).join(', ') + '\nCa: ' + selected.dataset.from + ' - ' + selected.dataset.to);
+        if (!patient || !patientIdVal) { toastr.warning('Vui lòng chọn bệnh nhân.'); return; }
+        if (!date) { toastr.warning('Vui lòng chọn ngày.'); return; }
+        if (!room) { toastr.warning('Vui lòng chọn phòng mổ.'); return; }
+        if (staff.length === 0) { toastr.warning('Vui lòng chọn ít nhất 1 bác sĩ hoặc điều dưỡng.'); return; }
+        if (!selected) { toastr.warning('Vui lòng chọn ca mổ phù hợp cho cả nhóm.'); return; }
+        toastr.success('Đặt mổ thành công!\nBệnh nhân: ' + patient + '\nNgày: ' + date + '\nPhòng: ' + roomsInfo[room].name + '\nĐội ngũ: ' + staff.map(s=>staffInfo[s].name).join(', ') + '\nCa: ' + selected.dataset.from + ' - ' + selected.dataset.to);
     });
+    });
+
+    // ===== PATIENT SEARCH (AUTOCOMPLETE) =====
+    (function() {
+        const patientSearch = document.getElementById('patient');
+        const patientIdInput = document.getElementById('patientId');
+        const patientDropdown = document.getElementById('patientDropdown');
+        const patientInfoEl = document.getElementById('patientInfo');
+        let searchTimeout = null;
+
+        patientSearch.addEventListener('input', function() {
+            if (patientIdInput.value) {
+                patientIdInput.value = '';
+                patientInfoEl.style.display = 'none';
+            }
+            clearTimeout(searchTimeout);
+            const term = this.value.trim();
+            if (term.length < 2) {
+                patientDropdown.classList.remove('show');
+                return;
+            }
+            searchTimeout = setTimeout(async function() {
+                try {
+                    const res = await fetch('/Operations/SurgeryBooking?handler=SearchPatients&term=' + encodeURIComponent(term));
+                    const data = await res.json();
+                    patientDropdown.innerHTML = '';
+                    if (data.length === 0) {
+                        patientDropdown.innerHTML = '<div class="dropdown-item text-muted">Không tìm thấy</div>' +
+                            '<a class="dropdown-item text-primary fw-semibold" href="/Patients/Create" target="_blank"><i class="bi bi-plus-circle me-1"></i>Thêm bệnh nhân mới</a>';
+                    } else {
+                        data.forEach(function(p) {
+                            const item = document.createElement('a');
+                            item.className = 'dropdown-item';
+                            item.href = 'javascript:void(0)';
+                            item.innerHTML = '<div class="fw-semibold">' + p.fullName + '</div><div class="small text-muted">ID: ' + p.id + (p.phone ? ' \u00b7 ' + p.phone : '') + ' \u00b7 ' + p.dateOfBirth + '</div>';
+                            item.addEventListener('click', function() {
+                                patientIdInput.value = p.id;
+                                patientSearch.value = p.fullName;
+                                patientInfoEl.textContent = 'ID: ' + p.id + (p.phone ? ' \u00b7 S\u0110T: ' + p.phone : '') + ' \u00b7 Ng\u00e0y sinh: ' + p.dateOfBirth;
+                                patientInfoEl.style.display = '';
+                                patientDropdown.classList.remove('show');
+                            });
+                            patientDropdown.appendChild(item);
+                        });
+                    }
+                    patientDropdown.classList.add('show');
+                } catch(err) {
+                    console.error('Error searching patients:', err);
+                }
+            }, 300);
+        });
+
+        document.addEventListener('click', function(e) {
+            if (!patientSearch.contains(e.target) && !patientDropdown.contains(e.target)) {
+                patientDropdown.classList.remove('show');
+            }
+        });
+    })();
 
     // initial populate rooms (if page loads with date empty still show rooms list)
     populateRooms();

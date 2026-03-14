@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using Clinic.Services.Models.Appointment;
 using Clinic.Services.Services.Appointments;
+using Clinic.Services.Services.Patients;
 using Clinic.Services.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,11 +13,13 @@ namespace Clinic.Web.Pages
     public class IndexModel : PageModel
     {
         private readonly IAppointmentService _appointmentService;
+        private readonly IPatientService _patientService;
         private readonly ClinicDbContext _dbContext;
 
-        public IndexModel(IAppointmentService appointmentService, ClinicDbContext dbContext)
+        public IndexModel(IAppointmentService appointmentService, IPatientService patientService, ClinicDbContext dbContext)
         {
             _appointmentService = appointmentService;
+            _patientService = patientService;
             _dbContext = dbContext;
         }
 
@@ -43,10 +46,29 @@ namespace Clinic.Web.Pages
             //Appointments = await _appointmentService.GetByDateAsync(date);
         }
 
+        public async Task<IActionResult> OnGetSearchPatientsAsync(string term, CancellationToken ct)
+        {
+            if (string.IsNullOrWhiteSpace(term))
+                return new JsonResult(Array.Empty<object>());
+
+            var (items, _, _) = await _patientService.SearchPagedAsync(0, 10, term, "FullName", true, ct);
+            var result = items.Select(p => new
+            {
+                id = p.Id,
+                fullName = p.FullName,
+                phone = p.Phone ?? "",
+                dateOfBirth = p.DateOfBirth.ToString("dd/MM/yyyy")
+            });
+            return new JsonResult(result);
+        }
+
         public async Task<IActionResult> OnGetAppointmentsAsync(
             int draw = 1, 
             int start = 0, 
             int length = 10,
+            string? searchPatient = null,
+            string? searchDateFrom = null,
+            string? searchDateTo = null,
             CancellationToken ct = default)
         {
             try
@@ -55,6 +77,29 @@ namespace Clinic.Web.Pages
                     .Include(a => a.Patient)
                     .Include(a => a.Staff)
                     .AsQueryable();
+
+                // Filter by patient name or ID
+                if (!string.IsNullOrWhiteSpace(searchPatient))
+                {
+                    var term = searchPatient.Trim();
+                    if (int.TryParse(term, out var patientId))
+                    {
+                        query = query.Where(a => a.PatientId == patientId);
+                    }
+                    else
+                    {
+                        query = query.Where(a => a.Patient != null && a.Patient.FullName.Contains(term));
+                    }
+                }
+
+                // Filter by date range (from week buttons or advanced search)
+                if (!string.IsNullOrWhiteSpace(searchDateFrom) && DateOnly.TryParse(searchDateFrom, out var dateFrom)
+                    && !string.IsNullOrWhiteSpace(searchDateTo) && DateOnly.TryParse(searchDateTo, out var dateTo))
+                {
+                    var from = dateFrom.ToDateTime(TimeOnly.MinValue);
+                    var to = dateTo.ToDateTime(TimeOnly.MaxValue);
+                    query = query.Where(a => a.ScheduledAt >= from && a.ScheduledAt <= to);
+                }
 
                 // Get sorting parameters from DataTables
                 var orderColumn = HttpContext.Request.Query["order[0][column]"].ToString();
@@ -93,7 +138,7 @@ namespace Clinic.Web.Pages
                     }
                 }
 
-                var totalCount = await query.CountAsync(ct);
+                var filteredCount = await query.CountAsync(ct);
                 var pagedAppointments = await query
                     .Skip(start)
                     .Take(length)
@@ -102,8 +147,8 @@ namespace Clinic.Web.Pages
                 var result = new
                 {
                     draw,
-                    recordsTotal = totalCount,
-                    recordsFiltered = totalCount,
+                    recordsTotal = filteredCount,
+                    recordsFiltered = filteredCount,
                     data = pagedAppointments.Select(a => new
                     {
                         id = a.Id,
@@ -113,6 +158,8 @@ namespace Clinic.Web.Pages
                         staffId = a.StaffId,
                         reason = a.Reason ?? "-",
                         scheduledAt = a.ScheduledAt.ToString("yyyy-MM-dd HH:mm"),
+                        scheduledAtDisplay = a.ScheduledAt.ToString("dd/MM/yyyy HH:mm"),
+                        isOverdue = a.ScheduledAt < DateTime.Now,
                         status = a.Status.ToString()
                     }).ToArray()
                 };

@@ -106,4 +106,11 @@ public sealed class ReminderTaskService : IReminderTaskService
         await _db.SaveChangesAsync(ct);
         return tasks.Count;
     }
+
+    public async Task<TaskEntity> CreateAsync(TaskEntity task, CancellationToken ct = default)
+    {
+        _db.ReminderTasks.Add(task);
+        await _db.SaveChangesAsync(ct);
+        return task;
+    }
 }

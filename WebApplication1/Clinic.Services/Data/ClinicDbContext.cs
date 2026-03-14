@@ -24,6 +24,7 @@ public class ClinicDbContext : DbContext
     public DbSet<ReminderTask> ReminderTasks { get; set; }
     public DbSet<ClinicalExam> ClinicalExams { get; set; }
     public DbSet<ServiceOrder> ServiceOrders { get; set; }
+    public DbSet<OperatingRoom> OperatingRooms { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -192,6 +193,13 @@ public class ClinicDbContext : DbContext
             e.HasIndex(x => x.HealthRecordId);
         });
 
+        modelBuilder.Entity<OperatingRoom>(e =>
+        {
+            e.HasKey(x => x.Id);
+            e.Property(x => x.Name).HasMaxLength(100).IsRequired();
+            e.Property(x => x.Location).HasMaxLength(200);
+        });
+
         SeedData(modelBuilder);
     }
 
@@ -278,6 +286,14 @@ public class ClinicDbContext : DbContext
             new SurgeryScheduleStaff { SurgeryScheduleId = 1, StaffId = 3, TeamRole = "Surgeon" },
         };
         modelBuilder.Entity<SurgeryScheduleStaff>().HasData(surgeryTeam);
+
+        var operatingRooms = new[]
+        {
+            new OperatingRoom { Id = 1, Name = "Phòng mổ 1", Location = "Tầng 2", IsActive = true },
+            new OperatingRoom { Id = 2, Name = "Phòng mổ 2", Location = "Tầng 2", IsActive = true },
+            new OperatingRoom { Id = 3, Name = "Phòng mổ 3", Location = "Tầng 3", IsActive = true },
+        };
+        modelBuilder.Entity<OperatingRoom>().HasData(operatingRooms);
 
         var activities = new List<Activity>();
         var activityImages = new List<ActivityImage>();
