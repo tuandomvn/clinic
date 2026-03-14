@@ -107,12 +107,13 @@ public class ClinicDbContext : DbContext
         modelBuilder.Entity<SurgerySchedule>(e =>
         {
             e.HasKey(x => x.Id);
-            e.Property(x => x.Room).HasMaxLength(50);
             e.Property(x => x.SurgeryType).HasMaxLength(200);
             e.Property(x => x.Description).HasMaxLength(1000);
             e.Property(x => x.Notes).HasMaxLength(500);
             e.HasOne(x => x.Patient).WithMany(p => p.SurgerySchedules).HasForeignKey(x => x.PatientId).OnDelete(DeleteBehavior.Restrict);
+            e.HasOne(x => x.OperatingRoom).WithMany(r => r.SurgerySchedules).HasForeignKey(x => x.OperatingRoomId).OnDelete(DeleteBehavior.SetNull);
             e.HasIndex(x => x.ScheduledAt);
+            e.HasIndex(x => x.OperatingRoomId);
         });
 
         modelBuilder.Entity<SurgeryScheduleStaff>(e =>
@@ -277,13 +278,13 @@ public class ClinicDbContext : DbContext
 
         var surgerySchedules = new[]
         {
-            new SurgerySchedule { Id = 1, PatientId = 3, ScheduledAt = new DateTime(2024, 3, 25, 7, 0, 0, DateTimeKind.Utc), DurationMinutes = 120, Room = "Phòng 101", SurgeryType = "Phẫu thuật ruột thừa", Description = "Nội soi cắt ruột thừa", Status = SurgeryStatus.Scheduled, CreatedAt = new DateTime(2024, 3, 5, 0, 0, 0, DateTimeKind.Utc) },
+            new SurgerySchedule { Id = 1, PatientId = 3, OperatingRoomId = 1, ScheduledAt = new DateTime(2024, 3, 25, 7, 0, 0, DateTimeKind.Utc), DurationMinutes = 120, SurgeryType = "Phẫu thuật ruột thừa", Description = "Nội soi cắt ruột thừa", Status = SurgeryStatus.Scheduled, CreatedAt = new DateTime(2024, 3, 5, 0, 0, 0, DateTimeKind.Utc) },
         };
         modelBuilder.Entity<SurgerySchedule>().HasData(surgerySchedules);
 
         var surgeryTeam = new[]
         {
-            new SurgeryScheduleStaff { SurgeryScheduleId = 1, StaffId = 3, TeamRole = "Surgeon" },
+            new SurgeryScheduleStaff { SurgeryScheduleId = 1, StaffId = 3, TeamRole = "Surgeon", ScheduledAt = new DateTime(2024, 3, 25, 7, 0, 0, DateTimeKind.Utc), DurationMinutes = 120 },
         };
         modelBuilder.Entity<SurgeryScheduleStaff>().HasData(surgeryTeam);
 

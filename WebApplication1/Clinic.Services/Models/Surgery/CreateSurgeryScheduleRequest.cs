@@ -5,7 +5,7 @@ public sealed class CreateSurgeryScheduleRequest
     public int PatientId { get; set; }
     public DateTime ScheduledAt { get; set; }
     public int DurationMinutes { get; set; } = 120;
-    public string? Room { get; set; }
+    public int? OperatingRoomId { get; set; }
     public string? SurgeryType { get; set; }
     public string? Description { get; set; }
     public string? Notes { get; set; }

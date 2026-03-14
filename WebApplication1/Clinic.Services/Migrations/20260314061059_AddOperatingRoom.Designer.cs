@@ -4,6 +4,7 @@ using Clinic.Services.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Services.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    partial class ClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260314061059_AddOperatingRoom")]
+    partial class AddOperatingRoom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56732,11 +56735,12 @@ namespace Clinic.Services.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
-                    b.Property<int?>("OperatingRoomId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PatientId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Room")
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
 
                     b.Property<DateTime>("ScheduledAt")
                         .HasColumnType("datetime(6)");
@@ -56753,8 +56757,6 @@ namespace Clinic.Services.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OperatingRoomId");
-
                     b.HasIndex("PatientId");
 
                     b.HasIndex("ScheduledAt");
@@ -56768,8 +56770,8 @@ namespace Clinic.Services.Migrations
                             CreatedAt = new DateTime(2024, 3, 5, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Nội soi cắt ruột thừa",
                             DurationMinutes = 120,
-                            OperatingRoomId = 1,
                             PatientId = 3,
+                            Room = "Phòng 101",
                             ScheduledAt = new DateTime(2024, 3, 25, 7, 0, 0, 0, DateTimeKind.Utc),
                             Status = 0,
                             SurgeryType = "Phẫu thuật ruột thừa"
@@ -56783,12 +56785,6 @@ namespace Clinic.Services.Migrations
 
                     b.Property<int>("StaffId")
                         .HasColumnType("int");
-
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ScheduledAt")
-                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("TeamRole")
                         .HasMaxLength(100)
@@ -56805,8 +56801,6 @@ namespace Clinic.Services.Migrations
                         {
                             SurgeryScheduleId = 1,
                             StaffId = 3,
-                            DurationMinutes = 120,
-                            ScheduledAt = new DateTime(2024, 3, 25, 7, 0, 0, 0, DateTimeKind.Utc),
                             TeamRole = "Surgeon"
                         });
                 });
@@ -56865,7 +56859,7 @@ namespace Clinic.Services.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "AqfqQT1wAvYt3KQ6hCZ5rBdSe9WmGpYYCShm49nCvkj7EwTAlAv6jRk3NMXqMtxb",
+                            PasswordHash = "3+AA5qBJHmS0umIG/j+q4LQcHH9e5rLssF2xtRsoP2m9UICOWRBQ5EMcRXYtQNV+",
                             Role = "Doctor",
                             StaffId = 1,
                             Username = "doctor1"
@@ -56875,7 +56869,7 @@ namespace Clinic.Services.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "7dyQeynSbnc6BJyzNBb71St6JQSaMpGFkphKDQkCgKem9exFbp/r/7fR43PWA9cl",
+                            PasswordHash = "4UiIyyL7ua1WmkmurEwiDSFSxzsraGjOrEcWMcxhc/JMCqsDsiXW6p190UVu9BNt",
                             Role = "Nurse",
                             StaffId = 2,
                             Username = "nurse1"
@@ -56885,7 +56879,7 @@ namespace Clinic.Services.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "BoxSyL8/Vosz9zHYsN2UXynOfUa3rj5jtiGTTjuPvIofKyglJuotBatj/i71ZRpD",
+                            PasswordHash = "ogJ8NZvoHyKoLChfO3zx0ZHK+D/XkrA7KN2V+k9inat27FhgWjFsvERjS0yPiXID",
                             Role = "Doctor",
                             StaffId = 3,
                             Username = "doctor2"
@@ -56895,7 +56889,7 @@ namespace Clinic.Services.Migrations
                             Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "Gkhbkgx2ICHfXMR4RST1V18w2jdkGA6orD2yu+MFL15AXh1yMQVzFWYSYx+FNc0W",
+                            PasswordHash = "+vqn2sNMUQ+QAyu0KEV9AHCnOR8Ngw2hqV0Y3t/pAJO5t5SiAzwRN8gqH53s6K61",
                             Role = "Nurse",
                             StaffId = 4,
                             Username = "nurse2"
@@ -57014,18 +57008,11 @@ namespace Clinic.Services.Migrations
 
             modelBuilder.Entity("Clinic.Services.Domain.Entities.SurgerySchedule", b =>
                 {
-                    b.HasOne("Clinic.Services.Domain.Entities.OperatingRoom", "OperatingRoom")
-                        .WithMany("SurgerySchedules")
-                        .HasForeignKey("OperatingRoomId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("Clinic.Services.Domain.Entities.Patient", "Patient")
                         .WithMany("SurgerySchedules")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
-
-                    b.Navigation("OperatingRoom");
 
                     b.Navigation("Patient");
                 });
@@ -57072,11 +57059,6 @@ namespace Clinic.Services.Migrations
                     b.Navigation("Prescriptions");
 
                     b.Navigation("ServiceOrders");
-                });
-
-            modelBuilder.Entity("Clinic.Services.Domain.Entities.OperatingRoom", b =>
-                {
-                    b.Navigation("SurgerySchedules");
                 });
 
             modelBuilder.Entity("Clinic.Services.Domain.Entities.Patient", b =>

@@ -4,6 +4,7 @@ using Clinic.Services.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Clinic.Services.Migrations
 {
     [DbContext(typeof(ClinicDbContext))]
-    partial class ClinicDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260314073612_MoveSurgeryRoomToOperatingRoomFK")]
+    partial class MoveSurgeryRoomToOperatingRoomFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56784,12 +56787,6 @@ namespace Clinic.Services.Migrations
                     b.Property<int>("StaffId")
                         .HasColumnType("int");
 
-                    b.Property<int>("DurationMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("ScheduledAt")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("TeamRole")
                         .HasMaxLength(100)
                         .HasColumnType("varchar(100)");
@@ -56805,8 +56802,6 @@ namespace Clinic.Services.Migrations
                         {
                             SurgeryScheduleId = 1,
                             StaffId = 3,
-                            DurationMinutes = 120,
-                            ScheduledAt = new DateTime(2024, 3, 25, 7, 0, 0, 0, DateTimeKind.Utc),
                             TeamRole = "Surgeon"
                         });
                 });
@@ -56865,7 +56860,7 @@ namespace Clinic.Services.Migrations
                             Id = 1,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "AqfqQT1wAvYt3KQ6hCZ5rBdSe9WmGpYYCShm49nCvkj7EwTAlAv6jRk3NMXqMtxb",
+                            PasswordHash = "D1Yu0sgtDdhqtsQZlCKy3yFW/34K/4cDfkqxYzordElqdZYK+AGeuKq0zZQJ0b0h",
                             Role = "Doctor",
                             StaffId = 1,
                             Username = "doctor1"
@@ -56875,7 +56870,7 @@ namespace Clinic.Services.Migrations
                             Id = 2,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "7dyQeynSbnc6BJyzNBb71St6JQSaMpGFkphKDQkCgKem9exFbp/r/7fR43PWA9cl",
+                            PasswordHash = "bK433VoU423Gr+oXkl2GFx0VbH8iZ4/S5/0TQA72oqzLTQAsjITb6rUWzojMVCax",
                             Role = "Nurse",
                             StaffId = 2,
                             Username = "nurse1"
@@ -56885,7 +56880,7 @@ namespace Clinic.Services.Migrations
                             Id = 3,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "BoxSyL8/Vosz9zHYsN2UXynOfUa3rj5jtiGTTjuPvIofKyglJuotBatj/i71ZRpD",
+                            PasswordHash = "GsH9IU+c+mnzdw+jlW4miESxBNrWxl0cK54bVt8H4GszlUsGrPebQtYdiVOhBKHS",
                             Role = "Doctor",
                             StaffId = 3,
                             Username = "doctor2"
@@ -56895,7 +56890,7 @@ namespace Clinic.Services.Migrations
                             Id = 4,
                             CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
-                            PasswordHash = "Gkhbkgx2ICHfXMR4RST1V18w2jdkGA6orD2yu+MFL15AXh1yMQVzFWYSYx+FNc0W",
+                            PasswordHash = "ObZ1+1/sx8TxjLqksTZ/BosKgTH+ChLguSjfoDqbsJDvwb4dxdpng0EiBq010eag",
                             Role = "Nurse",
                             StaffId = 4,
                             Username = "nurse2"

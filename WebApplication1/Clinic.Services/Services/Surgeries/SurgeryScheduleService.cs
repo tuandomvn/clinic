@@ -51,7 +51,7 @@ public sealed class SurgeryScheduleService : ISurgeryScheduleService
             PatientId = request.PatientId,
             ScheduledAt = request.ScheduledAt,
             DurationMinutes = request.DurationMinutes,
-            Room = request.Room,
+            OperatingRoomId = request.OperatingRoomId,
             SurgeryType = request.SurgeryType,
             Description = request.Description,
             Notes = request.Notes,
@@ -88,6 +88,7 @@ public sealed class SurgeryScheduleService : ISurgeryScheduleService
             .AsNoTracking()
             .Where(x => x.ScheduledAt >= dayStartUtc && x.ScheduledAt < dayEndUtc)
             .Include(x => x.Patient)
+            .Include(x => x.OperatingRoom)
             .Include(x => x.TeamMembers)
                 .ThenInclude(tm => tm.Staff)
             .OrderBy(x => x.ScheduledAt)
@@ -101,6 +102,7 @@ public sealed class SurgeryScheduleService : ISurgeryScheduleService
         var s = await _db.SurgerySchedules
             .AsNoTracking()
             .Include(x => x.Patient)
+            .Include(x => x.OperatingRoom)
             .Include(x => x.TeamMembers)
                 .ThenInclude(tm => tm.Staff)
             .FirstOrDefaultAsync(x => x.Id == id, ct);
@@ -115,7 +117,8 @@ public sealed class SurgeryScheduleService : ISurgeryScheduleService
         PatientName = s.Patient?.FullName,
         ScheduledAt = s.ScheduledAt,
         DurationMinutes = s.DurationMinutes,
-        Room = s.Room,
+        OperatingRoomId = s.OperatingRoomId,
+        OperatingRoomName = s.OperatingRoom?.Name,
         SurgeryType = s.SurgeryType,
         Description = s.Description,
         Notes = s.Notes,

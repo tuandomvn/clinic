@@ -13,9 +13,9 @@ public class SurgerySchedule
 {
     public int Id { get; set; }
     public int PatientId { get; set; }
+    public int? OperatingRoomId { get; set; }
     public DateTime ScheduledAt { get; set; }
     public int DurationMinutes { get; set; } = 120;
-    public string? Room { get; set; }
     public string? SurgeryType { get; set; }
     public string? Description { get; set; }
     public SurgeryStatus Status { get; set; } = SurgeryStatus.Scheduled;
@@ -24,6 +24,7 @@ public class SurgerySchedule
     public DateTime? UpdatedAt { get; set; }
 
     public Patient Patient { get; set; } = null!;
+    public OperatingRoom? OperatingRoom { get; set; }
 
     public ICollection<SurgeryScheduleStaff> TeamMembers { get; set; } = new List<SurgeryScheduleStaff>();
 }

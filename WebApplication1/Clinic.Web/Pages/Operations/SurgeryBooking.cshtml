@@ -61,33 +61,22 @@
 </div>
 
 <script>
-    // Mock staff registry (doctors + nurses). Each has id, name, role
-    const staffInfo = {
-        "d1": { name: 'Dr. Tran Thi B', role: 'Doctor' },
-        "d2": { name: 'Dr. Nguyen Van D', role: 'Doctor' },
-        "n1": { name: 'Nurse Hong', role: 'Nurse' },
-        "n2": { name: 'Nurse Lan', role: 'Nurse' }
-    };
+    // Staff loaded from database
+    let staffInfo = {};
 
-    // Rooms with shifts
-    const roomsInfo = {
-        "r1": { name: 'Phòng mổ 1' },
-        "r2": { name: 'Phòng mổ 2' }
-    };
+    // Rooms loaded from database
+    let roomsInfo = {};
 
-    // Shift definitions per entity (same format as earlier) - for simplicity mock static shifts
-    const entityShifts = {
-        "d1": [ { start: '07:30', end: '12:30' }, { start: '13:30', end: '17:00' } ],
-        "d2": [ { start: '08:00', end: '12:00' }, { start: '13:00', end: '16:30' } ],
-        "n1": [ { start: '07:00', end: '11:30' }, { start: '12:30', end: '16:00' } ],
-        "n2": [ { start: '09:00', end: '12:30' }, { start: '13:30', end: '18:00' } ],
-        // rooms availability
-        "r1": [ { start: '07:00', end: '18:00' } ],
-        "r2": [ { start: '08:00', end: '17:00' } ]
-    };
+    // Shift definitions per entity - default working hours for staff (until shift management is implemented)
+    const staffDefaultShifts = [ { start: '07:30', end: '12:00' }, { start: '13:00', end: '17:00' } ];
 
-    // per-session mock booked cache for entities (so slots can appear busy)
-    const bookedCache = {};
+    // Default operating hours for rooms (all rooms share the same window)
+    const roomDefaultShifts = [ { start: '07:00', end: '18:00' } ];
+
+    // staff booked cache from DB
+    const staffBookedCache = {};
+    // room booked cache from DB
+    const roomBookedCache = {};
 
     function pad(n) { return n.toString().padStart(2, '0'); }
     function timeToMinutes(t) { const [hh, mm] = t.split(':').map(Number); return hh*60 + mm; }
@@ -104,27 +93,44 @@
     }
 
     function allSlotsForEntity(entityId, duration=30) {
-        const shifts = entityShifts[entityId] || [];
+        // If entityId is a room (exists in roomsInfo), use default room shifts; otherwise staff shifts
+        const isRoom = roomsInfo[entityId] !== undefined;
+        const shifts = isRoom ? roomDefaultShifts : staffDefaultShifts;
         let slots = [];
         shifts.forEach(s => { slots = slots.concat(generateSlotsForShift(s, duration)); });
         return slots;
     }
 
-    // simple random booked generator per entity/date
-    function getEntityBooked(date, entityId, allSlots) {
-        const key = date + '::' + entityId;
-        if (bookedCache[key]) return bookedCache[key];
-        const starts = allSlots.map(s => s.from);
-        const maxPick = Math.min(3, starts.length);
-        const pickCount = Math.floor(Math.random() * (maxPick + 1));
-        const picked = new Set();
-        while (picked.size < pickCount) {
-            const idx = Math.floor(Math.random() * starts.length);
-            picked.add(starts[idx]);
+    // Load booked surgeries for a room from DB
+    async function getRoomBooked(date, roomId) {
+        const key = date + '::room::' + roomId;
+        if (roomBookedCache[key]) return roomBookedCache[key];
+        try {
+            const res = await fetch('/Operations/SurgeryBooking?handler=RoomSurgeries&roomId=' + roomId + '&date=' + encodeURIComponent(date));
+            const data = await res.json();
+            const bookedStarts = data.map(a => a.from);
+            roomBookedCache[key] = bookedStarts;
+            return bookedStarts;
+        } catch(err) {
+            console.error('Error loading room appointments:', err);
+            return [];
         }
-        const res = Array.from(picked);
-        bookedCache[key] = res;
-        return res;
+    }
+
+    // Load booked surgeries for a staff member from DB
+    async function getStaffBooked(date, staffId) {
+        const key = date + '::staff::' + staffId;
+        if (staffBookedCache[key]) return staffBookedCache[key];
+        try {
+            const res = await fetch('/Operations/SurgeryBooking?handler=StaffSurgeries&staffId=' + staffId + '&date=' + encodeURIComponent(date));
+            const data = await res.json();
+            const bookedStarts = data.map(a => a.from);
+            staffBookedCache[key] = bookedStarts;
+            return bookedStarts;
+        } catch(err) {
+            console.error('Error loading staff surgeries:', err);
+            return [];
+        }
     }
 
     // compute intersection of available starts across entities
@@ -136,13 +142,36 @@
         return Object.keys(counts).filter(t => counts[t] === lists.length).sort();
     }
 
-    // render room options
-    function populateRooms() {
-        const sel = document.getElementById('room');
-        sel.innerHTML = '<option value="">Chọn phòng</option>';
-        Object.keys(roomsInfo).forEach(id => {
-            const opt = document.createElement('option'); opt.value = id; opt.innerText = roomsInfo[id].name; sel.appendChild(opt);
-        });
+    // render room options from database
+    async function populateRooms() {
+        try {
+            const res = await fetch('/Operations/SurgeryBooking?handler=OperatingRooms');
+            const data = await res.json();
+            roomsInfo = {};
+            data.forEach(r => { roomsInfo[r.id] = { name: r.name, location: r.location }; });
+            const sel = document.getElementById('room');
+            sel.innerHTML = '<option value="">Chọn phòng</option>';
+            data.forEach(r => {
+                const opt = document.createElement('option');
+                opt.value = r.id;
+                opt.innerText = r.name + (r.location ? ' (' + r.location + ')' : '');
+                sel.appendChild(opt);
+            });
+        } catch(err) {
+            console.error('Error loading rooms:', err);
+        }
+    }
+
+    // Load staff from database
+    async function populateStaff() {
+        try {
+            const res = await fetch('/Operations/SurgeryBooking?handler=Staff');
+            const data = await res.json();
+            staffInfo = {};
+            data.forEach(s => { staffInfo[s.id] = { name: s.fullName, role: s.role }; });
+        } catch(err) {
+            console.error('Error loading staff:', err);
+        }
     }
 
     function renderStaffForDate(date) {
@@ -160,7 +189,7 @@
         });
     }
 
-    function renderGroupSlots() {
+    async function renderGroupSlots() {
         const date = document.getElementById('date').value;
         const roomId = document.getElementById('room').value;
         const checked = Array.from(document.querySelectorAll('#staffList input[type=checkbox]:checked')).map(i=>i.dataset.id);
@@ -173,16 +202,26 @@
         const duration = 30;
         const entities = [roomId].concat(checked);
 
+        // Pre-load room booked data from DB
+        const roomBooked = await getRoomBooked(date, roomId);
+
+        // Pre-load all staff booked data from DB in parallel
+        const staffBookedMap = {};
+        await Promise.all(checked.map(async (sid) => {
+            staffBookedMap[sid] = await getStaffBooked(date, sid);
+        }));
+
         entities.forEach(ent => {
             const col = document.createElement('div');
             col.className = 'slot-column';
             col.style.minWidth = '220px';
             col.style.flex = '0 0 220px';
-            const title = ent === roomId ? (roomsInfo[ent].name + ' (Phòng)') : (staffInfo[ent].name + ' (' + staffInfo[ent].role + ')');
+            const isRoom = ent === roomId;
+            const title = isRoom ? (roomsInfo[ent].name + ' (Phòng)') : (staffInfo[ent].name + ' (' + staffInfo[ent].role + ')');
             col.innerHTML = '<div class="fw-semibold mb-2">' + title + '</div>';
 
             const all = allSlotsForEntity(ent, duration);
-            const booked = getEntityBooked(date, ent, all);
+            const booked = isRoom ? roomBooked : (staffBookedMap[ent] || []);
 
             if (!all || all.length === 0) {
                 const note = document.createElement('div'); note.className = 'text-muted'; note.innerText = 'No shifts'; col.appendChild(note);
@@ -210,25 +249,79 @@
     }
 
     document.getElementById('date').addEventListener('change', function(){
-        const date = this.value; selectedStaff = null; renderStaffForDate(date); populateRooms(); document.getElementById('groupSlots').innerHTML = '<div class="text-muted">Chọn ngày, phòng và ít nhất 1 nhân sự để xem ca khả dụng.</div>';
+        const date = this.value; selectedStaff = null; renderStaffForDate(date); document.getElementById('groupSlots').innerHTML = '<div class="text-muted">Chọn ngày, phòng và ít nhất 1 nhân sự để xem ca khả dụng.</div>';
     });
 
     document.getElementById('room').addEventListener('change', renderGroupSlots);
 
-    document.getElementById('submitSurgery').addEventListener('click', function(){
+    document.getElementById('submitSurgery').addEventListener('click', async function(){
         const patient = document.getElementById('patient').value.trim();
         const patientIdVal = document.getElementById('patientId').value;
         const date = document.getElementById('date').value;
         const room = document.getElementById('room').value;
         const staff = Array.from(document.querySelectorAll('#staffList input[type=checkbox]:checked')).map(i=>i.dataset.id);
-        const selected = document.querySelector('#groupSlots .slot-btn.active');
+        const roomSelected = document.querySelector('#groupSlots .slot-column:first-child .slot-btn.active');
         if (!patient || !patientIdVal) { toastr.warning('Vui lòng chọn bệnh nhân.'); return; }
         if (!date) { toastr.warning('Vui lòng chọn ngày.'); return; }
         if (!room) { toastr.warning('Vui lòng chọn phòng mổ.'); return; }
         if (staff.length === 0) { toastr.warning('Vui lòng chọn ít nhất 1 bác sĩ hoặc điều dưỡng.'); return; }
-        if (!selected) { toastr.warning('Vui lòng chọn ca mổ phù hợp cho cả nhóm.'); return; }
-        toastr.success('Đặt mổ thành công!\nBệnh nhân: ' + patient + '\nNgày: ' + date + '\nPhòng: ' + roomsInfo[room].name + '\nĐội ngũ: ' + staff.map(s=>staffInfo[s].name).join(', ') + '\nCa: ' + selected.dataset.from + ' - ' + selected.dataset.to);
-    });
+        if (!roomSelected) { toastr.warning('Vui lòng chọn ca mổ cho phòng.'); return; }
+
+        // Collect per-staff selected slots
+        const staffFroms = [];
+        const staffTos = [];
+        const columns = document.querySelectorAll('#groupSlots .slot-column');
+        let missingStaff = false;
+        for (let i = 0; i < staff.length; i++) {
+            // Staff columns start after the room column (index 0)
+            const staffCol = columns[i + 1];
+            const staffSlot = staffCol ? staffCol.querySelector('.slot-btn.active') : null;
+            if (!staffSlot) {
+                const staffName = staffInfo[staff[i]]?.name || staff[i];
+                toastr.warning('Vui lòng chọn ca cho ' + staffName + '.');
+                missingStaff = true;
+                break;
+            }
+            staffFroms.push(staffSlot.dataset.from);
+            staffTos.push(staffSlot.dataset.to);
+        }
+        if (missingStaff) return;
+
+        const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+        const params = new URLSearchParams();
+        params.append('patientId', patientIdVal);
+        params.append('roomId', room);
+        params.append('date', date);
+        params.append('timeFrom', roomSelected.dataset.from);
+        params.append('timeTo', roomSelected.dataset.to);
+        params.append('reason', 'Phẫu thuật');
+        staff.forEach(s => params.append('staffIds', s));
+        staffFroms.forEach(f => params.append('staffFroms', f));
+        staffTos.forEach(t => params.append('staffTos', t));
+
+        try {
+            const res = await fetch('/Operations/SurgeryBooking?handler=BookSurgery', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': token || ''
+                },
+                body: params.toString()
+            });
+            const result = await res.json();
+            if (result.success) {
+                toastr.success('Đặt mổ thành công!\nBệnh nhân: ' + patient + '\nNgày: ' + date + '\nPhòng: ' + roomsInfo[room].name + '\nĐội ngũ: ' + staff.map(s=>staffInfo[s].name).join(', '));
+                // Clear caches and refresh slots
+                Object.keys(roomBookedCache).forEach(k => { if (k.includes('::room::' + room)) delete roomBookedCache[k]; });
+                staff.forEach(s => { Object.keys(staffBookedCache).forEach(k => { if (k.includes('::staff::' + s)) delete staffBookedCache[k]; }); });
+                renderGroupSlots();
+            } else {
+                toastr.error(result.message || 'Đặt lịch mổ thất bại.');
+            }
+        } catch(err) {
+            console.error('Error booking surgery:', err);
+            toastr.error('Lỗi kết nối. Vui lòng thử lại.');
+        }
     });
 
     // ===== PATIENT SEARCH (AUTOCOMPLETE) =====
@@ -288,6 +381,7 @@
         });
     })();
 
-    // initial populate rooms (if page loads with date empty still show rooms list)
+    // initial populate rooms and staff from DB
     populateRooms();
+    populateStaff();
 </script>
