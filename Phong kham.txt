@@ -43,4 +43,6 @@ update clinicdb.activityimages set ImageUrl = '2.jpg' where Id > 800 and Id < 12
 
         <a class="btn btn-sm btn-outline-secondary" href="/index">Quay lại</a>
         <a class="btn btn-sm btn-primary" href="/Patients/Create" target="_blank"><i class="bi bi-plus-circle me-1"></i>Thêm bệnh nhân mới</a>
-    
+    https://localhost:7170/Operations/SurgeryBooking có thể tìm kiếm bệnh nhan (autocomplete ) giống https://localhost:7170/Appointments/Create
+	
+Book in advance, no patient 

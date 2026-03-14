@@ -5,6 +5,7 @@ using Clinic.Services.Models.Appointment;
 using Clinic.Services.Services.Appointments;
 using Clinic.Services.Services.Patients;
 using Clinic.Services.Data;
+using Clinic.Services.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Clinic.Web.Pages
@@ -170,6 +171,50 @@ namespace Clinic.Web.Pages
             {
                 return StatusCode(500, new { error = "An error occurred while loading appointments" });
             }
+        }
+
+        public async Task<IActionResult> OnGetSurgeriesAsync(
+            string? searchDateFrom = null,
+            string? searchDateTo = null,
+            CancellationToken ct = default)
+        {
+            var query = _dbContext.SurgerySchedules
+                .Include(s => s.Patient)
+                .Include(s => s.OperatingRoom)
+                .Include(s => s.TeamMembers).ThenInclude(tm => tm.Staff)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchDateFrom) && DateOnly.TryParse(searchDateFrom, out var dateFrom)
+                && !string.IsNullOrWhiteSpace(searchDateTo) && DateOnly.TryParse(searchDateTo, out var dateTo))
+            {
+                var from = dateFrom.ToDateTime(TimeOnly.MinValue);
+                var to = dateTo.ToDateTime(TimeOnly.MaxValue);
+                query = query.Where(s => s.ScheduledAt >= from && s.ScheduledAt <= to);
+            }
+
+            var surgeries = await query
+                .OrderBy(s => s.ScheduledAt)
+                .ToListAsync(ct);
+
+            var result = surgeries.Select(s => new
+            {
+                id = s.Id,
+                scheduledAt = s.ScheduledAt.ToString("HH:mm"),
+                scheduledAtFull = s.ScheduledAt.ToString("dd/MM/yyyy HH:mm"),
+                endTime = s.ScheduledAt.AddMinutes(s.DurationMinutes).ToString("HH:mm"),
+                patientName = s.Patient?.FullName ?? "-",
+                patientId = s.PatientId,
+                team = s.TeamMembers.Select(tm => new
+                {
+                    name = tm.Staff?.FullName ?? "-",
+                    role = tm.TeamRole ?? tm.Staff?.StaffType.ToString() ?? ""
+                }).ToArray(),
+                room = s.OperatingRoom?.Name ?? "-",
+                status = s.Status.ToString(),
+                surgeryType = s.SurgeryType ?? "-"
+            }).ToArray();
+
+            return new JsonResult(result);
         }
     }
 }
