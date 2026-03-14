@@ -45,6 +45,7 @@ public class CreateModel : PageModel
 
         var created = await _patientService.CreateAsync(patient, ct);
 
+        TempData["SuccessMessage"] = $"Đã thêm bệnh nhân {created.FullName} thành công.";
         return RedirectToPage("/Patients/Details", new { id = created.Id });
     }
 

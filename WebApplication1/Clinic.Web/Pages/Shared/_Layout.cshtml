@@ -166,6 +166,14 @@
             timeOut: 3000
         };
     </script>
+    @if (TempData["SuccessMessage"] is string successMsg)
+    {
+        <script>toastr.success('@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(successMsg))');</script>
+    }
+    @if (TempData["ErrorMessage"] is string errorMsg)
+    {
+        <script>toastr.error('@Html.Raw(System.Text.Encodings.Web.JavaScriptEncoder.Default.Encode(errorMsg))');</script>
+    }
 
     <!-- DataTables JS -->
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

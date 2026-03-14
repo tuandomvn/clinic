@@ -74,6 +74,7 @@ public class EditModel : PageModel
             return RedirectToPage("/Patients/Index");
         }
 
+        TempData["SuccessMessage"] = $"Đã cập nhật bệnh nhân {updated.FullName} thành công.";
         return RedirectToPage("/Patients/Details", new { id = updated.Id });
     }
 

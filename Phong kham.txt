@@ -46,3 +46,5 @@ update clinicdb.activityimages set ImageUrl = '2.jpg' where Id > 800 and Id < 12
     https://localhost:7170/Operations/SurgeryBooking có thể tìm kiếm bệnh nhan (autocomplete ) giống https://localhost:7170/Appointments/Create
 	
 Book in advance, no patient 
+
+
