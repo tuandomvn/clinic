@@ -19,7 +19,7 @@ public class Activity
     public int CreatedBy { get; set; } = -1; //Staff create, -1 if system generated
     public int? PatientId { get; set; }
     public int? RelatedEncounterId { get; set; }
-    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedDate { get; set; } = DateTime.Now;
     public Patient? Patient { get; set; }
     public HealthRecord? RelatedEncounter { get; set; }
     public ICollection<ActivityImage> Images { get; set; } = new List<ActivityImage>();

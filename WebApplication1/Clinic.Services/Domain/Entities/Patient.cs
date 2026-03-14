@@ -22,7 +22,7 @@ public class Patient
     public string? BarcodeValue { get; set; }
     public BarcodeType BarcodeType { get; set; } = BarcodeType.Code128;
     public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     public ICollection<HealthRecord> HistoryRecords { get; set; } = new List<HealthRecord>();

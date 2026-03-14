@@ -28,7 +28,7 @@ public class ReminderTask
     public int? DoneByStaffId { get; set; }
     public DateTime? DoneAt { get; set; }
     public int CreatedBy { get; set; } = -1;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
 
     public Patient Patient { get; set; } = null!;
 }

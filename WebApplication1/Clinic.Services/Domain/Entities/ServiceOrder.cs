@@ -10,7 +10,7 @@ public class ServiceOrder
     public decimal? UnitPrice { get; set; }
     public string? Notes { get; set; }
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     public HealthRecord HealthRecord { get; set; } = null!;

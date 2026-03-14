@@ -24,7 +24,7 @@ public class ClinicalExam
     public string? NeurologyExam { get; set; }      // Thần kinh
     public string? OtherFindings { get; set; }      // Khám khác
 
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     public HealthRecord HealthRecord { get; set; } = null!;

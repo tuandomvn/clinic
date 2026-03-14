@@ -140,10 +140,8 @@
 </div>
 
 @section Scripts {
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/locale/vi.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/moment@2.30.1/min/moment-with-locales.min.js"></script>
     <script>
-        // Set moment locale to Vietnamese
         moment.locale('vi');
     </script>
     <style>
@@ -344,8 +342,8 @@
                             className: 'fw-semibold',
                             render: function(data) {
                                 if (!data) return '-';
-                                // Parse the datetime string and format with moment
-                                return moment(data).format('DD/MM/YYYY HH:mm');
+                                var m = moment(data);
+                                return '<span title="' + m.format('DD/MM/YYYY HH:mm') + '">' + m.fromNow() + '</span>';
                             },
                             orderable: true
                         },

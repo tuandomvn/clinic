@@ -9,7 +9,7 @@ public class HealthRecord
     public string? Diagnosis { get; set; }
     public string? Symptoms { get; set; }
     public string? Notes { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     public Patient Patient { get; set; } = null!;

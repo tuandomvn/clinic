@@ -16,7 +16,7 @@ public class UserAccount
     public string Role { get; set; } = "User";
 
     public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
     public DateTime? LastLoginAt { get; set; }
 }

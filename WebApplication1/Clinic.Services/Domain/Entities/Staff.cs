@@ -18,7 +18,7 @@ public class Staff
     public string? Specialization { get; set; }
     public string? AvatarPath { get; set; }
     public bool IsActive { get; set; } = true;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     public UserAccount? UserAccount { get; set; }

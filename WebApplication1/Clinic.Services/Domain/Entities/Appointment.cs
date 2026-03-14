@@ -22,7 +22,7 @@ public class Appointment
     public AppointmentStatus Status { get; set; } = AppointmentStatus.Scheduled;
     public string? Notes { get; set; }
     public string? Reason { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     public Patient Patient { get; set; } = null!;

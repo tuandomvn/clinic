@@ -20,7 +20,7 @@ public class SurgerySchedule
     public string? Description { get; set; }
     public SurgeryStatus Status { get; set; } = SurgeryStatus.Scheduled;
     public string? Notes { get; set; }
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; set; } = DateTime.Now;
     public DateTime? UpdatedAt { get; set; }
 
     public Patient Patient { get; set; } = null!;
