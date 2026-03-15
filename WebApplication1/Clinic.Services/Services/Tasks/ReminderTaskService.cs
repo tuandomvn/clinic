@@ -14,9 +14,17 @@ public sealed class ReminderTaskService : IReminderTaskService
         _db = db;
     }
 
+    // overload cũ cho interface, gọi overload mới
     public async Task<(IReadOnlyList<TaskEntity> Items, int FilteredCount, int TotalCount)> SearchPagedAsync(
         int skip, int take, string? search, string? filterType, string? filterStatus,
         string? sortBy, bool ascending, CancellationToken ct = default)
+    {
+        return await SearchPagedAsync(skip, take, search, filterType, filterStatus, sortBy, ascending, null, null, ct);
+    }
+
+    public async Task<(IReadOnlyList<TaskEntity> Items, int FilteredCount, int TotalCount)> SearchPagedAsync(
+        int skip, int take, string? search, string? filterType, string? filterStatus,
+        string? sortBy, bool ascending, string? filterDateFrom = null, string? filterDateTo = null, CancellationToken ct = default)
     {
         var query = _db.ReminderTasks
             .AsNoTracking()

@@ -38,6 +38,8 @@ public class IndexModel : PageModel
         string? search = null,
         string? filterType = null,
         string? filterStatus = null,
+        string? filterDateFrom = null,
+        string? filterDateTo = null,
         CancellationToken ct = default)
     {
         var orderColumn = HttpContext.Request.Query["order[0][column]"].ToString();
@@ -51,7 +53,7 @@ public class IndexModel : PageModel
         }
 
         var (items, filteredCount, totalCount) = await _taskService.SearchPagedAsync(
-            start, length, search, filterType, filterStatus, sortBy, ascending, ct);
+            start, length, search, filterType, filterStatus, sortBy, ascending, filterDateFrom, filterDateTo, ct);
 
         // Build StaffId → FullName map for DoneBy display
         var staffIds = items

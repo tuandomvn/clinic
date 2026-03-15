@@ -10,6 +10,12 @@
         <div class="text-muted small">Danh sách nhắc nhở theo dõi bệnh nhân</div>
     </div>
     <div class="d-flex align-items-center gap-2">
+        <div class="btn-group me-2" role="group" aria-label="Chọn tuần">
+            <button type="button" data-week="0" class="btn btn-sm btn-outline-secondary week-btn active">Hôm nay</button>
+            <button type="button" data-week="1" class="btn btn-sm btn-outline-secondary week-btn">Tuần này</button>
+            <button type="button" data-week="2" class="btn btn-sm btn-outline-secondary week-btn">Tuần kế tiếp</button>
+            <button type="button" data-week="3" class="btn btn-sm btn-outline-secondary week-btn">2 tuần kế tiếp</button>
+        </div>
         <span class="badge bg-danger rounded-pill" id="todayBadge">@Model.TodayPendingCount việc cần làm hôm nay</span>
         <a class="btn btn-sm btn-primary" href="/Tasks/Create"><i class="bi bi-plus-circle me-1"></i>Tạo task mới</a>
     </div>
@@ -235,6 +241,36 @@
     </style>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            // ===== TUẦN FILTER =====
+            function getWeekRange(offset) {
+                var today = new Date();
+                today.setHours(0,0,0,0);
+                if (offset === 0) {
+                    var ds = today.toISOString().split('T')[0];
+                    return { from: ds, to: ds };
+                }
+                var day = today.getDay();
+                var diffToMon = (day === 0 ? -6 : 1 - day);
+                var monday = new Date(today);
+                monday.setDate(today.getDate() + diffToMon + 7 * (offset - 1));
+                var sunday = new Date(monday);
+                sunday.setDate(monday.getDate() + 6);
+                return { from: monday.toISOString().split('T')[0], to: sunday.toISOString().split('T')[0] };
+            }
+            window.taskFilterDateFrom = null;
+            window.taskFilterDateTo = null;
+            var activeWeekOffset = 0;
+            document.querySelectorAll('.week-btn').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.week-btn').forEach(function(b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    activeWeekOffset = parseInt(btn.dataset.week);
+                    var range = getWeekRange(activeWeekOffset);
+                    window.taskFilterDateFrom = range.from;
+                    window.taskFilterDateTo = range.to;
+                    table.ajax.reload();
+                });
+            });
             var typeBadgeClass = {
                 'FollowUp': 'bg-info text-dark',
                 'BirthdayGreeting': 'bg-pink',
@@ -267,6 +303,8 @@
                         d.search = document.getElementById('taskSearch').value;
                         d.filterType = document.getElementById('filterType').value;
                         d.filterStatus = document.getElementById('filterStatus').value;
+                        if (window.taskFilterDateFrom) d.filterDateFrom = window.taskFilterDateFrom;
+                        if (window.taskFilterDateTo) d.filterDateTo = window.taskFilterDateTo;
                         return d;
                     },
                     dataSrc: 'data',
