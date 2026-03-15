@@ -348,32 +348,35 @@ else
                         });
 
                         if (!res.ok) throw new Error('Post failed');
-                        const newActivity = await res.json();
+                         const resJson = await res.json();
+                         if (resJson.error) {
+                             toastr.error(resJson.error);
+                         } else {
+                             // Prepend new card to feed
+                             const cardHtml = renderActivityCard(resJson);
+                             const feedFirstCard = feed.querySelector('.feed-card');
+                             if (feedFirstCard) {
+                                 feedFirstCard.insertAdjacentHTML('beforebegin', cardHtml);
+                             } else {
+                                 feed.insertAdjacentHTML('afterbegin', cardHtml);
+                             }
+                             allItems.unshift(resJson);
+                             applyFeedFilter();
 
-                        // Prepend new card to feed
-                        const cardHtml = renderActivityCard(newActivity);
-                        const feedFirstCard = feed.querySelector('.feed-card');
-                        if (feedFirstCard) {
-                            feedFirstCard.insertAdjacentHTML('beforebegin', cardHtml);
-                        } else {
-                            feed.insertAdjacentHTML('afterbegin', cardHtml);
-                        }
-                        allItems.unshift(newActivity);
-                        applyFeedFilter();
+                             // Reset composer
+                             postContent.value = '';
+                             postContent.style.height = 'auto';
+                             postCharCount.textContent = '';
+                             selectedFiles = [];
+                             renderImagePreviews();
+                         }
+                     } catch (err) {
+                         console.error('Error posting activity:', err);
+                         toastr.error('Lỗi khi đăng bài viết. Vui lòng thử lại.');
+                     }
 
-                        // Reset composer
-                        postContent.value = '';
-                        postContent.style.height = 'auto';
-                        postCharCount.textContent = '';
-                        selectedFiles = [];
-                        renderImagePreviews();
-                    } catch (err) {
-                        console.error('Error posting activity:', err);
-                        alert('Lỗi khi đăng bài viết. Vui lòng thử lại.');
-                    }
-
-                    btnPost.disabled = false;
-                    btnPost.innerHTML = 'Đăng';
+                     btnPost.disabled = false;
+                     btnPost.innerHTML = 'Đăng';
                 });
 
                 // Ctrl+Enter to post

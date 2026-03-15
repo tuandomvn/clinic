@@ -171,10 +171,26 @@ public class DetailsModel : PageModel
         var patientIdStr = Request.Form["patientId"].ToString();
         var contentText = Request.Form["contentText"].ToString();
 
-        if (!int.TryParse(patientIdStr, out var patientId) || patientId <= 0
-            || string.IsNullOrWhiteSpace(contentText))
+        if (!int.TryParse(patientIdStr, out var patientId) || patientId <= 0)
         {
-            return BadRequest(new { error = "Nội dung không được để trống." });
+            return BadRequest(new { success = false, error = "Thiếu thông tin bệnh nhân." });
+        }
+
+        // Nếu không có nội dung và không có file ảnh nào hợp lệ thì báo lỗi
+        var files = Request.Form.Files;
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+        bool hasValidImage = false;
+        foreach (var file in files)
+        {
+            if (file.Length > 0 && file.Length <= 5 * 1024 * 1024)
+            {
+                var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+                if (allowedExtensions.Contains(ext)) { hasValidImage = true; break; }
+            }
+        }
+        if (string.IsNullOrWhiteSpace(contentText) && !hasValidImage)
+        {
+            return BadRequest(new { success = false, error = "Bạn vui lòng nhập nội dung." });
         }
 
         try
@@ -209,8 +225,6 @@ public class DetailsModel : PageModel
             };
 
             // Handle uploaded images
-            var files = Request.Form.Files;
-            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
             var activityImagesDir = Path.Combine(_uploadPath, "activities");
             Directory.CreateDirectory(activityImagesDir);
 
