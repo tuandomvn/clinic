@@ -14,4 +14,9 @@ public class TimeSlotDto
     public DateTime Start { get; set; }
     public DateTime End { get; set; }
     public int? AppointmentId { get; set; }
+
+    // Thông tin bệnh nhân cho slot đã book
+    public int? PatientId { get; set; }
+    public string? PatientName { get; set; }
+    public string? Reason { get; set; }
 }

@@ -100,11 +100,11 @@ public sealed class AppointmentService : IAppointmentService
 
         var booked = await _db.Appointments
             .AsNoTracking()
+            .Include(a => a.Patient)
             .Where(a => a.StaffId == staffId && a.Status != AppointmentStatus.Cancelled
                 && a.ScheduledAt < workEnd
                 && a.ScheduledAt.AddMinutes(a.DurationMinutes) > workStart)
             .OrderBy(a => a.ScheduledAt)
-            .Select(a => new { a.Id, a.ScheduledAt, a.DurationMinutes })
             .ToListAsync(ct);
 
         var bookedSlots = booked
@@ -112,7 +112,10 @@ public sealed class AppointmentService : IAppointmentService
             {
                 Start = a.ScheduledAt,
                 End = a.ScheduledAt.AddMinutes(a.DurationMinutes),
-                AppointmentId = a.Id
+                AppointmentId = a.Id,
+                PatientId = a.PatientId,
+                PatientName = a.Patient != null ? a.Patient.FullName : null,
+                Reason = a.Reason
             })
             .ToList();
 

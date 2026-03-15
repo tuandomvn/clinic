@@ -81,7 +81,10 @@ public class CreateModel : PageModel
             bookedSlots = availability.BookedSlots.Select(s => new
             {
                 start = s.Start.ToString("HH:mm"),
-                end = s.End.ToString("HH:mm")
+                end = s.End.ToString("HH:mm"),
+                patientId = s.PatientId,
+                patientName = s.PatientName,
+                reason = s.Reason
             })
         };
         return new JsonResult(result);

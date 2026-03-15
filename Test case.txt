@@ -1,0 +1,20 @@
+1. Task
+-tạo task
+-xem task: đánh dấu task done, undone
+
+2. Appoitment
+-Tao lich hen
+-Xem lich hen, kiêm tra lich hen
+-Lich cua bac si trong Appoitment có đúng ko? Phải show dc lich đã book cho Appoiment/Lịch mổ
+
+3. Lịch mổ
+-Tao lich mổ
+-Xem lich mổ, kiêm tra lich mổ
+-Lich cua bac si trong Appoitment có đúng ko? Phải show dc lich đã book cho Appoiment/Lịch mổ
+
+3. Nhan vien
+Quan ly list nv, Tao mới, edit, cap nhật avatar
+
+4. Bệnh nhân
+Tao mới, quản lý hồ sơ, profile
+Print

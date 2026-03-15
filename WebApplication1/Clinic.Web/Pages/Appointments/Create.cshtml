@@ -201,7 +201,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (slot.booked) {
                     btn.disabled = true;
                     btn.classList.add('btn-busy');
-                    btn.title = 'Đã được đặt';
+                    // Tìm thông tin bệnh nhân cho slot này
+                    var info = (data.bookedSlots || []).find(function(s) { return s.start === slot.start; });
+                    var tooltipText = 'Đã được đặt';
+                    if (info && info.patientName) {
+                        tooltipText = 'Bác sĩ đã có lịch với: ' + info.patientName + (info.patientId ? ' (ID: ' + info.patientId + ')' : '') + (info.reason ? '\nLý do: ' + info.reason : '');
+                    }
+                    var wrapper = document.createElement('span');
+                    wrapper.setAttribute('data-bs-toggle', 'tooltip');
+                    wrapper.setAttribute('data-bs-title', tooltipText);
+                    wrapper.appendChild(btn);
+                    slotsContainer.appendChild(wrapper);
                 } else {
                     btn.addEventListener('click', function () {
                         slotsContainer.querySelectorAll('.slot-btn.active').forEach(function(el) {
@@ -213,8 +223,14 @@ document.addEventListener('DOMContentLoaded', function () {
                         selectedSlotTime = slot.start;
                         updateSubmitBtn();
                     });
+                    slotsContainer.appendChild(btn);
                 }
-                slotsContainer.appendChild(btn);
+            });
+
+            // Khởi tạo lại tooltip cho tất cả slot đã book (span có data-bs-toggle="tooltip")
+            var tooltipTriggerList = [].slice.call(slotsContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function (el) {
+                new bootstrap.Tooltip(el);
             });
 
             if (allSlots.filter(function(s) { return !s.booked; }).length === 0) {
