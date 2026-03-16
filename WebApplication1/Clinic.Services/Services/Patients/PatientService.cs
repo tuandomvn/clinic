@@ -94,15 +94,27 @@ public sealed class PatientService : IPatientService
             .FirstOrDefaultAsync(p => p.Id == id, ct);
     }
 
-    public async Task<PatientEntity?> GetByIdWithDetailsAsync(int id, string barcodeValue, CancellationToken ct = default)
+    public async Task<PatientEntity?> GetByIdWithDetailsAsync(int id, string? barcodeValue, CancellationToken ct = default)
     {
-        return await _db.Patients
+        var query = _db.Patients
             .AsNoTracking()
             .Include(p => p.Activities.OrderByDescending(a => a.CreatedDate))
                 .ThenInclude(a => a.Images)
             .Include(p => p.Appointments.OrderByDescending(a => a.ScheduledAt))
-                .ThenInclude(a => a.Staff)
-            .FirstOrDefaultAsync(p => p.Id == id || p.BarcodeValue == barcodeValue, ct);
+                .ThenInclude(a => a.Staff);
+
+        if (id > 0)
+        {
+            return await query.FirstOrDefaultAsync(p => p.Id == id, ct);
+        }
+        else if (!string.IsNullOrEmpty(barcodeValue))
+        {
+            return await query.FirstOrDefaultAsync(p => p.BarcodeValue == barcodeValue, ct);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     public async Task<PatientEntity> CreateAsync(PatientEntity patient, CancellationToken ct = default)

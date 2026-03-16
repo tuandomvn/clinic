@@ -22,7 +22,7 @@ public interface IPatientService
     Task<PatientEntity?> GetByIdAsync(int id, CancellationToken ct = default);
 
     /// <summary>Lấy chi tiết bệnh nhân kèm theo Activities và Appointments.</summary>
-    Task<PatientEntity?> GetByIdWithDetailsAsync(int id, string barcodeValue, CancellationToken ct = default);
+    Task<PatientEntity?> GetByIdWithDetailsAsync(int id, string? barcodeValue, CancellationToken ct = default);
 
     /// <summary>Tạo bệnh nhân mới.</summary>
     Task<PatientEntity> CreateAsync(PatientEntity patient, CancellationToken ct = default);

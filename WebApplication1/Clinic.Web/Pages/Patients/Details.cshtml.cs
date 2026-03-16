@@ -229,7 +229,7 @@ public class DetailsModel : PageModel
             };
 
             // Handle uploaded images
-            var activityImagesDir = Path.Combine(_uploadPath, "activities");
+            var activityImagesDir = Path.Combine(_uploadPath, patientId.ToString(), "activities");
             Directory.CreateDirectory(activityImagesDir);
 
             var savedImages = new List<ActivityImage>();
@@ -249,7 +249,7 @@ public class DetailsModel : PageModel
 
                 var image = new ActivityImage
                 {
-                    ImageUrl = $"/activities/{fileName}",
+                    ImageUrl = $"/{patientId.ToString()}/activities/{fileName}",
                     Caption = file.FileName,
                     CreatedDate = DateTime.UtcNow
                 };
