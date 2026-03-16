@@ -114,7 +114,7 @@ public class ProfileModel : PageModel
             return Page();
         }
 
-        var uploadsDir = Path.Combine(_uploadPath, staffId.GetValueOrDefault().ToString(), "avatars");
+        var uploadsDir = Path.Combine(_uploadPath, "avatars");
         Directory.CreateDirectory(uploadsDir);
 
         var fileName = $"staff-{staffId}-{Guid.NewGuid():N}{ext}";
@@ -124,7 +124,7 @@ public class ProfileModel : PageModel
         var currentStaff = await _staffService.GetByIdAsync(staffId.Value, ct);
         if (currentStaff?.AvatarPath is not null)
         {
-            var oldFile = Path.Combine(_uploadPath, staffId.GetValueOrDefault().ToString(), currentStaff.AvatarPath.TrimStart('/'));
+            var oldFile = Path.Combine(_uploadPath, currentStaff.AvatarPath.TrimStart('/'));
             if (System.IO.File.Exists(oldFile))
             {
                 System.IO.File.Delete(oldFile);
@@ -134,7 +134,7 @@ public class ProfileModel : PageModel
         await using var stream = new FileStream(filePath, FileMode.Create);
         await avatar.CopyToAsync(stream, ct);
 
-        var avatarUrl = $"/{staffId.GetValueOrDefault().ToString()}/avatars/{fileName}";
+        var avatarUrl = $"/avatars/{fileName}";
         await _staffService.UpdateAvatarAsync(staffId.Value, avatarUrl, ct);
 
         SuccessMessage = "Cập nhật ảnh đại diện thành công.";
