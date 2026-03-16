@@ -1,7 +1,8 @@
-using Clinic.Services.Domain.Entities;
 using Clinic.Services.Data;
+using Clinic.Services.Domain.Entities;
 using Clinic.Services.Services.Patients;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -40,6 +41,7 @@ public class DetailsModel : PageModel
         if (Id <= 0 && string.IsNullOrEmpty(Barcode))
         {
             _logger.LogWarning("Invalid patient ID: {Id}", Id);
+            TempData["ErrorMessage"] = $"Không tìm thấy bệnh nhân.";
             return RedirectToPage("/Patients/Index");
         }
 
@@ -50,7 +52,8 @@ public class DetailsModel : PageModel
             if (Patient == null)
             {
                 _logger.LogWarning("Patient not found with ID: {Id}", Id);
-                return NotFound();
+                TempData["ErrorMessage"] = $"Không tìm thấy bệnh nhân.";
+                return RedirectToPage("/Patients/Index");
             }
 
             // Lấy lịch hẹn kế tiếp (chưa diễn ra)
