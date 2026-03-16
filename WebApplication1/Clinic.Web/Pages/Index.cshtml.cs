@@ -30,6 +30,8 @@ namespace Clinic.Web.Pages
 
         public IReadOnlyList<AppointmentResponse> Appointments { get; private set; } = Array.Empty<AppointmentResponse>();
 
+        public List<Clinic.Services.Domain.Entities.Staff> Doctors { get; set; } = new List<Clinic.Services.Domain.Entities.Staff>();
+
         public async Task OnGetAsync(int weekOffset = 0)
         {
             WeekOffset = weekOffset;
@@ -41,6 +43,12 @@ namespace Clinic.Web.Pages
             var start = mondayThisWeek.AddDays(7 * WeekOffset);
             StartOfWeek = start;
             EndOfWeek = start.AddDays(6);
+
+            // Load all doctors for filter dropdown
+            Doctors = await _dbContext.Staff
+                .Where(s => s.StaffType == Clinic.Services.Domain.Entities.StaffType.Doctor && s.IsActive)
+                .OrderBy(s => s.FullName)
+                .ToListAsync();
 
             //// Tạm lấy lịch của ngày hôm nay trong tuần được chọn (có thể thay bằng filter theo ngày được chọn từ UI)
             //var date = DateOnly.FromDateTime(today);
@@ -68,6 +76,7 @@ namespace Clinic.Web.Pages
             int start = 0, 
             int length = 10,
             string? searchPatient = null,
+            string? searchDoctor = null,
             string? searchDateFrom = null,
             string? searchDateTo = null,
             CancellationToken ct = default)
@@ -91,6 +100,12 @@ namespace Clinic.Web.Pages
                     {
                         query = query.Where(a => a.Patient != null && a.Patient.FullName.Contains(term));
                     }
+                }
+
+                // Filter by doctor
+                if (!string.IsNullOrWhiteSpace(searchDoctor) && int.TryParse(searchDoctor, out var doctorId))
+                {
+                    query = query.Where(a => a.StaffId == doctorId);
                 }
 
                 // Filter by date range (from week buttons or advanced search)

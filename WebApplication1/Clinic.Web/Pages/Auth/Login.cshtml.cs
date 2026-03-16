@@ -55,6 +55,7 @@ public class LoginModel : PageModel
             }
 
             // Create claims for the authenticated user
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, result.StaffId.ToString()),
@@ -62,6 +63,10 @@ public class LoginModel : PageModel
                 new Claim(ClaimTypes.Role, result.Role),
                 new Claim("AccessToken", result.AccessToken)
             };
+            if (!string.IsNullOrWhiteSpace(result.FullName))
+            {
+                claims.Add(new Claim("FullName", result.FullName));
+            }
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var authProperties = new AuthenticationProperties

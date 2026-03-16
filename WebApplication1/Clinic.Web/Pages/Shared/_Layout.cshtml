@@ -72,7 +72,7 @@
                                 {
                                     <span>👤</span>
                                 }
-                                @(User.Identity?.Name ?? "User")
+                                @(User.FindFirst("FullName")?.Value ?? User.Identity?.Name ?? "User")
                             </a>
 
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">

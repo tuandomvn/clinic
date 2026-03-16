@@ -23,6 +23,7 @@ public sealed class AuthService : IAuthService
             return null;
 
         var account = await _db.UserAccounts
+            .Include(x => x.Staff)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Username == request.Username && x.IsActive, ct);
 
@@ -40,7 +41,8 @@ public sealed class AuthService : IAuthService
             ExpiresAtUtc = expiresAtUtc,
             StaffId = account.StaffId,
             Username = account.Username,
-            Role = account.Role
+            Role = account.Role,
+            FullName = account.Staff?.FullName ?? account.Username
         };
     }
 }

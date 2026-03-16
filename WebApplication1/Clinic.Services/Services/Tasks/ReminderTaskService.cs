@@ -26,10 +26,21 @@ public sealed class ReminderTaskService : IReminderTaskService
         int skip, int take, string? search, string? filterType, string? filterStatus,
         string? sortBy, bool ascending, string? filterDateFrom = null, string? filterDateTo = null, CancellationToken ct = default)
     {
+
         var query = _db.ReminderTasks
             .AsNoTracking()
             .Include(t => t.Patient)
             .AsQueryable();
+
+        // Filter by due date range
+        if (!string.IsNullOrWhiteSpace(filterDateFrom) && DateTime.TryParse(filterDateFrom, out var dateFrom))
+        {
+            query = query.Where(t => t.DueDate >= dateFrom);
+        }
+        if (!string.IsNullOrWhiteSpace(filterDateTo) && DateTime.TryParse(filterDateTo, out var dateTo))
+        {
+            query = query.Where(t => t.DueDate <= dateTo);
+        }
 
         var totalCount = await query.CountAsync(ct);
 

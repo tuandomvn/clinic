@@ -30,10 +30,12 @@
             </div>
         </div>
         <div class="col-md-2">
-            <select class="form-select">
-                <option>All doctors</option>
-                <option>Dr. Tran Thi B</option>
-                <option>Dr. Nguyen Van D</option>
+            <select class="form-select" id="filterDoctor">
+                <option value="">Tất cả bác sĩ</option>
+                @foreach (var doc in Model.Doctors)
+                {
+                    <option value="@doc.Id">@doc.FullName</option>
+                }
             </select>
         </div>
         <div class="col-md-2">
@@ -190,6 +192,10 @@
                             } else if (patientText) {
                                 d.searchPatient = patientText;
                             }
+                            var doctorId = document.getElementById('filterDoctor').value;
+                            if (doctorId) {
+                                d.searchDoctor = doctorId;
+                            }
                             var dateFrom = document.getElementById('filterDateFrom').value;
                             var dateTo = document.getElementById('filterDateTo').value;
                             if (dateFrom || dateTo) {
@@ -272,6 +278,10 @@
 
                 var table = $('#appointmentsTable').DataTable();
 
+                // Doctor filter change event
+                document.getElementById('filterDoctor').addEventListener('change', function() {
+                    table.ajax.reload();
+                });
                 // Week buttons
                 document.querySelectorAll('.week-btn').forEach(function(btn) {
                     btn.addEventListener('click', function() {
