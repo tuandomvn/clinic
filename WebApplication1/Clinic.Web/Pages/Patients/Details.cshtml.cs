@@ -33,10 +33,11 @@ public class DetailsModel : PageModel
 
     [BindProperty(SupportsGet = true)]
     public int Id { get; set; }
-
+    [BindProperty(SupportsGet = true)]
+    public string? Barcode { get; set; }
     public async Task<IActionResult> OnGetAsync(CancellationToken ct = default)
     {
-        if (Id <= 0)
+        if (Id <= 0 && string.IsNullOrEmpty(Barcode))
         {
             _logger.LogWarning("Invalid patient ID: {Id}", Id);
             return RedirectToPage("/Patients/Index");
@@ -44,7 +45,7 @@ public class DetailsModel : PageModel
 
         try
         {
-            Patient = await _patientService.GetByIdWithDetailsAsync(Id, ct);
+            Patient = await _patientService.GetByIdWithDetailsAsync(Id, barcodeValue: Barcode, ct);
 
             if (Patient == null)
             {
@@ -110,7 +111,7 @@ public class DetailsModel : PageModel
 
         try
         {
-            var patient = await _patientService.GetByIdWithDetailsAsync(Id, ct);
+            var patient = await _patientService.GetByIdWithDetailsAsync(Id, Barcode, ct);
             if (patient == null)
             {
                 return NotFound();

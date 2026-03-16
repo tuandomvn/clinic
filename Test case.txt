@@ -21,3 +21,5 @@ Tao mới, quản lý hồ sơ, profile
 Profile: có the post + upload hinh anh, view lai sau do 
          1 so profile tu dong post
 Print
+
+5. Scan mã vạch bệnh nhân

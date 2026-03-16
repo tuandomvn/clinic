@@ -94,7 +94,7 @@ public sealed class PatientService : IPatientService
             .FirstOrDefaultAsync(p => p.Id == id, ct);
     }
 
-    public async Task<PatientEntity?> GetByIdWithDetailsAsync(int id, CancellationToken ct = default)
+    public async Task<PatientEntity?> GetByIdWithDetailsAsync(int id, string barcodeValue, CancellationToken ct = default)
     {
         return await _db.Patients
             .AsNoTracking()
@@ -102,7 +102,7 @@ public sealed class PatientService : IPatientService
                 .ThenInclude(a => a.Images)
             .Include(p => p.Appointments.OrderByDescending(a => a.ScheduledAt))
                 .ThenInclude(a => a.Staff)
-            .FirstOrDefaultAsync(p => p.Id == id, ct);
+            .FirstOrDefaultAsync(p => p.Id == id || p.BarcodeValue == barcodeValue, ct);
     }
 
     public async Task<PatientEntity> CreateAsync(PatientEntity patient, CancellationToken ct = default)
