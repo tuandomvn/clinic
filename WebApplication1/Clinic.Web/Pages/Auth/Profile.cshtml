@@ -37,10 +37,11 @@
             <h6 class="mb-1">@Model.Input.FullName</h6>
             <div class="small text-muted mb-3">@Model.Input.StaffType</div>
             <form method="post" asp-page-handler="UploadAvatar" enctype="multipart/form-data">
-                <div class="mb-2">
-                    <input type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" class="form-control form-control-sm" id="avatarInput" />
+                <div class="mb-2 d-flex flex-column align-items-center">
+                    <label for="avatarInput" class="btn btn-outline-secondary btn-sm mb-1">Chọn ảnh</label>
+                    <input type="file" name="avatar" accept=".jpg,.jpeg,.png,.webp" id="avatarInput" style="display:none" />
                 </div>
-                <div class="small text-muted mb-2">JPG hoặc PNG. Tối đa 2MB.</div>
+                <div class="small text-muted text-center">JPG hoặc PNG. Tối đa 2MB.</div>
                 <button type="submit" class="btn btn-sm btn-outline-primary w-100">Lưu</button>
             </form>
         </div>
