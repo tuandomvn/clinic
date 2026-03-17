@@ -73,7 +73,6 @@
                     <th>Loại</th>
                     <th>Mô tả</th>
                     <th>Ngày hẹn</th>
-                    <th>Mức độ</th>
                     <th data-orderable="false">Trạng thái</th>
                     <th data-orderable="false">Hoàn thành bởi</th>
                     <th data-orderable="false" style="width:60px;"></th>
@@ -278,11 +277,6 @@
                 'PeriodicTest': 'bg-primary',
                 'General': 'bg-secondary'
             };
-            var priorityBadgeClass = {
-                'High': 'bg-danger',
-                'Medium': 'bg-warning text-dark',
-                'Low': 'bg-secondary'
-            };
 
             var table = $('#taskTable').DataTable({
                 serverSide: true,
@@ -370,14 +364,6 @@
                     {
                         data: null,
                         render: function (d) {
-                            var badge = priorityBadgeClass[d.priority] || 'bg-secondary';
-                            return '<span class="badge ' + badge + '" style="font-size:0.65rem;">' + d.priorityDisplay + '</span>';
-                        },
-                        orderable: true
-                    },
-                    {
-                        data: null,
-                        render: function (d) {
                             if (d.isDone) return '<span class="badge bg-success" style="font-size:0.65rem;">Đã xong</span>';
                             return '<span class="badge bg-outline-warning text-warning border border-warning" style="font-size:0.65rem;">Chưa xong</span>';
                         },
@@ -393,7 +379,7 @@
                     {
                         data: null,
                         render: function (d) {
-                            return '<a class="btn btn-sm btn-outline-primary" href="/Patients/Details?id=' + d.patientId + '" style="font-size:0.7rem;padding:0.15rem 0.3rem;">Xem</a>';
+                            return '<a class="btn btn-sm btn-outline-primary" href="" style="font-size:0.7rem;padding:0.15rem 0.3rem;">Xem</a>';
                         },
                         orderable: false,
                         searchable: false

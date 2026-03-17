@@ -12,7 +12,7 @@ namespace Clinic.Web.Pages.Tasks;
 [Authorize]
 public class IndexModel : PageModel
 {
-    private static readonly string[] ColumnMap = ["", "patientName", "taskType", "description", "dueDate", "priority"];
+    private static readonly string[] ColumnMap = ["", "patientName", "taskType", "description", "dueDate"];
 
     private readonly IReminderTaskService _taskService;
     private readonly ClinicDbContext _dbContext;
@@ -86,13 +86,6 @@ public class IndexModel : PageModel
                 dueDate = t.DueDate.ToString("dd/MM/yyyy"),
                 isOverdue = t.DueDate.Date <= today && !t.IsDone,
                 isToday = t.DueDate.Date == today,
-                priority = t.Priority.ToString(),
-                priorityDisplay = t.Priority switch
-                {
-                    TaskPriority.High => "Cao",
-                    TaskPriority.Medium => "TB",
-                    _ => "Thấp"
-                },
                 isDone = t.IsDone,
                 doneBy = t.DoneByStaffId.HasValue && t.DoneByStaffId.Value > 0
                     ? staffMap.GetValueOrDefault(t.DoneByStaffId.Value, "—")

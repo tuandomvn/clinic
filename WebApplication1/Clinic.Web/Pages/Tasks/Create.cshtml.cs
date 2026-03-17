@@ -45,7 +45,6 @@ public class CreateModel : PageModel
     public async Task<IActionResult> OnPostAsync(
         int patientId,
         string taskType,
-        string priority,
         string dueDate,
         string? description,
         CancellationToken ct)
@@ -56,8 +55,6 @@ public class CreateModel : PageModel
         if (!Enum.TryParse<ReminderTaskType>(taskType, out var type))
             return BadRequest(new { error = "Loại task không hợp lệ." });
 
-        if (!Enum.TryParse<TaskPriority>(priority, out var prio))
-            return BadRequest(new { error = "Mức độ không hợp lệ." });
 
         if (!DateTime.TryParse(dueDate, out var due))
             return BadRequest(new { error = "Ngày hẹn không hợp lệ." });
@@ -71,7 +68,6 @@ public class CreateModel : PageModel
         {
             PatientId = patientId,
             TaskType = type,
-            Priority = prio,
             DueDate = due,
             Description = description ?? string.Empty,
             IsDone = false,

@@ -73,7 +73,6 @@ public sealed class ReminderTaskService : IReminderTaskService
             "patientName" => ascending ? query.OrderBy(t => t.Patient.FullName) : query.OrderByDescending(t => t.Patient.FullName),
             "taskType" => ascending ? query.OrderBy(t => t.TaskType) : query.OrderByDescending(t => t.TaskType),
             "dueDate" => ascending ? query.OrderBy(t => t.DueDate) : query.OrderByDescending(t => t.DueDate),
-            "priority" => ascending ? query.OrderBy(t => t.Priority) : query.OrderByDescending(t => t.Priority),
             _ => ascending ? query.OrderBy(t => t.DueDate) : query.OrderByDescending(t => t.DueDate)
         };
 

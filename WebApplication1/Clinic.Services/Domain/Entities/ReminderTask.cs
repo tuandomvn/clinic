@@ -23,7 +23,7 @@ public class ReminderTask
     public ReminderTaskType TaskType { get; set; }
     public string Description { get; set; } = string.Empty;
     public DateTime DueDate { get; set; }
-    public TaskPriority Priority { get; set; }
+    public TaskPriority Priority { get; set; } = TaskPriority.Medium;
     public bool IsDone { get; set; }
     public int? DoneByStaffId { get; set; }
     public DateTime? DoneAt { get; set; }

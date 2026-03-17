@@ -498,8 +498,6 @@ public class ClinicDbContext : DbContext
 
         var taskRandom = new Random(42);
         var allTaskTypes = Enum.GetValues<ReminderTaskType>();
-        var priorities = Enum.GetValues<TaskPriority>();
-
         for (int i = 1; i <= 100; i++)
         {
             var taskType = allTaskTypes[taskRandom.Next(allTaskTypes.Length)];
@@ -508,13 +506,6 @@ public class ClinicDbContext : DbContext
             var pid = taskRandom.Next(1, 51); // patients 1-50
             var daysOffset = taskRandom.Next(-10, 15); // some overdue, some today, some future
             var dueDate = utc.AddDays(daysOffset).Date;
-            var priority = taskType switch
-            {
-                ReminderTaskType.FollowUp => TaskPriority.High,
-                ReminderTaskType.PeriodicTest => priorities[taskRandom.Next(1, 3)], // Medium or High
-                ReminderTaskType.BirthdayGreeting => TaskPriority.Low,
-                _ => priorities[taskRandom.Next(priorities.Length)]
-            };
             var isDone = daysOffset < -3 ? taskRandom.NextDouble() > 0.3 : // older → more likely done
                          daysOffset < 0 ? taskRandom.NextDouble() > 0.6 :
                          taskRandom.NextDouble() > 0.85;
@@ -529,7 +520,6 @@ public class ClinicDbContext : DbContext
                 TaskType = taskType,
                 Description = desc,
                 DueDate = dueDate,
-                Priority = priority,
                 IsDone = isDone,
                 DoneByStaffId = doneByStaffId,
                 DoneAt = doneAt,
