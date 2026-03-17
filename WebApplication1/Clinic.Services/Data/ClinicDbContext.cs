@@ -221,10 +221,10 @@ public class ClinicDbContext : DbContext
         // Seed UserAccounts (linked to Staff)
         var userAccounts = new[]
         {
-            new UserAccount { Id = 1, StaffId = 1, Username = "doctor1", PasswordHash = HashPassword("Password@123"), Role = "Doctor", IsActive = true, CreatedAt = utc },
-            new UserAccount { Id = 2, StaffId = 2, Username = "nurse1", PasswordHash = HashPassword("Password@123"), Role = "Nurse", IsActive = true, CreatedAt = utc },
-            new UserAccount { Id = 3, StaffId = 3, Username = "doctor2", PasswordHash = HashPassword("Password@123"), Role = "Doctor", IsActive = true, CreatedAt = utc },
-            new UserAccount { Id = 4, StaffId = 4, Username = "nurse2", PasswordHash = HashPassword("Password@123"), Role = "Nurse", IsActive = true, CreatedAt = utc },
+            new UserAccount { Id = 1, StaffId = 1, Username = "doctor1", PasswordHash = HashPassword("p123"), Role = "Doctor", IsActive = true, CreatedAt = utc },
+            new UserAccount { Id = 2, StaffId = 2, Username = "nurse1", PasswordHash = HashPassword("p123"), Role = "Nurse", IsActive = true, CreatedAt = utc },
+            new UserAccount { Id = 3, StaffId = 3, Username = "doctor2", PasswordHash = HashPassword("p123"), Role = "Doctor", IsActive = true, CreatedAt = utc },
+            new UserAccount { Id = 4, StaffId = 4, Username = "nurse2", PasswordHash = HashPassword("p123"), Role = "Nurse", IsActive = true, CreatedAt = utc },
         };
         modelBuilder.Entity<UserAccount>().HasData(userAccounts);
 

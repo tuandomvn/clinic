@@ -17,6 +17,9 @@ public class IndexModel : PageModel
         _patientService = patientService;
     }
 
+    [BindProperty(SupportsGet = true)]
+    public string? Search { get; set; }
+
     public void OnGet()
     {
     }

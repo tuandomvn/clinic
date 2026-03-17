@@ -35,7 +35,7 @@ authen voi ajax
 
 
 doctor1
-Password@123
+Password@123 / p123
 
 update clinicdb.activityimages set ImageUrl = '1.jpg' where Id < 400;
 update clinicdb.activityimages set ImageUrl = '2.jpg' where Id > 400 and Id < 800;
@@ -48,3 +48,10 @@ update clinicdb.activityimages set ImageUrl = '2.jpg' where Id > 800 and Id < 12
 Book in advance, no patient 
 search in 2 weeks
 
+
+        console.log("Decoded text: ", decodedText);
+        console.log("encodeURIComponent text: ", encodeURIComponent(decodedText));
+
+
+
+BC000000008
