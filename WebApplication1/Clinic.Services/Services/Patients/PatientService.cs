@@ -121,7 +121,20 @@ public sealed class PatientService : IPatientService
     {
         patient.CreatedAt = DateTime.UtcNow;
         patient.IsActive = true;
-        patient.BarcodeValue ??= Guid.NewGuid().ToString("N")[..12].ToUpperInvariant();
+
+        // Sinh barcode 8 ký tự số, kiểm tra trùng
+        if (string.IsNullOrWhiteSpace(patient.BarcodeValue))
+        {
+            var random = new Random();
+            string newBarcode;
+            bool exists;
+            do
+            {
+                newBarcode = string.Concat(Enumerable.Range(0, 8).Select(_ => random.Next(0, 10).ToString()));
+                exists = await _db.Patients.AnyAsync(p => p.BarcodeValue == newBarcode, ct);
+            } while (exists);
+            patient.BarcodeValue = newBarcode;
+        }
 
         _db.Patients.Add(patient);
         await _db.SaveChangesAsync(ct);

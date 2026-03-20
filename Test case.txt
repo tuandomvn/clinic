@@ -23,3 +23,6 @@ Profile: có the post + upload hinh anh, view lai sau do
 Print
 
 5. Scan mã vạch bệnh nhân
+
+
+var activityImagesDir = Path.Combine(_uploadPath, "activities"); I want all photo upload of a patient is stored in 1 sub folder. So It should be _uploadPath > patient id > activities
